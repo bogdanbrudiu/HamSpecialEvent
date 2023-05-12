@@ -5,8 +5,9 @@
 <p *ngIf="!QSOs?.length"><em>Loading...</em></p>
 
 <div [formGroup]="searchForm">
-    <input placeholder="Search " formControlName="search" />
-    <button  (click)="submitForm()">Search</button>
+  <input placeholder="Search " formControlName="search" />
+  <button (click)="submitForm()">Search</button>
+  <button (click)="submitForm()">Export</button>
 </div>
 <table class='table table-striped' aria-labelledby="tableLabel" *ngIf="QSOs.length">
   <thead>

@@ -132,5 +132,8 @@
       }
     }
   },
-  "defaultProject": "HamEvent"
+  "defaultProject": "HamEvent",
+  "cli": {
+    "analytics": "d57b7b3b-83b4-4f70-9d8c-aa5d252ddc01"
+  }
 }

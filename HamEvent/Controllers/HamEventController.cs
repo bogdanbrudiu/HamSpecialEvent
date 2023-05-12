@@ -29,7 +29,7 @@ namespace HamEvent.Controllers
                 List<QSO> QSOs = JsonConvert.DeserializeObject<List<QSO>>(json);
                 var result = QSOs;
                 if (!String.IsNullOrEmpty(callsign) && QSOs!=null) {
-                    result = QSOs.Where(qso => qso.Callsign2.Equals(callsign)).ToList();
+                    result = QSOs.Where(qso => string.Equals(callsign, qso.Callsign2, StringComparison.CurrentCultureIgnoreCase)).ToList();
                 }
                 return result;
             }

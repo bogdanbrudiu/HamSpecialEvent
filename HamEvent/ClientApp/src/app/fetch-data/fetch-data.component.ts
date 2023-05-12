@@ -24,6 +24,10 @@ export class FetchDataComponent {
     this.loadData()
   }
 
+  genPdf() {
+
+  }
+
   loadData() {
     this.http.get<QSO[]>(this.baseUrl + 'hamevent?callsign=' + this.searchInput).subscribe(result => {
       this.QSOs = result;

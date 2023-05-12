@@ -1,0 +1,30 @@
+<h1 id="tableLabel">Weather forecast</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+<p *ngIf="!QSOs?.length"><em>Loading...</em></p>
+
+<table class='table table-striped' aria-labelledby="tableLabel" *ngIf="QSOs.length">
+  <thead>
+    <tr>
+      <th>Callsign 1</th>
+      <th>CAllsign 2</th>
+      <th>RST1</th>
+      <th>RST2</th>
+      <th>Mode</th>
+      <th>Band</th>
+      <th>Timestamp</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let QSO of QSOs">
+      <td>{{ QSO.Callsign1 }}</td>
+      <td>{{ QSO.Callsign2 }}</td>
+      <td>{{ QSO.RST1 }}</td>
+      <td>{{ QSO.RST2 }}</td>
+      <td>{{ QSO.Mode }}</td>
+      <td>{{ QSO.Band }}</td>
+      <td>{{ QSO.Timestamp }}</td>
+    </tr>
+  </tbody>
+</table>

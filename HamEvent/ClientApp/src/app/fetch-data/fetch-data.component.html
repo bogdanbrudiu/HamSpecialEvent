@@ -1,9 +1,13 @@
-<h1 id="tableLabel">Weather forecast</h1>
+<h1 id="tableLabel">HamEvent QSOs</h1>
 
 <p>This component demonstrates fetching data from the server.</p>
 
 <p *ngIf="!QSOs?.length"><em>Loading...</em></p>
 
+<div [formGroup]="searchForm">
+    <input placeholder="Search " formControlName="search" />
+    <button  (click)="submitForm()">Search</button>
+</div>
 <table class='table table-striped' aria-labelledby="tableLabel" *ngIf="QSOs.length">
   <thead>
     <tr>
@@ -18,13 +22,13 @@
   </thead>
   <tbody>
     <tr *ngFor="let QSO of QSOs">
-      <td>{{ QSO.Callsign1 }}</td>
-      <td>{{ QSO.Callsign2 }}</td>
-      <td>{{ QSO.RST1 }}</td>
-      <td>{{ QSO.RST2 }}</td>
-      <td>{{ QSO.Mode }}</td>
-      <td>{{ QSO.Band }}</td>
-      <td>{{ QSO.Timestamp }}</td>
+      <td>{{ QSO.callsign1 }}</td>
+      <td>{{ QSO.callsign2 }}</td>
+      <td>{{ QSO.rst1 }}</td>
+      <td>{{ QSO.rst2 }}</td>
+      <td>{{ QSO.mode }}</td>
+      <td>{{ QSO.band }}</td>
+      <td>{{ QSO.timestamp }}</td>
     </tr>
   </tbody>
 </table>

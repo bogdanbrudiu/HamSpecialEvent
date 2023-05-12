@@ -1,6 +1,7 @@
 ﻿using HtmlToPDFCore;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace HamEvent.Controllers
@@ -18,29 +19,23 @@ namespace HamEvent.Controllers
             _logger = logger;
         }
 
+
         [HttpGet]
-        public IEnumerable<QSO> Get()
+        public IEnumerable<QSO> Get(string callsign="")
         {
             using (StreamReader reader = new StreamReader("QSOs.json"))
             {
                 var json = reader.ReadToEnd();
                 List<QSO> QSOs = JsonConvert.DeserializeObject<List<QSO>>(json);
-                return QSOs;
+                var result = QSOs;
+                if (!String.IsNullOrEmpty(callsign) && QSOs!=null) {
+                    result = QSOs.Where(qso => qso.Callsign2.Equals(callsign)).ToList();
+                }
+                return result;
             }
         }
-
-        [HttpGet]
-        public IEnumerable<QSO> Get(string callsign)
-        {
-            using (StreamReader reader = new StreamReader("QSOs.json"))
-            {
-                var json = reader.ReadToEnd();
-                List<QSO> QSOs = JsonConvert.DeserializeObject<List<QSO>>(json);
-                return QSOs.Where(qso=>qso.Callsign2.Equals(callsign));
-            }
-        }
-
-        public IActionResult PDF()
+        [HttpGet("Diploma/{callsign}")]
+        public IActionResult PDF(string callsign)
         {
             try
 

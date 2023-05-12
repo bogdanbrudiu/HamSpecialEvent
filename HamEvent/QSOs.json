@@ -6,6 +6,24 @@
         "RST2": "598",
         "Mode": "CW",
         "Band": "40m(7Mhz)",
-        "Timestamp": "2023-05-12T17:00:00+1Z"
+        "Timestamp": "2023-05-12T17:00:00Z"
+    },
+    {
+        "Callsign1": "YP1989TM",
+        "Callsign2": "YO2MTG",
+        "RST1": "599",
+        "RST2": "599",
+        "Mode": "CW",
+        "Band": "40m(7Mhz)",
+        "Timestamp": "2023-05-12T17:15:00Z"
+    },
+    {
+        "Callsign1": "YP1989TM",
+        "Callsign2": "YO2MKE",
+        "RST1": "599",
+        "RST2": "598",
+        "Mode": "CW",
+        "Band": "20m(14Mhz)",
+        "Timestamp": "2023-05-12T18:00:00Z"
     }
 ]

@@ -47,16 +47,23 @@ namespace HamEvent.Controllers
             try
 
             {
-                string imageUrl = "url";
-                string html = "<html><head><style>body {background-image: url("+ imageUrl +");background-size: cover;background-position: center;background-repeat: no-repeat; background-attachment: fixed;position: relative;}</style></head> <div><h1 style=\"text-align: center; font-size: 50px; font-family: 'Times New Roman', Times, serif; color: #000000;\">Certificate of Achievement</h1><h2 style=\"text-align: center; font-size: 30px; font-family: 'Times New Roman', Times, serif; color: #000000;\">callsign</h2></div></html>";
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                string url = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}/static/diploma.html";
+
+                using (HttpClient client = new HttpClient())
                 {
-                    html = "<html><body><b>TESTE PDF no Linux</b></body></html>";
+                    using (HttpResponseMessage response = client.GetAsync(url).Result)
+                    {
+                        using (HttpContent content = response.Content)
+                        {
+                            string html = content.ReadAsStringAsync().Result;
+                            var pdf = new HtmlToPDF();
+                            var buffer = pdf.ReturnPDF(html);
+                            var stream = new MemoryStream(buffer);
+                            return new FileStreamResult(stream, "application/pdf");
+                        }
+                    }
                 }
-                var pdf = new HtmlToPDF();
-                var buffer = pdf.ReturnPDF(html);
-                var stream = new MemoryStream(buffer);
-                return new FileStreamResult(stream, "application/pdf");
+              
             }
             catch (Exception ex)
             {

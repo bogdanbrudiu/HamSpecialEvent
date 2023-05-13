@@ -7,6 +7,7 @@ const PROXY_CONFIG = [
   {
     context: [
       "/hamevent",
+      "/static"
    ],
     target: target,
     secure: false,

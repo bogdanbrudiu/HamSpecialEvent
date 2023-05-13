@@ -9,6 +9,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 export class FetchDataComponent {
   searchForm!: FormGroup;
   public QSOs: QSO[] = [];
+  public balance = '';
   public searchInput = '';
   public loaded = false;
   public blob: Blob | undefined;
@@ -19,7 +20,13 @@ export class FetchDataComponent {
       search: "",
     });
   }
+  //doit() {
+  //  this.http.get<BalanceResult>(this.baseUrl + 'hamevent/balanceDoIt').subscribe(result => {
+  //  }, error => console.error(error));
 
+  //  this.loadData();
+
+  //}
   submitForm() {
     this.searchInput = encodeURIComponent(this.searchForm.get('search')?.value);
     this.loaded = false;
@@ -52,6 +59,11 @@ export class FetchDataComponent {
       console.log('base URL: ' + this.baseUrl);
       console.log('search input: ' + this.searchInput);
     }, error => console.error(error));
+
+
+    //this.http.get<BalanceResult>(this.baseUrl + 'hamevent/balance').subscribe(result => {
+    //  this.balance = result.balance;
+    //}, error => console.error(error));
   }
   qualifiesForDiploma() {
     return this.QSOs.length > 0 && this.searchInput.length > 0 && this.loaded;
@@ -67,4 +79,6 @@ interface QSO {
   band: string;
   timestamp: Date;
 }
-
+//interface BalanceResult {
+//  balance: string;
+//}

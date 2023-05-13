@@ -41,6 +41,8 @@ namespace HamEvent.Controllers
                 return result;
             }
         }
+
+
         [HttpGet("Diploma/{callsign}")]
         public IActionResult PDF(string callsign)
         {

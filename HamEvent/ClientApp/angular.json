@@ -33,9 +33,7 @@
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "src/styles.css"
             ],
-            "scripts": [
-              "src/_myStyles/src/js/main.js"
-            ]
+            "scripts": []
           },
           "configurations": {
             "production": {
@@ -102,9 +100,7 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": [
-              "src/_myStyles/src/js/main.js"
-            ]
+            "scripts": []
           }
         },
         "server": {

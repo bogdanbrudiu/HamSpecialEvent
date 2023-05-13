@@ -25,7 +25,7 @@ div#app_root {        /* this will hide div with id div_id_name */
 }
 
 #myfooter {
-  position: static;
+  position: fixed;
   bottom: 0;
   width: 100%;
 }

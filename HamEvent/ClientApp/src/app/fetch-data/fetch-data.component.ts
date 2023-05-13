@@ -21,7 +21,7 @@ export class FetchDataComponent {
   }
 
   submitForm() {
-    this.searchInput = this.searchForm.get('search')?.value;
+    this.searchInput = encodeURIComponent(this.searchForm.get('search')?.value);
     this.loaded = false;
     this.loadData();
  
@@ -49,6 +49,8 @@ export class FetchDataComponent {
     this.http.get<QSO[]>(this.baseUrl + 'hamevent?callsign=' + this.searchInput).subscribe(result => {
       this.QSOs = result;
       this.loaded = true;
+      console.log('base URL: ' + this.baseUrl);
+      console.log('search input: ' + this.searchInput);
     }, error => console.error(error));
   }
   qualifiesForDiploma() {

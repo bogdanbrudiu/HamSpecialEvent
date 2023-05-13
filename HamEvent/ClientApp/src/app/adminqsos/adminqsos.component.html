@@ -1,0 +1,39 @@
+<h1 id="tableLabel">HamEvent QSOs</h1>
+
+<p>Balance is {{balance}}   <button (click)="doit()">Doit</button></p>
+
+
+<app-upload [eventId]="eventId" [eventsecret]="eventsecret"></app-upload>
+
+<p *ngIf="!loaded"><em>Loading...</em></p>
+
+<div [formGroup]="searchForm">
+  <input placeholder="Search " formControlName="search" />
+  <button (click)="submitForm()">Search</button>
+  <button *ngIf = 'qualifiesForDiploma()' (click)="genPdf()">Download Diploma</button>
+</div>
+<p *ngIf="loaded && !QSOs?.length"><em>No entries...</em></p>
+<table class='table table-striped' aria-labelledby="tableLabel" *ngIf="QSOs.length">
+  <thead>
+    <tr>
+      <th>Callsign 1</th>
+      <th>Callsign 2</th>
+      <!--<th>RST1</th>
+      <th>RST2</th>-->
+      <th>Mode</th>
+      <th>Band</th>
+      <th>Timestamp</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let QSO of QSOs">
+      <td>{{ QSO.callsign1 }}</td>
+      <td>{{ QSO.callsign2 }}</td>
+      <!--<td>{{ QSO.rst1 }}</td>
+      <td>{{ QSO.rst2 }}</td>-->
+      <td>{{ QSO.mode }}</td>
+      <td>{{ QSO.band }}</td>
+      <td>{{ QSO.timestamp }}</td>
+    </tr>
+  </tbody>
+</table>

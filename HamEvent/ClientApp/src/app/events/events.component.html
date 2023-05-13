@@ -1,0 +1,20 @@
+<h1 id="tableLabel">HamEvents</h1>
+
+<p *ngIf="!loaded"><em>Loading...</em></p>
+
+<p *ngIf="loaded && !Events?.length"><em>No entries...</em></p>
+<table class='table table-striped' aria-labelledby="tableLabel" *ngIf="Events.length">
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>Name</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let event of Events" (click)="gotoEvent(event)">
+      <td>{{ event.id }}</td>
+      <td>{{ event.name }}</td>
+    </tr>
+  </tbody>
+</table>
+<router-outlet></router-outlet>

@@ -1,32 +1,34 @@
 import { Component, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
-  selector: 'app-fetch-data',
-  templateUrl: './fetch-data.component.html'
+  selector: 'app-qsos',
+  templateUrl: './qsos.component.html'
 })
-export class FetchDataComponent {
+export class QSOsComponent {
   searchForm!: FormGroup;
   public QSOs: QSO[] = [];
-  public balance = '';
+  public eventId:string  = '';
   public searchInput = '';
   public loaded = false;
   public blob: Blob | undefined;
 
-  constructor(public http: HttpClient, private formBuilder: FormBuilder, @Inject('BASE_URL') public baseUrl: string) {
-    this.loadData()
+  constructor(public http: HttpClient, private formBuilder: FormBuilder, @Inject('BASE_URL') public baseUrl: string, private routes: ActivatedRoute) {
+
     this.searchForm = this.formBuilder.group({
       search: "",
     });
   }
-  //doit() {
-  //  this.http.get<BalanceResult>(this.baseUrl + 'hamevent/balanceDoIt').subscribe(result => {
-  //  }, error => console.error(error));
 
-  //  this.loadData();
+  ngOnInit() {
+    this.routes.paramMap.subscribe(params => {
+      this.eventId = params.get('id')!;
+      this.loadData();
+    });
+  }
 
-  //}
   submitForm() {
     this.searchInput = encodeURIComponent(this.searchForm.get('search')?.value);
     this.loaded = false;
@@ -39,7 +41,7 @@ export class FetchDataComponent {
       responseType: 'blob' as 'json'
     };
 
-    return this.http.get(this.baseUrl + 'hamevent/Diploma/' + this.searchInput, httpOptions).subscribe((data:any) => {
+    return this.http.get(this.baseUrl + 'hamevent/Diploma/'+encodeURIComponent(this.eventId)+'/' + this.searchInput, httpOptions).subscribe((data:any) => {
 
       this.blob = new Blob([data], { type: 'application/pdf' });
 
@@ -53,17 +55,12 @@ export class FetchDataComponent {
   }
 
   loadData() {
-    this.http.get<QSO[]>(this.baseUrl + 'hamevent?callsign=' + this.searchInput).subscribe(result => {
+    this.http.get<QSO[]>(this.baseUrl + 'hamevent/'+encodeURIComponent(this.eventId)+'?callsign=' + this.searchInput).subscribe(result => {
       this.QSOs = result;
       this.loaded = true;
       console.log('base URL: ' + this.baseUrl);
       console.log('search input: ' + this.searchInput);
     }, error => console.error(error));
-
-
-    //this.http.get<BalanceResult>(this.baseUrl + 'hamevent/balance').subscribe(result => {
-    //  this.balance = result.balance;
-    //}, error => console.error(error));
   }
   qualifiesForDiploma() {
     return this.QSOs.length > 0 && this.searchInput.length > 0 && this.loaded;
@@ -79,6 +76,4 @@ interface QSO {
   band: string;
   timestamp: Date;
 }
-//interface BalanceResult {
-//  balance: string;
-//}
+

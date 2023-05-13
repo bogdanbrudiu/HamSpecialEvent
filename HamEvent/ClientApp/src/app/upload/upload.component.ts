@@ -1,5 +1,5 @@
 import { HttpClient, HttpEventType, HttpErrorResponse } from '@angular/common/http';
-import { Component, EventEmitter, OnInit, Output, Inject } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, Inject, Input } from '@angular/core';
 
 @Component({
   selector: 'app-upload',
@@ -7,6 +7,8 @@ import { Component, EventEmitter, OnInit, Output, Inject } from '@angular/core';
   styleUrls: ['./upload.component.css']
 })
 export class UploadComponent implements OnInit {
+  @Input() eventId: string='';
+  @Input() eventsecret: string='';
   progress: number = 0;
   message: string = '';
   @Output() public onUploadFinished = new EventEmitter();
@@ -24,7 +26,7 @@ export class UploadComponent implements OnInit {
     const formData = new FormData();
     formData.append('file', fileToUpload, fileToUpload.name);
 
-    this.http.post(this.baseUrl + 'hamevent/upload', formData, { reportProgress: true, observe: 'events' })
+    this.http.post(this.baseUrl + 'hamevent/' + encodeURIComponent(this.eventId) + '/' + encodeURIComponent(this.eventsecret) +'/upload', formData, { reportProgress: true, observe: 'events' })
       .subscribe({
         next: (event) => {
           if (event.type === HttpEventType.UploadProgress && event.total)

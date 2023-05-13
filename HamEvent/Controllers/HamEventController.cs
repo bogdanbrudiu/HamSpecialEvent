@@ -19,6 +19,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Runtime.CompilerServices;
+using HamEvent.Data.Model;
+using System.Text.Json;
 
 namespace HamEvent.Controllers
 {
@@ -39,37 +41,37 @@ namespace HamEvent.Controllers
         }
 
 
-        [HttpGet]
-        public IEnumerable<QSO> Get(string callsign="")
+        [HttpGet("{hamevent}")]
+        public IEnumerable<QSO> Get(Guid hamevent,string callsign="")
         {
-            //using (StreamReader reader = new StreamReader("QSOs.adi"))
-            //{
-            //    var adif = reader.ReadToEnd();
-            //    AdifFile.TryParse(adif, out var file);
-            //    List<AdifContactRecord> adifQSOs = file.Records.ToList();
-            //    List<QSO> QSOs = _mapper.Map<List<AdifContactRecord>, List<QSO>>(adifQSOs);
-            //    var result = QSOs;
-            //    if (!String.IsNullOrEmpty(callsign) && QSOs!=null) {
-            //        result = QSOs.Where(qso => string.Equals(callsign, qso.Callsign2, StringComparison.CurrentCultureIgnoreCase)).ToList();
-            //    }
-            //    return result;
-            //}
             try
             {
                 if (!String.IsNullOrEmpty(callsign))
                 {
-                    return _dbcontext.QSOs.Where(qso => string.Equals(callsign.ToLower(), qso.Callsign2.ToLower())).ToList();
+                    return _dbcontext.QSOs.Where(qso=>qso.EventId.Equals(hamevent)).Where(qso => string.Equals(callsign.ToLower(), qso.Callsign2.ToLower())).ToList();
                 }
-                return _dbcontext.QSOs.ToList();
+                return _dbcontext.QSOs.Where(qso => qso.EventId.Equals(hamevent)).ToList();
             }
             catch (Exception ex) {
                 return new List<QSO>();
             }
         }
 
+        [HttpGet("hamevents")]
+        public IEnumerable<Event> Get()
+        {
+            try
+            {
 
-        [HttpGet("Diploma/{callsign}")]
-        public IActionResult PDF(string callsign)
+                return _dbcontext.Events.ToList();
+            }
+            catch (Exception ex)
+            {
+                return new List<Event>();
+            }
+        }
+        [HttpGet("Diploma/{hamevent}/{callsign}")]
+        public IActionResult PDF(Guid hamevent, string callsign)
         {
             try
 
@@ -98,33 +100,37 @@ namespace HamEvent.Controllers
             }
         }
 
-        [HttpPost("upload")]
-        public IActionResult Upload()
+        [HttpPost("{hamevent}/{eventsecret}/upload")]
+        public IActionResult Upload(Guid hamevent, Guid eventsecret)
         {
             try
             {
-                var adifInport = Request.Form.Files[0];
-                if (adifInport.Length > 0)
-                {
-                    using (var reader = new StreamReader(adifInport.OpenReadStream()))
-                    {
-                        var adif = reader.ReadToEnd();
-                        AdifFile.TryParse(adif, out var file);
-                        List<AdifContactRecord> adifQSOs = file.Records.ToList();
-                        List<QSO> QSOs = _mapper.Map<List<AdifContactRecord>, List<QSO>>(adifQSOs);
-                        foreach (QSO myQSO in QSOs)
-                        {
-                            _dbcontext.QSOs.Add(myQSO);
-                        }
-                        _dbcontext.SaveChanges();
-                    }
+                var myevent=_dbcontext.Events.Where(e => e.Id.Equals(hamevent) && e.SecretKey.Equals(eventsecret)).FirstOrDefault();
 
-                    return Ok();
-                }
-                else
-                {
-                    return BadRequest();
-                }
+                    var adifInport = Request.Form.Files[0];
+                    if (adifInport.Length > 0 && myevent != null)
+                    {
+                        using (var reader = new StreamReader(adifInport.OpenReadStream()))
+                        {
+                            var adif = reader.ReadToEnd();
+                            AdifFile.TryParse(adif, out var file);
+                            List<AdifContactRecord> adifQSOs = file.Records.ToList();
+                            List<QSO> QSOs = _mapper.Map<List<AdifContactRecord>, List<QSO>>(adifQSOs);
+                            foreach (QSO myQSO in QSOs)
+                            {
+                                myQSO.EventId = hamevent;
+                                _dbcontext.QSOs.Add(myQSO);
+                                AddToMultiversx(myQSO);
+                            }
+                            _dbcontext.SaveChanges();
+                        }
+
+                        return Ok();
+                    }
+                    else
+                    {
+                        return BadRequest();
+                    }
             }
             catch (Exception ex)
             {
@@ -132,7 +138,36 @@ namespace HamEvent.Controllers
             }
         }
 
+        public async void AddToMultiversx(QSO qso) {
+            var provider = new ElrondProvider(new HttpClient(), new ElrondNetworkConfiguration(Network.DevNet));
+            //var account = await provider.GetAccount("erd1s5fh0dcpmvhs4vwunnzyvwwgjxc0pzx396pguxa2lc4k870ws3vqkkjx5p");
+            var wallet = Wallet.DeriveFromMnemonic("focus round resemble boring ball stay tilt task valley vocal scare taxi supply hint invest mixed luggage mix mammal please velvet stick clarify wrong");
 
+            var sender = wallet.GetAccount();
+            var receiver = wallet.GetAccount().Address;
+            await sender.Sync(provider);
+
+            var transaction = TransactionRequest.Create(sender, await NetworkConfig.GetFromNetwork(provider), receiver, TokenAmount.EGLD("0"));//TokenAmount.EGLD("0.000000000000000001"));
+            transaction.SetData("{" +
+                "\"Callsign1\":\""+qso.Callsign1+ "\"," +
+                "\"Callsign2\":\""+qso.Callsign2+"\"," +
+                "\"Mode\":\"" + qso.Mode + "\"," +
+                "\"Band\":\"" + qso.Band + "\"," +
+                "\"Timestamp\":\"" + qso.Timestamp + "\"" +
+                "}");
+            transaction.SetGasLimit(GasLimit.ForTransfer(await NetworkConfig.GetFromNetwork(provider), transaction));
+            try
+            {
+                var transactionResult = await transaction.Send(provider, wallet);
+                await transactionResult.AwaitExecuted(provider);
+
+                System.Console.WriteLine("TxHash {0}", transactionResult.TxHash);
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine(ex);
+            }
+        }
 
 
         [HttpGet("balance")]
@@ -159,7 +194,7 @@ namespace HamEvent.Controllers
             var receiver = wallet.GetAccount().Address;
             await sender.Sync(provider);
 
-            var transaction = TransactionRequest.Create(sender, await NetworkConfig.GetFromNetwork(provider), receiver, TokenAmount.EGLD("0.000000000000000001"));
+            var transaction = TransactionRequest.Create(sender, await NetworkConfig.GetFromNetwork(provider), receiver, TokenAmount.EGLD("0"));//TokenAmount.EGLD("0.000000000000000001"));
             transaction.SetData("Hello world !");
             transaction.SetGasLimit(GasLimit.ForTransfer(await NetworkConfig.GetFromNetwork(provider), transaction));
             try
@@ -169,7 +204,8 @@ namespace HamEvent.Controllers
 
                 System.Console.WriteLine("TxHash {0}", transactionResult.TxHash);
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 System.Console.WriteLine(ex);
             }
             return Ok();

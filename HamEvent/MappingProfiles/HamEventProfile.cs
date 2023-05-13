@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
+using HamEvent.Data.Model;
 using M0LTE.AdifLib;
 
 namespace HamEvent.MappingProfiles
 {
-  public class HamEventProfile : Profile
+    public class HamEventProfile : Profile
   {
     public HamEventProfile()
     {

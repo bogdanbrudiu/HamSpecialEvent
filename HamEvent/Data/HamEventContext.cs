@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using HamEvent.Data.Model;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Reflection.Metadata;
 
 namespace HamEvent.Data
 {
@@ -13,9 +15,23 @@ namespace HamEvent.Data
         }
 
         public DbSet<QSO> QSOs { get; set; }
+        public DbSet<Event> Events { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<QSO>().ToTable("QSO").HasKey(e=>e.Id);
+            modelBuilder.Entity<Event>()
+              .HasMany(e => e.QSOs)
+              .WithOne(e => e.Event)
+              .HasForeignKey(e => e.EventId)
+              .IsRequired();
+            modelBuilder.Entity<Event>().HasData(
+                    new Event
+                    {
+                        Id = Guid.NewGuid(),
+                        SecretKey = Guid.NewGuid(),
+                        Name = "YO2KQT - TM2023",
+                    }
+                );
+            modelBuilder.Entity<QSO>().HasKey(e=>e.Id);
         }
 
         public string DbPath { get; } = "Database\\QSOs.db";

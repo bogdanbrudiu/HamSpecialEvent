@@ -1,4 +1,4 @@
-namespace HamEvent
+namespace HamEvent.Data.Model
 {
     public class QSO
     {
@@ -10,6 +10,7 @@ namespace HamEvent
         public string Band { get; set; }
         public string Mode { get; set; }
         public DateTime Timestamp { get; set; }
-
+        public Guid EventId { get; set; }
+        public Event Event { get; set; }
     }
 }

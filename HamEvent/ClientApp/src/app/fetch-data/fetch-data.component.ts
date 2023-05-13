@@ -10,7 +10,8 @@ export class FetchDataComponent {
   searchForm!: FormGroup;
   public QSOs: QSO[] = [];
   public searchInput = '';
-
+  public loaded = false;
+  public blob: Blob | undefined;
 
   constructor(public http: HttpClient, private formBuilder: FormBuilder, @Inject('BASE_URL') public baseUrl: string) {
     this.loadData()
@@ -21,17 +22,37 @@ export class FetchDataComponent {
 
   submitForm() {
     this.searchInput = this.searchForm.get('search')?.value;
-    this.loadData()
+    this.loaded = false;
+    this.loadData();
+ 
   }
 
   genPdf() {
+    const httpOptions = {
+      responseType: 'blob' as 'json'
+    };
 
+    return this.http.get(this.baseUrl + 'hamevent/Diploma/' + this.searchInput, httpOptions).subscribe((data:any) => {
+
+      this.blob = new Blob([data], { type: 'application/pdf' });
+
+      let downloadURL = window.URL.createObjectURL(data);
+      let link = document.createElement('a');
+      link.href = downloadURL;
+      link.download = "diploma.pdf";
+      link.click();
+
+    });
   }
 
   loadData() {
     this.http.get<QSO[]>(this.baseUrl + 'hamevent?callsign=' + this.searchInput).subscribe(result => {
       this.QSOs = result;
+      this.loaded = true;
     }, error => console.error(error));
+  }
+  qualifiesForDiploma() {
+    return this.QSOs.length > 0 && this.searchInput.length > 0 && this.loaded;
   }
 }
 

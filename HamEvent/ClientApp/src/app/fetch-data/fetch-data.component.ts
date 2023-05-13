@@ -13,6 +13,8 @@ export class FetchDataComponent {
   public searchInput = '';
   public loaded = false;
   public blob: Blob | undefined;
+  public index: number = 0;
+  public countItems: number = 100;
 
   constructor(public http: HttpClient, private formBuilder: FormBuilder, @Inject('BASE_URL') public baseUrl: string) {
     this.loadData()
@@ -30,8 +32,9 @@ export class FetchDataComponent {
   submitForm() {
     this.searchInput = encodeURIComponent(this.searchForm.get('search')?.value);
     this.loaded = false;
+    this.index = 0;
     this.loadData();
- 
+    
   }
 
   genPdf() {
@@ -68,6 +71,22 @@ export class FetchDataComponent {
   qualifiesForDiploma() {
     return this.QSOs.length > 0 && this.searchInput.length > 0 && this.loaded;
   }
+
+  prevPage() {
+    if (this.index > 0) this.index = this.index - 1;
+  }
+
+  nextPage() {
+    this.index = this.index + 1;
+  }
+}
+
+interface PageResult<T>
+{
+  count: number;
+  pageIndex: number;
+  pageSize: number;
+  items: T[];
 }
 
 interface QSO {

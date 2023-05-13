@@ -37,7 +37,18 @@ namespace HamEvent.Controllers
             _mapper = mapper;
             _dbcontext = dbcontext;
         }
-
+        public PageResult<QSO> listQSOs(int? page, int pagesize = 10)
+        {
+            var countDetails = _dbcontext.QSOs.Count();
+            var result = new PageResult<QSO>
+            {
+                Count = countDetails,
+                PageIndex = page ?? 1,
+                PageSize = 10,
+                Items = _dbcontext.QSOs.Skip((page - 1 ?? 0) * pagesize).Take(pagesize).ToList()
+            };
+            return result;
+        }
 
         [HttpGet]
         public IEnumerable<QSO> Get(string callsign="")

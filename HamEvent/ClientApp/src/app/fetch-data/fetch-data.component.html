@@ -13,6 +13,10 @@
   <button *ngIf = 'qualifiesForDiploma()' (click)="genPdf()">Download Diploma</button>
 </div>
 <p *ngIf="loaded && !QSOs?.length"><em>No entries...</em></p>
+<div id="pageBttn">
+  <button (click)="prevPage()">Prev</button>
+  <button (click)="nextPage()">Next</button>
+</div>
 <table class='table table-striped' aria-labelledby="tableLabel" *ngIf="QSOs.length">
   <thead>
     <tr>
@@ -26,14 +30,14 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let QSO of QSOs">
+    <!--<tr *ngFor="let QSO of QSOs | paginate: { itemsPerPage: 10, currentPage: pageNumber, totalItems:Count }">-->
+    <tr *ngFor="let QSO of QSOs.slice(this.index * this.countItems, (this.index+1) * this.countItems)">
       <td>{{ QSO.callsign1 }}</td>
       <td>{{ QSO.callsign2 }}</td>
-      <!--<td>{{ QSO.rst1 }}</td>
-      <td>{{ QSO.rst2 }}</td>-->
       <td>{{ QSO.mode }}</td>
       <td>{{ QSO.band }}</td>
       <td>{{ QSO.timestamp }}</td>
     </tr>
+    <!--<pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>-->
   </tbody>
 </table>

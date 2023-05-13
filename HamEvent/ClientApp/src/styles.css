@@ -1,4 +1,5 @@
 /* You can add global styles to this file, and also import other style files */
+@import url("_myStyles/dist/css/style.css");
 
 /* Provide sufficient contrast against white background */
 a {
@@ -17,4 +18,14 @@ code {
   color: #fff;
   background-color: #1b6ec2;
   border-color: #1861ac;
+}
+
+div#app_root {        /* this will hide div with id div_id_name */
+  display:none;
+}
+
+#myfooter {
+  position: static;
+  bottom: 0;
+  width: 100%;
 }

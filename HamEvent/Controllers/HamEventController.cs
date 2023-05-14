@@ -96,6 +96,9 @@ namespace HamEvent.Controllers
                         using (HttpContent content = response.Content)
                         {
                             string html = content.ReadAsStringAsync().Result;
+
+                            html = html.Replace("--callsign1--", callsign.ToUpper());
+
                             var pdf = new HtmlToPDF();
                             var buffer = pdf.ReturnPDF(html);
                             var stream = new MemoryStream(buffer);
@@ -185,7 +188,7 @@ namespace HamEvent.Controllers
         public async Task<IActionResult> GetBalanceAsync()
         {
             var provider = new ElrondProvider(new HttpClient(), new ElrondNetworkConfiguration(Network.DevNet));
-            var account = await provider.GetAccount("erd1s5fh0dcpmvhs4vwunnzyvwwgjxc0pzx396pguxa2lc4k870ws3vqkkjx5p");
+            var account = await provider.GetAccount("erd13h7a6f3h00e9f6eegjh09l9wjl5qe6urfjxgcsj6ny3w0cjv9r0q0h36fj");
 
             System.Console.WriteLine($"Balance : {account.Balance}");
 
@@ -199,7 +202,7 @@ namespace HamEvent.Controllers
         {
             var provider = new ElrondProvider(new HttpClient(), new ElrondNetworkConfiguration(Network.DevNet));
             //var account = await provider.GetAccount("erd1s5fh0dcpmvhs4vwunnzyvwwgjxc0pzx396pguxa2lc4k870ws3vqkkjx5p");
-            var wallet = Wallet.DeriveFromMnemonic("focus round resemble boring ball stay tilt task valley vocal scare taxi supply hint invest mixed luggage mix mammal please velvet stick clarify wrong");
+            var wallet = Wallet.DeriveFromMnemonic("endorse hurt rack shrimp damp news bike duck observe sad pet wine tomato day talk casual strategy venture picture license vote buzz measure first");
 
             var sender = wallet.GetAccount();
             var receiver = wallet.GetAccount().Address;

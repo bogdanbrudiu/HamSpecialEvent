@@ -39,3 +39,6 @@ YO2KQT (Ham radio club from Timisoara) has a special event in 2023 promoting TM2
 
 # Extra
 On request print QSLs/diplomas and ship them. 
+
+
+

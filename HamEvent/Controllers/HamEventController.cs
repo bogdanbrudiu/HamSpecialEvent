@@ -66,12 +66,12 @@ namespace HamEvent.Controllers
         }
 
         [HttpGet("hamevents")]
-        public IEnumerable<Event> Get()
+        public List<Event> Get()
         {
             try
             {
 
-                return _dbcontext.Events.ToList();
+                return _dbcontext.Events.Select(e => new Event() {  Id=e.Id,  Name=e.Name}).ToList();
             }
             catch (Exception ex)
             {

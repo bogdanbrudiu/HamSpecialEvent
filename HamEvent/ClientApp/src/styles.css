@@ -20,9 +20,6 @@ code {
   border-color: #1861ac;
 }
 
-div#app_root {        /* this will hide div with id div_id_name */
-  display:none;
-}
 
 #myfooter {
   position: fixed;

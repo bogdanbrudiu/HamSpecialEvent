@@ -1,0 +1,22 @@
+{
+  "HamEvent": "Eveniment radioamatori",
+  "HamEvents": "Evenimente radioamatori",
+  "HamEventTitle": "Diploma eveniment radioamatori.",
+  "HamEventDescription": "Obțineți certificatul QSO rapid și ușor la atingerea unui buton!",
+  "Search QSO": "Caută QSO",
+  "Copyright": "2023, all rights reserved",
+  "Loading...": "Se încarcă...",
+  "No entries...": "Fără intrări...",
+  "HamEvent QSOs": "Eveniment radioamatori - QSO-uri",
+  "Download Diploma": "Descarcă Diploma",
+  "Search": "Caută",
+  "Callsign 1": "Indicativ 1",
+  "Callsign 2": "Indicativ 2",
+  "Mode": "Mod",
+  "Band": "Bandă",
+  "Timestamp": "Timestamp",
+  "Id": "Id",
+  "Name": "Nume",
+  "Prev": "Anterioară",
+  "Next": "Următoare"
+}

@@ -23,6 +23,8 @@
     "@angular/platform-browser-dynamic": "^16.2.2",
     "@angular/platform-server": "^16.2.2",
     "@angular/router": "^16.2.2",
+    "@ngx-translate/core": "^15.0.0",
+    "@ngx-translate/http-loader": "^8.0.0",
     "bootstrap": "^5.2.0",
     "jquery": "^3.6.0",
     "oidc-client": "^1.11.5",
@@ -49,6 +51,5 @@
   },
   "overrides": {
     "autoprefixer": "10.4.5"
-  },
-  "optionalDependencies": {}
+  }
 }

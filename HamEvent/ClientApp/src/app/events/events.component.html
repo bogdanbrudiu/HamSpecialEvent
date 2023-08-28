@@ -1,13 +1,13 @@
-<h1 id="tableLabel">HamEvents</h1>
+<h1 id="tableLabel">{{'HamEvents' | translate}}</h1>
 
-<p *ngIf="!loaded"><em>Loading...</em></p>
+<p *ngIf="!loaded"><em>{{'Loading...' | translate}}</em></p>
 
-<p *ngIf="loaded && !Events?.length"><em>No entries...</em></p>
+<p *ngIf="loaded && !Events?.length"><em>{{'No entries...' | translate}}</em></p>
 <table class='table table-striped' aria-labelledby="tableLabel" *ngIf="Events.length">
   <thead>
     <tr>
-      <th>Id</th>
-      <th>Name</th>
+      <th>{{'Id' | translate}}</th>
+      <th>{{'Name' | translate}}</th>
     </tr>
   </thead>
   <tbody>

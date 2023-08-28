@@ -1,6 +1,27 @@
-<body>
+
   <app-nav-menu></app-nav-menu>
-  <main class="container">
+  <main class="content">
     <router-outlet></router-outlet>
   </main>
-</body>
+  <footer class="site-footer has-top-divider" id="myfooter">
+    <div class="container">
+      <div class="site-footer-inner">
+        <div class="brand footer-brand">
+          <a href="#">
+            <img class="asset-light">
+            <img class="asset-dark">
+          </a>
+        </div>
+        <ul class="footer-links list-reset">
+          <li>
+            <a href="https://github.com/bogdanbrudiu/HamSpecialEvent">Contact</a>
+          </li>
+          <li>
+            <a href="http://yo2kqt.ro">YO2KQT</a>
+          </li>
+        </ul>
+        <div class="footer-copyright">&copy; {{'Copyright' | translate}}</div>
+      </div>
+    </div>
+  </footer>
+

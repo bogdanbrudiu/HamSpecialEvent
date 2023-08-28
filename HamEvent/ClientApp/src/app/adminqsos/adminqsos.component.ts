@@ -60,13 +60,7 @@ export class AdminQSOsComponent {
     });
   }
 
-    doit() {
-    this.http.get<BalanceResult>(this.baseUrl + 'hamevent/balanceDoIt').subscribe(result => {
-    }, error => console.error(error));
-
-    this.loadData();
-
-  }
+   
 
 
   loadData() {
@@ -76,13 +70,6 @@ export class AdminQSOsComponent {
       console.log('base URL: ' + this.baseUrl);
       console.log('search input: ' + this.searchInput);
     }, error => console.error(error));
-
-
-
-    this.http.get<BalanceResult>(this.baseUrl + 'hamevent/balance').subscribe(result => {
-      this.balance = result.balance;
-    }, error => console.error(error));
-
 
   }
   qualifiesForDiploma() {
@@ -98,8 +85,4 @@ interface QSO {
   mode: string;
   band: string;
   timestamp: Date;
-}
-
-interface BalanceResult {
-  balance: string;
 }

@@ -1,7 +1,4 @@
 ﻿using AutoMapper;
-using Erdcsharp.Configuration;
-using Erdcsharp.Domain;
-using Erdcsharp.Provider;
 using HtmlToPDFCore;
 using M0LTE.AdifLib;
 using Microsoft.AspNetCore.Mvc;
@@ -131,7 +128,6 @@ namespace HamEvent.Controllers
                             {
                                 myQSO.EventId = hamevent;
                                 _dbcontext.QSOs.Add(myQSO);
-                                AddToMultiversx(myQSO);
                             }
                             _dbcontext.SaveChanges();
                         }
@@ -149,78 +145,6 @@ namespace HamEvent.Controllers
             }
         }
 
-        public async void AddToMultiversx(QSO qso) {
-            var provider = new ElrondProvider(new HttpClient(), new ElrondNetworkConfiguration(Network.DevNet));
-            //var account = await provider.GetAccount("erd1s5fh0dcpmvhs4vwunnzyvwwgjxc0pzx396pguxa2lc4k870ws3vqkkjx5p");
-            var wallet = Wallet.DeriveFromMnemonic("focus round resemble boring ball stay tilt task valley vocal scare taxi supply hint invest mixed luggage mix mammal please velvet stick clarify wrong");
-
-            var sender = wallet.GetAccount();
-            var receiver = wallet.GetAccount().Address;
-            await sender.Sync(provider);
-
-            var transaction = TransactionRequest.Create(sender, await NetworkConfig.GetFromNetwork(provider), receiver, TokenAmount.EGLD("0"));//TokenAmount.EGLD("0.000000000000000001"));
-            transaction.SetData("{" +
-                "\"Callsign1\":\""+qso.Callsign1+ "\"," +
-                "\"Callsign2\":\""+qso.Callsign2+"\"," +
-                "\"Mode\":\"" + qso.Mode + "\"," +
-                "\"Band\":\"" + qso.Band + "\"," +
-                "\"Timestamp\":\"" + qso.Timestamp + "\"" +
-                "}");
-            transaction.SetGasLimit(GasLimit.ForTransfer(await NetworkConfig.GetFromNetwork(provider), transaction));
-            try
-            {
-                var transactionResult = await transaction.Send(provider, wallet);
-                await transactionResult.AwaitExecuted(provider);
-
-                System.Console.WriteLine("TxHash {0}", transactionResult.TxHash);
-            }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine(ex);
-            }
-        }
-
-
-        [HttpGet("balance")]
-        public async Task<IActionResult> GetBalanceAsync()
-        {
-            var provider = new ElrondProvider(new HttpClient(), new ElrondNetworkConfiguration(Network.DevNet));
-            var account = await provider.GetAccount("erd1s5fh0dcpmvhs4vwunnzyvwwgjxc0pzx396pguxa2lc4k870ws3vqkkjx5p");
-
-            System.Console.WriteLine($"Balance : {account.Balance}");
-
-            var amount = TokenAmount.From(account.Balance);
-            System.Console.WriteLine($"Balance in EGLD : {amount.ToCurrencyString()}");
-            return Ok("{\"balance\":\"" + amount.ToCurrencyString() + "\"}");
-        }
-
-        [HttpGet("balanceDoIt")]
-        public async Task<IActionResult> BalanceDoIt()
-        {
-            var provider = new ElrondProvider(new HttpClient(), new ElrondNetworkConfiguration(Network.DevNet));
-            //var account = await provider.GetAccount("erd1s5fh0dcpmvhs4vwunnzyvwwgjxc0pzx396pguxa2lc4k870ws3vqkkjx5p");
-            var wallet = Wallet.DeriveFromMnemonic("focus round resemble boring ball stay tilt task valley vocal scare taxi supply hint invest mixed luggage mix mammal please velvet stick clarify wrong");
-
-            var sender = wallet.GetAccount();
-            var receiver = wallet.GetAccount().Address;
-            await sender.Sync(provider);
-
-            var transaction = TransactionRequest.Create(sender, await NetworkConfig.GetFromNetwork(provider), receiver, TokenAmount.EGLD("0"));//TokenAmount.EGLD("0.000000000000000001"));
-            transaction.SetData("Hello world !");
-            transaction.SetGasLimit(GasLimit.ForTransfer(await NetworkConfig.GetFromNetwork(provider), transaction));
-            try
-            {
-                var transactionResult = await transaction.Send(provider, wallet);
-                await transactionResult.AwaitExecuted(provider);
-
-                System.Console.WriteLine("TxHash {0}", transactionResult.TxHash);
-            }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine(ex);
-            }
-            return Ok();
-        }
-
+      
     }
 }

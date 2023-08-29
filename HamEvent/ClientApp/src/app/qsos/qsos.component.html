@@ -1,38 +1,57 @@
-<h1 id="tableLabel">{{'HamEvent QSOs' | translate}}</h1>
+<div class="px-4 text-center border-bottom">
+  <h1 class="display-4 fw-bold text-body-emphasis" *ngIf="event">{{event.name}}</h1>
+  <div class="col-lg-6 mx-auto">
+    <div [formGroup]="searchForm">
 
-<p *ngIf="!loaded"><em>{{'Loading...' | translate}}</em></p>
 
-<div [formGroup]="searchForm">
-  <input placeholder="Search " formControlName="search" />
-  <button (click)="submitForm()">{{'Search' | translate}}</button>
-  <button *ngIf='qualifiesForDiploma()' (click)="genPdf()">{{'Download Diploma' | translate}}</button>
+      <div class="d-flex" role="search">
+        <input class="form-control me-2" type="search" placeholder="{{'Callsign 2' | translate}}" aria-label="Search" formControlName="search">
+        <button class="btn btn-outline-success" (click)="submitForm()">{{'Search' | translate}}</button>
+      </div>
+
+
+
+
+      <button *ngIf='qualifiesForDiploma()' (click)="genPdf()">{{'Download Diploma' | translate}}</button>
+    </div>
+    <p *ngIf="loaded && !QSOs?.length"><em>{{'No entries...' | translate}}</em></p>
+
+    <table class='table table-striped' aria-labelledby="tableLabel" *ngIf="QSOs.length">
+      <thead>
+        <tr>
+          <th>{{'Callsign 1' | translate}}</th>
+          <th>{{'Callsign 2' | translate}}</th>
+          <!--<th>RST1</th>
+        <th>RST2</th>-->
+          <th>{{'Mode' | translate}}</th>
+          <th>{{'Band' | translate}}</th>
+          <th>{{'Timestamp' | translate}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor=" let QSO of QSOs
+            | paginate
+              : {
+                  itemsPerPage: tableSize,
+                  currentPage: page,
+                  totalItems: count
+                };
+          let i = index">
+          <td>{{ QSO.callsign1 }}</td>
+          <td>{{ QSO.callsign2 }}</td>
+          <td>{{ QSO.mode }}</td>
+          <td>{{ QSO.band }}</td>
+          <td>{{ QSO.timestamp }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="d-flex justify-content-center">
+      <pagination-controls previousLabel="Prev"
+                           nextLabel="Next"
+                           (pageChange)="onTableDataChange($event)">
+      </pagination-controls>
+    </div>
+  </div>
+  
 </div>
-<p *ngIf="loaded && !QSOs?.length"><em>{{'No entries...' | translate}}</em></p>
-<div id="pageBttn">
-  <button (click)="prevPage()">{{'Prev' | translate}}</button>
-  <button (click)="nextPage()">{{'Next' | translate}}</button>
-</div>
-<table class='table table-striped' aria-labelledby="tableLabel" *ngIf="QSOs.length">
-  <thead>
-    <tr>
-      <th>{{'Callsign 1' | translate}}</th>
-      <th>{{'Callsign 2' | translate}}</th>
-      <!--<th>RST1</th>
-      <th>RST2</th>-->
-      <th>{{'Mode' | translate}}</th>
-      <th>{{'Band' | translate}}</th>
-      <th>{{'Timestamp' | translate}}</th>
-    </tr>
-  </thead>
-  <tbody>
-    <!--<tr *ngFor="let QSO of QSOs | paginate: { itemsPerPage: 10, currentPage: pageNumber, totalItems:Count }">-->
-    <tr *ngFor="let QSO of QSOs.slice(this.index * this.countItems, (this.index+1) * this.countItems)">
-      <td>{{ QSO.callsign1 }}</td>
-      <td>{{ QSO.callsign2 }}</td>
-      <td>{{ QSO.mode }}</td>
-      <td>{{ QSO.band }}</td>
-      <td>{{ QSO.timestamp }}</td>
-    </tr>
-    <!--<pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>-->
-  </tbody>
-</table>
+

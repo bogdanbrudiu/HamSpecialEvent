@@ -18,6 +18,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Runtime.CompilerServices;
 using HamEvent.Data.Model;
 using System.Text.Json;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace HamEvent.Controllers
 {
@@ -36,48 +37,80 @@ namespace HamEvent.Controllers
             _mapper = mapper;
             _dbcontext = dbcontext;
         }
-        public PageResult<QSO> listQSOs(int? page, int pagesize = 10)
-        {
-            var countDetails = _dbcontext.QSOs.Count();
-            var result = new PageResult<QSO>
-            {
-                Count = countDetails,
-                PageIndex = page ?? 1,
-                PageSize = 10,
-                Items = _dbcontext.QSOs.Skip((page - 1 ?? 0) * pagesize).Take(pagesize).ToList()
-            };
-            return result;
-        }
 
-        [HttpGet("{hamevent}")]
-        public IEnumerable<QSO> Get(Guid hamevent,string callsign="")
+        [HttpGet("QSOs/{hamevent}")]
+        public PageResult<QSO> Get(Guid hamevent, int? page, int pagesize = 10, string callsign = "")
         {
+            IQueryable<QSO> qsos = null;
             try
             {
+                qsos = _dbcontext.QSOs.Where(qso => qso.EventId.Equals(hamevent));
                 if (!String.IsNullOrEmpty(callsign))
                 {
-                    return _dbcontext.QSOs.Where(qso=>qso.EventId.Equals(hamevent)).Where(qso => string.Equals(callsign.ToLower(), qso.Callsign2.ToLower())).ToList();
+                    qsos = qsos.Where(qso => string.Equals(callsign.ToLower(), qso.Callsign2.ToLower()));
                 }
-                return _dbcontext.QSOs.Where(qso => qso.EventId.Equals(hamevent)).ToList();
+               
+
             }
             catch (Exception ex) {
-                return new List<QSO>();
+                return new PageResult<QSO>
+                {
+                    Count = 0,
+                    Data = new List<QSO>()
+                };
             }
+
+            var countDetails = qsos.Count();
+            return new PageResult<QSO>
+            {
+                Count = countDetails,
+                Data = qsos.Skip((page - 1 ?? 0) * pagesize).Take(pagesize).ToList()
+            };
         }
 
-        [HttpGet("hamevents")]
-        public List<Event> Get()
+        [HttpGet("hamevent/{hamevent}")]
+        public ActionResult<Event> Get(Guid hamevent)
         {
+           
             try
             {
-
-                return _dbcontext.Events.Select(e => new Event() {  Id=e.Id,  Name=e.Name}).ToList();
+                var myevent = _dbcontext.Events.Select(e => new Event() { Id = e.Id, Name = e.Name, SecretKey = e.SecretKey }).Where(e => e.Id == hamevent).FirstOrDefault();
+                if (myevent == null) return NotFound();
+                else return Ok(myevent);
             }
             catch (Exception ex)
             {
-                return new List<Event>();
+                return NotFound();
             }
+         
         }
+
+        [HttpGet("hamevents")]
+        public PageResult<Event> Get(int? page, int pagesize = 10)
+        {
+            IQueryable<Event> events = null;
+            try
+            {
+
+                events= _dbcontext.Events.Select(e => new Event() {  Id=e.Id,  Name=e.Name, SecretKey=e.SecretKey});
+            }
+            catch (Exception ex)
+            {
+                return new PageResult<Event>
+                {
+                    Count = 0,
+                    Data = new List<Event>()
+                };
+            }
+            var countDetails = events.Count();
+            return new PageResult<Event>
+            {
+                Count = countDetails,
+                Data = events.Skip((page - 1 ?? 0) * pagesize).Take(pagesize).ToList()
+            };
+        }
+     
+        
         [HttpGet("Diploma/{hamevent}/{callsign}")]
         public IActionResult PDF(Guid hamevent, string callsign)
         {

@@ -1,43 +1,29 @@
-<header>
-  <nav
-    class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3"
-  >
-    <div class="container">
-      <a class="navbar-brand" [routerLink]="['/']">{{'HamEvent' | translate}}</a>
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-toggle="collapse"
-        data-target=".navbar-collapse"
-        aria-label="Toggle navigation"
-        [attr.aria-expanded]="isExpanded"
-        (click)="toggle()"
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div
-        class="navbar-collapse collapse d-sm-inline-flex justify-content-end"
-        [ngClass]="{ show: isExpanded }"
-      >
-        <ul class="navbar-nav flex-grow">
-          <li class="nav-item"
-              [routerLinkActive]="['link-active']"
-              [routerLinkActiveOptions]="{ exact: true }">
-            <!-- <a class="nav-link text-dark" [routerLink]="['/']">Special Event</a> -->
-            <!-- <a class="nav-link text-dark" [routerLink]="['/']">Search QSOs</a> -->
-          </li>
-          <ng-container *ngFor="let language of languageList">
-            <li role="menuitem">
-              <a class="dropdown-item"
-                 (click)="changeSiteLanguage(language.code)">
-                {{ language.label }}
-              </a>
-            </li>
-          </ng-container>
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand"  [routerLink]="['/']">{{'HamEvent' | translate}}</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topnavbar"  aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
+    <div class="collapse navbar-collapse" id="topnavbar">
+      <ul class="navbar-nav ms-auto">
 
-        </ul>
-      </div>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">{{siteLanguage}}</a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <ng-container *ngFor="let language of languageList">
+              <li>
+                <a class="dropdown-item"
+                   (click)="changeSiteLanguage(language.code)">
+                  {{ language.label }}
+                </a>
+              </li>
+            </ng-container>
+          </ul>
+        </li>
+
+     
+      </ul>
     </div>
-  </nav>
-</header>
+  </div>
+</nav>

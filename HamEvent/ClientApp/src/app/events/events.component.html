@@ -1,20 +1,37 @@
-<h1 id="tableLabel">{{'HamEvents' | translate}}</h1>
 
-<p *ngIf="!loaded"><em>{{'Loading...' | translate}}</em></p>
+<div class="px-4 text-center border-bottom">
+  <h1 class="display-4 fw-bold text-body-emphasis">{{'HamEvents' | translate}}</h1>
+  <div class="col-lg-6 mx-auto">
+    <p *ngIf="!loaded"><em>{{'Loading...' | translate}}</em></p>
 
-<p *ngIf="loaded && !Events?.length"><em>{{'No entries...' | translate}}</em></p>
-<table class='table table-striped' aria-labelledby="tableLabel" *ngIf="Events.length">
-  <thead>
-    <tr>
-      <th>{{'Id' | translate}}</th>
-      <th>{{'Name' | translate}}</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let event of Events" (click)="gotoEvent(event)">
-      <td>{{ event.id }}</td>
-      <td>{{ event.name }}</td>
-    </tr>
-  </tbody>
-</table>
-<router-outlet></router-outlet>
+    <p *ngIf="loaded && !Events?.length"><em>{{'No entries...' | translate}}</em></p>
+    <table class='table table-striped' aria-labelledby="tableLabel" *ngIf="Events.length">
+      <thead>
+        <tr>
+          <th>{{'Id' | translate}}</th>
+          <th>{{'Name' | translate}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor=" let event of Events
+            | paginate
+              : {
+                  itemsPerPage: tableSize,
+                  currentPage: page,
+                  totalItems: count
+                };
+          let i = index" (click)="gotoEvent(event)">
+          <td>{{ event.id }}</td>
+          <td>{{ event.name }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="d-flex justify-content-center">
+      <pagination-controls previousLabel="Prev"
+                           nextLabel="Next"
+                           (pageChange)="onTableDataChange($event)">
+      </pagination-controls>
+    </div>
+  </div>
+</div>
+

@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
@@ -38,6 +39,7 @@ export function createTranslateLoader(http: HttpClient) {
         deps: [HttpClient]
       }
     }),
+    NgxPaginationModule,
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,

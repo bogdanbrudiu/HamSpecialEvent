@@ -1,7 +1,7 @@
 import { Component, Inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
+import { EventsService } from '../events.service';
 
 @Component({
   selector: 'app-events',
@@ -10,24 +10,33 @@ import { Router } from '@angular/router';
 export class EventsComponent {
   searchForm!: FormGroup;
   public Events: Event[] = [];
+  page: number = 1;
+  count: number = 0;
+  tableSize: number = 10;
   public loaded = false;
 
 
-  constructor(public http: HttpClient, @Inject('BASE_URL') public baseUrl: string, private router: Router) {
+  constructor(private router: Router, private eventsService: EventsService) {
     this.loadData()
    
   }
 
-
-
   loadData() {
-    this.http.get<Event[]>(this.baseUrl + 'hamevent/hamevents').subscribe(result => {
-      this.Events = result;
-      this.loaded = true;
-
-    }, error => console.error(error));
-
-
+    this.eventsService.getAllEvents(this.page, this.tableSize).subscribe(
+      (response) => {
+        this.Events = response.data;
+        this.count = response.count;
+        this.loaded = true;
+        console.log(response);
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+  }
+  onTableDataChange(event: any) {
+    this.page = event;
+    this.loadData();
   }
   gotoEvent(event: Event) {
     this.router.navigateByUrl(event.id);

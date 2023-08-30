@@ -1,24 +1,11 @@
 ﻿using AutoMapper;
-using HtmlToPDFCore;
 using M0LTE.AdifLib;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using System;
-using System.Linq;
-using System.Numerics;
-using System.Runtime.InteropServices;
-using static System.Formats.Asn1.AsnWriter;
-using System.Threading.Tasks;
-using static System.Net.WebRequestMethods;
-using System.Net.Http.Headers;
 using HamEvent.Data;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.Runtime.CompilerServices;
 using HamEvent.Data.Model;
-using System.Text.Json;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Reflection;
+using System.IO;
+using SelectPdf;
 
 namespace HamEvent.Controllers
 {
@@ -74,7 +61,7 @@ namespace HamEvent.Controllers
            
             try
             {
-                var myevent = _dbcontext.Events.Select(e => new Event() { Id = e.Id, Name = e.Name, SecretKey = e.SecretKey }).Where(e => e.Id == hamevent).FirstOrDefault();
+                var myevent = _dbcontext.Events.Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, DiplomaURL = e.DiplomaURL }).Where(e => e.Id == hamevent).FirstOrDefault();
                 if (myevent == null) return NotFound();
                 else return Ok(myevent);
             }
@@ -92,7 +79,7 @@ namespace HamEvent.Controllers
             try
             {
 
-                events= _dbcontext.Events.Select(e => new Event() {  Id=e.Id,  Name=e.Name, SecretKey=e.SecretKey});
+                events= _dbcontext.Events.Select(e => new Event() {  Id=e.Id,  Name=e.Name, Description=e.Description, DiplomaURL=e.DiplomaURL});
             }
             catch (Exception ex)
             {
@@ -115,25 +102,52 @@ namespace HamEvent.Controllers
         public IActionResult PDF(Guid hamevent, string callsign)
         {
             try
-
             {
-                string url = $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}/static/diploma.html";
-
-                using (HttpClient client = new HttpClient())
+                var myevent=_dbcontext.Events.Where(e => e.Id.Equals(hamevent)).FirstOrDefault();
+                var url = myevent?.DiplomaURL;
+                if (!String.IsNullOrEmpty(url))
                 {
-                    using (HttpResponseMessage response = client.GetAsync(url).Result)
-                    {
-                        using (HttpContent content = response.Content)
-                        {
-                            string html = content.ReadAsStringAsync().Result;
-                            var pdf = new HtmlToPDF();
-                            var buffer = pdf.ReturnPDF(html);
-                            var stream = new MemoryStream(buffer);
-                            return new FileStreamResult(stream, "application/pdf");
-                        }
+                    using Stream diplomastream = Assembly.GetExecutingAssembly().GetManifestResourceStream("HamEvent.resources.diploma.html");
+                    using StreamReader reader = new(diplomastream);
+                    
+                    var diplomahtml = reader.ReadToEnd();
+                    diplomahtml = diplomahtml.Replace("imgurl", url);
+
+
+
+                    SelectPdf.HtmlToPdf converter = new SelectPdf.HtmlToPdf();
+                    // set converter options
+                    converter.Options.PdfPageSize = PdfPageSize.A4;
+                    converter.Options.PdfPageOrientation = PdfPageOrientation.Landscape;
+
+                    converter.Options.MarginLeft = 0;
+                    converter.Options.MarginRight = 0;
+                    converter.Options.MarginTop = 0;
+                    converter.Options.MarginBottom = 0;
+                    converter.Options.DisplayHeader = false;
+                    converter.Options.DisplayFooter = false;
+                    converter.Options.WebPageWidth = 3508;
+                    converter.Options.WebPageHeight = 2480;
+                    converter.Options.EmbedFonts = true;
+                    converter.Options.WebPageFixedSize = true;
+                    SelectPdf.PdfDocument doc = converter.ConvertHtmlString(diplomahtml);
+
+                    while (doc.Pages.Count > 1) {
+                        doc.RemovePageAt(1);
                     }
+
+                    byte[] pdf = doc.Save();
+                    doc.Close();
+
+                    FileResult fileResult = new FileContentResult(pdf, "application/pdf");
+                    fileResult.FileDownloadName = myevent.Name+" " + callsign + ".pdf";
+                    return fileResult;
+
                 }
-              
+                else
+                {
+                    return NoContent();
+                }
             }
             catch (Exception ex)
             {

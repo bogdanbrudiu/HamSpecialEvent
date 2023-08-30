@@ -2,7 +2,7 @@
   <h1 class="display-4 fw-bold text-body-emphasis" *ngIf="event">{{event.name}}</h1>
   <div class="col-lg-6 mx-auto">
 
-    <app-upload [eventId]="eventId" [eventsecret]="eventsecret"></app-upload>
+    <app-upload [eventId]="eventId" [eventsecret]="eventsecret" (onUploadFinished)="uploadFinished($event)"></app-upload>
 
     <div [formGroup]="searchForm">
 

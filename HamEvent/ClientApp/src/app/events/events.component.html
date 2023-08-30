@@ -8,8 +8,9 @@
     <table class='table table-striped' aria-labelledby="tableLabel" *ngIf="Events.length">
       <thead>
         <tr>
-          <th>{{'Id' | translate}}</th>
           <th>{{'Name' | translate}}</th>
+          <th>{{'Description' | translate}}</th>
+          <th>{{'Diploma' | translate}}</th>
         </tr>
       </thead>
       <tbody>
@@ -21,8 +22,9 @@
                   totalItems: count
                 };
           let i = index" (click)="gotoEvent(event)">
-          <td>{{ event.id }}</td>
           <td>{{ event.name }}</td>
+          <td>{{ event.description }}</td>
+          <td><img [src]="event.diplomaURL" width="100px"/></td>
         </tr>
       </tbody>
     </table>

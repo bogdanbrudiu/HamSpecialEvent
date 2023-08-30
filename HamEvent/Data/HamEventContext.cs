@@ -29,6 +29,8 @@ namespace HamEvent.Data
                         Id = Guid.NewGuid(),
                         SecretKey = Guid.NewGuid(),
                         Name = "YO2KQT - TM2023",
+                        Description = "YO2KQT - TM2023 Event",
+                        DiplomaURL = "https://localhost:44448/static/diploma-background.jpg"
                     }
                 );
             modelBuilder.Entity<QSO>().HasKey(e=>e.Id);

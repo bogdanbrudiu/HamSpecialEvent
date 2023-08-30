@@ -23,6 +23,14 @@ namespace HamEvent.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DiplomaURL")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -37,9 +45,11 @@ namespace HamEvent.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("fd99b134-8f84-429e-94d8-89a517abbd2a"),
+                            Id = new Guid("a17c1722-dde5-478d-ba97-a7a007ba1d79"),
+                            Description = "YO2KQT - TM2023 Event",
+                            DiplomaURL = "",
                             Name = "YO2KQT - TM2023",
-                            SecretKey = new Guid("aba8ed87-4f79-4a00-8f1e-67e12bbbff4a")
+                            SecretKey = new Guid("eab4a750-45a9-4b6a-9c55-963de26f70b5")
                         });
                 });
 

@@ -15,8 +15,9 @@
   "Mode": "Mod",
   "Band": "Bandă",
   "Timestamp": "Timestamp",
-  "Id": "Id",
   "Name": "Nume",
+  "Description": "Descriere",
+  "Diploma": "Diplomă",
   "Prev": "Anterioară",
   "Next": "Următoare"
 }

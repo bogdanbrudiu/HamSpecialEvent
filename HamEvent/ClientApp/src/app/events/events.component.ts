@@ -47,5 +47,7 @@ export class EventsComponent {
 interface Event {
   name: string;
   id: string;
+  description: string;
+  diplomaURL: string;
 }
 

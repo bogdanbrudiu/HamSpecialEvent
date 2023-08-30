@@ -93,6 +93,9 @@ export class AdminQSOsComponent {
     this.page = event;
     this.loadData();
   }
+  uploadFinished(event: any) {
+    this.loadData();
+  }
   qualifiesForDiploma() {
     return this.QSOs.length > 0 && this.searchInput.length > 0 && this.loaded;
   }
@@ -115,4 +118,6 @@ interface QSO {
 interface HamEvent {
   id: string;
   name: string;
+  description: string;
+  diplomaURL: string;
 }

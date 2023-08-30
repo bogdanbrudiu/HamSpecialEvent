@@ -65,7 +65,7 @@ export class QSOsComponent {
       let downloadURL = window.URL.createObjectURL(data);
       let link = document.createElement('a');
       link.href = downloadURL;
-      link.download = "diploma.pdf";
+      link.download = this.event?.name + " " + this.searchInput + ".pdf";
       link.click();
 
     });
@@ -116,4 +116,6 @@ interface QSO {
 interface HamEvent {
   id: string;
   name: string;
+  description: string;
+  diplomaURL: string;
 }

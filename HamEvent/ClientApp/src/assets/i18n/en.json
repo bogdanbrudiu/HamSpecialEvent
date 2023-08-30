@@ -15,8 +15,9 @@
   "Mode": "Mode",
   "Band": "Band",
   "Timestamp": "Timestamp",
-  "Id": "Id",
   "Name": "Name",
+  "Description": "Description",
+  "Diploma": "Diploma",
   "Prev": "Prev",
   "Next": "Next"
 }

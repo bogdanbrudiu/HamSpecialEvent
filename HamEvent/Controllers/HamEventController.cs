@@ -113,6 +113,7 @@ namespace HamEvent.Controllers
                     var diplomahtml = reader.ReadToEnd();
                     diplomahtml = diplomahtml.Replace("imgurl", url);
 
+                    diplomahtml = diplomahtml.Replace("--callsign2--", callsign.ToUpper());
 
 
                     SelectPdf.HtmlToPdf converter = new SelectPdf.HtmlToPdf();
@@ -126,10 +127,15 @@ namespace HamEvent.Controllers
                     converter.Options.MarginBottom = 0;
                     converter.Options.DisplayHeader = false;
                     converter.Options.DisplayFooter = false;
-                    converter.Options.WebPageWidth = 3508;
-                    converter.Options.WebPageHeight = 2480;
-                    converter.Options.EmbedFonts = true;
+
+                    converter.Options.WebPageWidth = 1024;
+                    converter.Options.WebPageHeight = 768;
                     converter.Options.WebPageFixedSize = true;
+                    converter.Options.AutoFitHeight = HtmlToPdfPageFitMode.AutoFit;
+                    converter.Options.AutoFitWidth = HtmlToPdfPageFitMode.AutoFit;
+                    // set css @media print
+                    converter.Options.CssMediaType = HtmlToPdfCssMediaType.Print;
+                    converter.Options.ViewerPreferences.CenterWindow = true;
                     SelectPdf.PdfDocument doc = converter.ConvertHtmlString(diplomahtml);
 
                     while (doc.Pages.Count > 1) {

@@ -1,24 +1,78 @@
-<STYLE type="text/css">
-    html, body {
-        margin: 0;
-        padding: 0;
-    }
-    #divid {
-        background-image: url(imgurl);
-        width: 3508px;
-        height: 2480px;
-        margin: 0;
-        padding: 0;
-        background-position: center center;
-        background-size: 100%;
-        background-repeat: no-repeat;
-    }
+ <STYLE type="text/css">
+     html, body {
+         margin: 0;
+         padding: 0;
+     }
+
+     h1 {
+         text-align: center;
+         font-size: xx-large;
+         margin-bottom: 20px;
+     }
+
+     h2 {
+         text-align: center;
+         font-size: x-large;
+         margin-top: 30px;
+         margin-bottom: 10px;
+     }
+
+     h3 {
+         text-align: center;
+         font-size: large;
+         margin-top: 20px;
+         margin-bottom: 10px;
+     }
+
+     p {
+         font-size: 18px;
+         line-height: 1.5;
+         text-align: center;
+         margin-bottom: 10px;
+     }
+
+     img {
+         display: block;
+         margin: 20px auto 0;
+         max-width: 200px;
+     }
+
+     .background {
+         background-image: url(imgurl);
+         width: 1024px;
+         height: 768px;
+         margin: 0;
+         padding: 0;
+         background-position: center center;
+         background-size: 100%;
+         background-repeat: no-repeat;
+         position: relative;
+     }
+
+     .diploma {
+         position: absolute;
+         top: 50%;
+         left: 50%;
+         -ms-transform: translate(-50%, -50%);
+         transform: translate(-50%, -50%);
+         margin: 0 auto;
+         padding: 30px;
+     }
 </STYLE>
 <html>
 <body>
-    <div id="divid">
-        <h1 style="text-align: center; font-size: 50px; font-family: 'Times New Roman', Times, serif; color: #000000;"> Certificate of Achievement</h1>
-        <h2 style="text-align: center; font-size: 30px; font-family: 'Times New Roman', Times, serif; color: #000000;"> callsign</h2>
+    <div class="background">
+        <div class="diploma">
+            <h1>QSL Certificate</h1>
+            <p>This certifies that</p>
+            <h2>Callsign2: --callsign2--</h2>
+            <p>has successfully communicated with</p>
+            <h3>Callsign1: YO2MKE </h3>
+            <h3>Mode: SSB</h3>
+            <h3>Band: 20m</h3>
+            <p>timesptamp: 2013-04-05T20:12:32 </p>
+            <img src="./static/radio-icon.png" alt="Ham Special Event">
+        </div>
     </div>
 </body>
 </html>

@@ -2,18 +2,27 @@
   <h1 class="display-4 fw-bold text-body-emphasis" *ngIf="event">{{event.name}}</h1>
   <div class="col-lg-6 mx-auto">
     <div [formGroup]="searchForm">
-
-
       <div class="d-flex" role="search">
         <input class="form-control me-2" type="search" placeholder="{{'Callsign 2' | translate}}" aria-label="Search" formControlName="search">
-        <button class="btn btn-outline-success" (click)="submitForm()">{{'Search' | translate}}</button>
+        <button class="btn btn-outline-primary" (click)="submitForm()">{{'Search' | translate}}</button>
+      </div>
+    </div>
+    <div class="py-4 d-flex justify-content-center">
+
+      <div class="card trow btn btn-outline-success" style="width: 18rem;" *ngIf='qualifiesForDiploma()' (click)="genPdf()">
+        <div class="card-body">
+          <h5 class="card-title">{{'Download Diploma' | translate}}</h5>
+          <div class="form-check">
+            <input class="form-check-input mycheckbox" type="checkbox" value="" id="flexCheckChecked" checked>
+            <label class="form-check-label" for="flexCheckChecked">
+              {{'At least 1 QSO' | translate}}
+            </label>
+          </div>
+        </div>
       </div>
 
-
-
-
-      <button *ngIf='qualifiesForDiploma()' (click)="genPdf()">{{'Download Diploma' | translate}}</button>
     </div>
+
     <p *ngIf="loaded && !QSOs?.length"><em>{{'No entries...' | translate}}</em></p>
 
     <table class='table table-striped' aria-labelledby="tableLabel" *ngIf="QSOs.length">
@@ -30,13 +39,13 @@
       </thead>
       <tbody>
         <tr *ngFor=" let QSO of QSOs
-            | paginate
-              : {
-                  itemsPerPage: tableSize,
-                  currentPage: page,
-                  totalItems: count
-                };
-          let i = index">
+          | paginate
+            : {
+                itemsPerPage: tableSize,
+                currentPage: page,
+                totalItems: count
+              };
+        let i = index">
           <td>{{ QSO.callsign1 }}</td>
           <td>{{ QSO.callsign2 }}</td>
           <td>{{ QSO.mode }}</td>
@@ -46,12 +55,12 @@
       </tbody>
     </table>
     <div class="d-flex justify-content-center">
-      <pagination-controls previousLabel="Prev"
-                           nextLabel="Next"
-                           (pageChange)="onTableDataChange($event)">
+      <pagination-controls previousLabel="{{'Prev' | translate}}"
+                            nextLabel="{{'Next' | translate}}"
+                            (pageChange)="onTableDataChange($event)">
       </pagination-controls>
     </div>
   </div>
-  
-</div>
+
+  </div>
 

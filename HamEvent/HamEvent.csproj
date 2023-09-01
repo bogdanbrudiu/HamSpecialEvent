@@ -34,14 +34,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="resources\diploma.html" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="resources\diploma.html" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Database\" />
     <Folder Include="NewFolder\" />
   </ItemGroup>

@@ -10,14 +10,15 @@
   "HamEvent QSOs": "Eveniment radioamatori - QSO-uri",
   "Download Diploma": "Descarcă Diploma",
   "Search": "Caută",
-  "Callsign 1": "Indicativ 1",
-  "Callsign 2": "Indicativ 2",
+  "Callsign 1": "Indicativ",
+  "Callsign 2": "Indicativ participant",
   "Mode": "Mod",
   "Band": "Bandă",
   "Timestamp": "Timestamp",
   "Name": "Nume",
   "Description": "Descriere",
   "Diploma": "Diplomă",
-  "Prev": "Anterioară",
-  "Next": "Următoare"
+  "Prev": "Pagina anterioară",
+  "Next": "Pagina următoare",
+  "At least 1 QSO": "Cel puțin un QSO"
 }

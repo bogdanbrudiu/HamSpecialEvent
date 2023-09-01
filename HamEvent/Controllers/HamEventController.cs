@@ -128,15 +128,15 @@ namespace HamEvent.Controllers
                     converter.Options.DisplayHeader = false;
                     converter.Options.DisplayFooter = false;
 
-                    converter.Options.WebPageWidth = 1024;
-                    converter.Options.WebPageHeight = 768;
+                    converter.Options.WebPageWidth = 842;
+                    converter.Options.WebPageHeight = 595;
                     converter.Options.WebPageFixedSize = true;
                     converter.Options.AutoFitHeight = HtmlToPdfPageFitMode.AutoFit;
                     converter.Options.AutoFitWidth = HtmlToPdfPageFitMode.AutoFit;
                     // set css @media print
                     converter.Options.CssMediaType = HtmlToPdfCssMediaType.Print;
                     converter.Options.ViewerPreferences.CenterWindow = true;
-                    SelectPdf.PdfDocument doc = converter.ConvertHtmlString(diplomahtml);
+                    SelectPdf.PdfDocument doc = converter.ConvertHtmlString(diplomahtml, $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}");
 
                     while (doc.Pages.Count > 1) {
                         doc.RemovePageAt(1);

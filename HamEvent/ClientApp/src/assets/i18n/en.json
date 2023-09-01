@@ -4,14 +4,14 @@
   "HamEventTitle": "HamEvent diploma.",
   "HamEventDescription": "Obtain your QSO certificate quick and fast at the touch of a button!",
   "Search QSO": "Search QSO",
-  "Copyright": "2023 HackTM, all rights reserved",
+  "Copyright": "2023, all rights reserved",
   "Loading...": "Loading...",
   "No entries...": "No entries...",
   "HamEvent QSOs": "HamEvent - QSOs",
   "Download Diploma": "Download Diploma",
   "Search": "Search",
-  "Callsign 1": "Callsign 1",
-  "Callsign 2": "Callsign 2",
+  "Callsign 1": "Callsign",
+  "Callsign 2": "Participant callsign",
   "Mode": "Mode",
   "Band": "Band",
   "Timestamp": "Timestamp",
@@ -19,5 +19,6 @@
   "Description": "Description",
   "Diploma": "Diploma",
   "Prev": "Prev",
-  "Next": "Next"
+  "Next": "Next",
+  "At least 1 QSO": "At least 1 QSO"
 }

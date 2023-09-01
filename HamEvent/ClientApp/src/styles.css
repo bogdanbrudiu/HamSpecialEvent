@@ -4,3 +4,18 @@
   bottom: 0;
   width: 100%;
 }
+
+.trow {
+  transition: transform .2s;
+}
+
+  .trow:hover {
+    cursor: pointer;
+    transform: scale(1.03);
+
+  }
+
+.mycheckbox {
+  background-color: #198754 !important;
+  border-color: #198754 !important;
+}

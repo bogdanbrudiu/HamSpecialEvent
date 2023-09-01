@@ -5,18 +5,15 @@
     <app-upload [eventId]="eventId" [eventsecret]="eventsecret" (onUploadFinished)="uploadFinished($event)"></app-upload>
 
     <div [formGroup]="searchForm">
-
-
       <div class="d-flex" role="search">
         <input class="form-control me-2" type="search" placeholder="{{'Callsign 2' | translate}}" aria-label="Search" formControlName="search">
-        <button class="btn btn-outline-success" (click)="submitForm()">{{'Search' | translate}}</button>
+        <button class="btn btn-outline-primary" (click)="submitForm()">{{'Search' | translate}}</button>
       </div>
-
-
-
-
-      <button *ngIf='qualifiesForDiploma()' (click)="genPdf()">{{'Download Diploma' | translate}}</button>
     </div>
+    <div class="py-4 d-flex justify-content-center">
+      <button *ngIf='qualifiesForDiploma()' class="btn btn-outline-success" (click)="genPdf()">{{'Download Diploma' | translate}}</button>
+    </div>
+
     <p *ngIf="loaded && !QSOs?.length"><em>{{'No entries...' | translate}}</em></p>
 
     <table class='table table-striped' aria-labelledby="tableLabel" *ngIf="QSOs.length">
@@ -25,7 +22,7 @@
           <th>{{'Callsign 1' | translate}}</th>
           <th>{{'Callsign 2' | translate}}</th>
           <!--<th>RST1</th>
-          <th>RST2</th>-->
+        <th>RST2</th>-->
           <th>{{'Mode' | translate}}</th>
           <th>{{'Band' | translate}}</th>
           <th>{{'Timestamp' | translate}}</th>

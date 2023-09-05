@@ -1,7 +1,11 @@
+using ElmahCore;
+using ElmahCore.Mvc;
+using HamEvent;
 using HamEvent.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,8 +15,17 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddDbContext<HamEventContext>();
-
-
+builder.Services.AddHostedService<InitializationService>();
+IPWhitelist wl = new IPWhitelist();
+builder.Configuration.GetSection("IPWhitelist").Bind(wl);
+builder.Services.AddElmah<XmlFileErrorLog>(options =>
+{
+    options.OnPermissionCheck = context => wl.Whitelist
+                .Where(ip => IPAddress.Parse(ip)
+                .Equals(context.Connection.RemoteIpAddress))
+                .Any();
+    options.LogPath = "~/log";
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -32,5 +45,5 @@ app.MapControllerRoute(
     pattern: "{controller}/{action=Index}/{id?}");
 
 app.MapFallbackToFile("index.html");
-
+app.UseElmah();
 app.Run();

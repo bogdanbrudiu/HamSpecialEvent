@@ -101,8 +101,6 @@ namespace HamEvent.Controllers
         [HttpGet("Diploma/{hamevent}/{callsign}")]
         public IActionResult PDF(Guid hamevent, string callsign)
         {
-            try
-            {
                 var myevent=_dbcontext.Events.Where(e => e.Id.Equals(hamevent)).FirstOrDefault();
                 var url = myevent?.DiplomaURL;
                 if (!String.IsNullOrEmpty(url))
@@ -154,11 +152,7 @@ namespace HamEvent.Controllers
                 {
                     return NoContent();
                 }
-            }
-            catch (Exception ex)
-            {
-                return Ok(ex.Message);
-            }
+           
         }
 
         [HttpPost("{hamevent}/{eventsecret}/upload")]

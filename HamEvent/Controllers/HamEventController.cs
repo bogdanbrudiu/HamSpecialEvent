@@ -6,6 +6,9 @@ using HamEvent.Data.Model;
 using System.Reflection;
 using System.IO;
 using SelectPdf;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Drawing.Printing;
+using System.Runtime.CompilerServices;
 
 namespace HamEvent.Controllers
 {
@@ -28,7 +31,8 @@ namespace HamEvent.Controllers
         [HttpGet("QSOs/{hamevent}")]
         public PageResult<QSO> Get(Guid hamevent, int? page, int pagesize = 10, string callsign = "")
         {
-            IQueryable<QSO> qsos = null;
+            _logger.LogInformation(MyLogEvents.GetQSOs, "Get QSOs for event {0} page {1} paginated by {2} per page, filtered by {3}",hamevent, page, pagesize, callsign);
+            IQueryable<QSO> qsos;
             try
             {
                 qsos = _dbcontext.QSOs.Where(qso => qso.EventId.Equals(hamevent));
@@ -36,10 +40,10 @@ namespace HamEvent.Controllers
                 {
                     qsos = qsos.Where(qso => string.Equals(callsign.ToLower(), qso.Callsign2.ToLower()));
                 }
-               
-
             }
-            catch (Exception ex) {
+            catch(Exception ex) {
+                _logger.LogError(MyLogEvents.GetQSOs,ex, "Failed getting QSOs for event {0} page {1} paginated by {2} per page, filtered by {3}", hamevent, page, pagesize, callsign);
+
                 return new PageResult<QSO>
                 {
                     Count = 0,
@@ -54,19 +58,21 @@ namespace HamEvent.Controllers
                 Data = qsos.Skip((page - 1 ?? 0) * pagesize).Take(pagesize).ToList()
             };
         }
-
         [HttpGet("hamevent/{hamevent}")]
         public ActionResult<Event> Get(Guid hamevent)
         {
-           
+            _logger.LogInformation(MyLogEvents.GetEvent, "Get Event {0}", hamevent);
+
             try
             {
                 var myevent = _dbcontext.Events.Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, DiplomaURL = e.DiplomaURL }).Where(e => e.Id == hamevent).FirstOrDefault();
                 if (myevent == null) return NotFound();
                 else return Ok(myevent);
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
+                _logger.LogError(MyLogEvents.GetEvent,ex, "Failed getting Event {0}", hamevent);
+
                 return NotFound();
             }
          
@@ -75,14 +81,18 @@ namespace HamEvent.Controllers
         [HttpGet("hamevents")]
         public PageResult<Event> Get(int? page, int pagesize = 10)
         {
-            IQueryable<Event> events = null;
+            _logger.LogInformation(MyLogEvents.GetEvents, "Get Events page {0} paginated by {1} per page", page, pagesize);
+
+            IQueryable<Event> events;
             try
             {
 
                 events= _dbcontext.Events.Select(e => new Event() {  Id=e.Id,  Name=e.Name, Description=e.Description, DiplomaURL=e.DiplomaURL});
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
+                _logger.LogError(MyLogEvents.GetEvents,ex, "Failed getting Events page {0} paginated by {1} per page", page, pagesize);
+
                 return new PageResult<Event>
                 {
                     Count = 0,
@@ -101,15 +111,18 @@ namespace HamEvent.Controllers
         [HttpGet("Diploma/{hamevent}/{callsign}")]
         public IActionResult PDF(Guid hamevent, string callsign)
         {
-                var myevent=_dbcontext.Events.Where(e => e.Id.Equals(hamevent)).FirstOrDefault();
-                var url = myevent?.DiplomaURL;
-                if (!String.IsNullOrEmpty(url))
+            _logger.LogInformation(MyLogEvents.GetDiploma, "Get Diploma for event {0} callsign {1}", hamevent, callsign);
+
+            var myevent =_dbcontext.Events.Where(e => e.Id.Equals(hamevent)).FirstOrDefault();
+            var assembly = Assembly.GetExecutingAssembly();
+            using Stream diplomastream = assembly.GetManifestResourceStream("HamEvent.resources.diploma.html");
+            if (myevent!=null && !String.IsNullOrEmpty(myevent.DiplomaURL) && diplomastream != null)
                 {
-                    using Stream diplomastream = Assembly.GetExecutingAssembly().GetManifestResourceStream("HamEvent.resources.diploma.html");
+                   
                     using StreamReader reader = new(diplomastream);
                     
                     var diplomahtml = reader.ReadToEnd();
-                    diplomahtml = diplomahtml.Replace("imgurl", url);
+                    diplomahtml = diplomahtml.Replace("imgurl", myevent.DiplomaURL);
 
                     diplomahtml = diplomahtml.Replace("--callsign2--", callsign.ToUpper());
 
@@ -158,6 +171,8 @@ namespace HamEvent.Controllers
         [HttpPost("{hamevent}/{eventsecret}/upload")]
         public IActionResult Upload(Guid hamevent, Guid eventsecret)
         {
+            _logger.LogInformation(MyLogEvents.UploadLog, "Uploading log for event {0}", hamevent);
+
             try
             {
                 var myevent=_dbcontext.Events.Where(e => e.Id.Equals(hamevent) && e.SecretKey.Equals(eventsecret)).FirstOrDefault();
@@ -188,6 +203,8 @@ namespace HamEvent.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(MyLogEvents.UploadLog, "Failed uploading log for event {0}", hamevent);
+
                 return StatusCode(500, $"Internal server error: {ex}");
             }
         }

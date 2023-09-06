@@ -33,7 +33,7 @@ namespace HamEvent.Data.Migrations
             migrationBuilder.InsertData(
                 table: "Events",
                 columns: new[] { "Id", "Description", "DiplomaURL", "Name", "SecretKey" },
-                values: new object[] { new Guid("a17c1722-dde5-478d-ba97-a7a007ba1d79"), "YO2KQT - TM2023 Event", "", "YO2KQT - TM2023", new Guid("eab4a750-45a9-4b6a-9c55-963de26f70b5") });
+                values: new object[] { new Guid("a17c1722-dde5-478d-ba97-a7a007ba1d79"), "YP20KQT Event", "https://hamevent.brudiu.ro/static/diploma-background.jpg", "YP20KQT", new Guid("eab4a750-45a9-4b6a-9c55-963de26f70b5") });
         }
 
         /// <inheritdoc />

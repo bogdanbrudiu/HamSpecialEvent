@@ -6,9 +6,9 @@ namespace HamEvent.Data.Model
     {
         public Guid Id { get; set; }
         public Guid SecretKey { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string DiplomaURL { get; set; }        
+        public required string Name { get; set; }
+        public required string Description { get; set; }
+        public required string DiplomaURL { get; set; }        
         public ICollection<QSO> QSOs { get; } = new List<QSO>();
 
 

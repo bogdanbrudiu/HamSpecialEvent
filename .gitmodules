@@ -1,0 +1,3 @@
+[submodule "AdifLib"]
+	path = AdifLib
+	url = https://github.com/M0LTE/AdifLib.git

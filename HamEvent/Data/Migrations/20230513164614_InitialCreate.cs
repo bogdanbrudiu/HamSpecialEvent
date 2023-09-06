@@ -53,7 +53,7 @@ namespace HamEvent.Data.Migrations
             migrationBuilder.InsertData(
                 table: "Events",
                 columns: new[] { "Id", "Name", "SecretKey" },
-                values: new object[] { new Guid("fd99b134-8f84-429e-94d8-89a517abbd2a"), "YO2KQT - TM2023", new Guid("aba8ed87-4f79-4a00-8f1e-67e12bbbff4a") });
+                values: new object[] { new Guid("fd99b134-8f84-429e-94d8-89a517abbd2a"), "YP20KQT", new Guid("aba8ed87-4f79-4a00-8f1e-67e12bbbff4a") });
 
             migrationBuilder.CreateIndex(
                 name: "IX_QSOs_EventId",

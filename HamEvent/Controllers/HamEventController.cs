@@ -9,6 +9,8 @@ using SelectPdf;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Drawing.Printing;
 using System.Runtime.CompilerServices;
+using Microsoft.EntityFrameworkCore;
+using System.Text;
 
 namespace HamEvent.Controllers
 {
@@ -117,17 +119,26 @@ namespace HamEvent.Controllers
             var assembly = Assembly.GetExecutingAssembly();
             using Stream diplomastream = assembly.GetManifestResourceStream("HamEvent.resources.diploma.html");
             if (myevent!=null && !String.IsNullOrEmpty(myevent.DiplomaURL) && diplomastream != null)
-                {
+            {
                    
-                    using StreamReader reader = new(diplomastream);
+                using StreamReader reader = new(diplomastream);
                     
-                    var diplomahtml = reader.ReadToEnd();
-                    diplomahtml = diplomahtml.Replace("imgurl", myevent.DiplomaURL);
+                var diplomahtml = reader.ReadToEnd();
+                diplomahtml = diplomahtml.Replace("imgurl", myevent.DiplomaURL);
+                diplomahtml = diplomahtml.Replace("--callsign2--", callsign.ToUpper());
 
-                    diplomahtml = diplomahtml.Replace("--callsign2--", callsign.ToUpper());
+                
 
+                var qsos=_dbcontext.QSOs.Where(qso => qso.EventId.Equals(hamevent) && string.Equals(callsign.ToLower(), qso.Callsign2.ToLower())).ToList();
 
-                    SelectPdf.HtmlToPdf converter = new SelectPdf.HtmlToPdf();
+                StringBuilder qsohtml = new StringBuilder();
+                foreach(var qso in qsos)
+                {
+                    qsohtml.Append($"<tr><td>{qso.Callsign1}</td><td>{qso.Mode}</td><td>{qso.Band}</td><td>{qso.Timestamp}</td></tr>");
+                }
+                diplomahtml = diplomahtml.Replace("--QSOs--", qsohtml.ToString());
+
+                SelectPdf.HtmlToPdf converter = new SelectPdf.HtmlToPdf();
                     // set converter options
                     converter.Options.PdfPageSize = PdfPageSize.A4;
                     converter.Options.PdfPageOrientation = PdfPageOrientation.Landscape;

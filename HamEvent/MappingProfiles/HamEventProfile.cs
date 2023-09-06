@@ -9,7 +9,7 @@ namespace HamEvent.MappingProfiles
     public HamEventProfile()
     {
             CreateMap<AdifContactRecord, QSO>()
-                  .ForMember(dest => dest.Callsign1, act => act.MapFrom(src => src.Operator))
+                  .ForMember(dest => dest.Callsign1, act => act.MapFrom(src => !string.IsNullOrEmpty(src.Operator)?src.Operator:src.StationCallsign))
                   .ForMember(dest => dest.Callsign2, act => act.MapFrom(src => src.Call))
                   .ForMember(dest => dest.RST1, act => act.MapFrom(src => src.RstSent))
                   .ForMember(dest => dest.RST2, act => act.MapFrom(src => src.RstReceived))

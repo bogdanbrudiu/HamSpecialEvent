@@ -52,7 +52,7 @@ namespace HamEvent.Controllers
                     Data = new List<QSO>()
                 };
             }
-
+            qsos=qsos.OrderByDescending(qso => qso.Timestamp);
             var countDetails = qsos.Count();
             return new PageResult<QSO>
             {
@@ -89,7 +89,11 @@ namespace HamEvent.Controllers
             try
             {
 
-                events= _dbcontext.Events.Select(e => new Event() {  Id=e.Id,  Name=e.Name, Description=e.Description, DiplomaURL=e.DiplomaURL});
+                events= _dbcontext.Events.Where(e=> 
+                        (!e.StartDate.HasValue || e.StartDate < DateTime.Now) 
+                        &&
+                        (!e.EndDate.HasValue || e.EndDate> DateTime.Now)
+                    ).Select(e => new Event() {  Id=e.Id,  Name=e.Name, Description=e.Description, DiplomaURL=e.DiplomaURL});
             }
             catch(Exception ex)
             {
@@ -126,17 +130,20 @@ namespace HamEvent.Controllers
                 var diplomahtml = reader.ReadToEnd();
                 diplomahtml = diplomahtml.Replace("imgurl", myevent.DiplomaURL);
                 diplomahtml = diplomahtml.Replace("--callsign2--", callsign.ToUpper());
+                diplomahtml = diplomahtml.Replace("--EventName--", myevent.Name);
+                diplomahtml = diplomahtml.Replace("--EventDescription--", myevent.Description);
 
-                
+              
 
-                var qsos=_dbcontext.QSOs.Where(qso => qso.EventId.Equals(hamevent) && string.Equals(callsign.ToLower(), qso.Callsign2.ToLower())).ToList();
+                var qsos=_dbcontext.QSOs.Where(qso => qso.EventId.Equals(hamevent) && string.Equals(callsign.ToLower(), qso.Callsign2.ToLower()));
 
-                StringBuilder qsohtml = new StringBuilder();
-                foreach(var qso in qsos)
-                {
-                    qsohtml.Append($"<tr><td>{qso.Callsign1}</td><td>{qso.Mode}</td><td>{qso.Band}</td><td>{qso.Timestamp}</td></tr>");
-                }
-                diplomahtml = diplomahtml.Replace("--QSOs--", qsohtml.ToString());
+                var qsosCount = qsos.Count();
+                var bandsCount = qsos.GroupBy(qso => qso.Band).Count();
+                var modesCount = qsos.GroupBy(qso => qso.Mode).Count();
+                diplomahtml = diplomahtml.Replace("--Points--", qsosCount.ToString());
+                diplomahtml = diplomahtml.Replace("--QSOs--", qsosCount.ToString());
+                diplomahtml = diplomahtml.Replace("--Bands--", bandsCount.ToString());
+                diplomahtml = diplomahtml.Replace("--Modes--", modesCount.ToString());
 
                 SelectPdf.HtmlToPdf converter = new SelectPdf.HtmlToPdf();
                     // set converter options
@@ -200,7 +207,17 @@ namespace HamEvent.Controllers
                             foreach (QSO myQSO in QSOs)
                             {
                                 myQSO.EventId = hamevent;
+                            if (_dbcontext.QSOs.Count(qso =>
+                                qso.EventId.Equals(myQSO.EventId)
+                                && qso.Callsign1.Equals(myQSO.Callsign1)
+                                && qso.Callsign2.Equals(myQSO.Callsign2)
+                                && qso.Band.Equals(myQSO.Band)
+                                && qso.Mode.Equals(myQSO.Mode)
+                                && qso.Timestamp.Equals(myQSO.Timestamp)
+                                ) == 0)
+                            {
                                 _dbcontext.QSOs.Add(myQSO);
+                            }
                             }
                             _dbcontext.SaveChanges();
                         }

@@ -10,7 +10,8 @@ namespace HamEvent.Data.Model
         public required string Description { get; set; }
         public required string DiplomaURL { get; set; }        
         public ICollection<QSO> QSOs { get; } = new List<QSO>();
-
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
     }
 }

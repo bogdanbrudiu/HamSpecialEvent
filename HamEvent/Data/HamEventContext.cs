@@ -33,7 +33,7 @@ namespace HamEvent.Data
                         DiplomaURL = "https://hamevent.brudiu.ro/static/diploma-background.jpg"
                     }
                 );
-            modelBuilder.Entity<QSO>().HasKey(e=>e.Id);
+            modelBuilder.Entity<QSO>().HasKey(q => new { q.Callsign1, q.Callsign2, q.Band, q.Mode, q.Timestamp, q.EventId });
         }
 
         public string DbPath { get; } = "Database\\QSOs.db";

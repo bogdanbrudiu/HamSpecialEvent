@@ -2,7 +2,6 @@ namespace HamEvent.Data.Model
 {
     public class QSO
     {
-        public int Id { get; set; }
         public required string Callsign1 { get; set; }
         public required string Callsign2 { get; set; }
         public string? RST1 { get; set; }

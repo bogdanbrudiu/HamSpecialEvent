@@ -17,7 +17,11 @@ namespace HamEvent.Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     SecretKey = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", nullable: false)
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: false),
+                    DiplomaURL = table.Column<string>(type: "TEXT", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    EndDate = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -28,20 +32,18 @@ namespace HamEvent.Data.Migrations
                 name: "QSOs",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
                     Callsign1 = table.Column<string>(type: "TEXT", nullable: false),
                     Callsign2 = table.Column<string>(type: "TEXT", nullable: false),
-                    RST1 = table.Column<string>(type: "TEXT", nullable: true),
-                    RST2 = table.Column<string>(type: "TEXT", nullable: true),
                     Band = table.Column<string>(type: "TEXT", nullable: false),
                     Mode = table.Column<string>(type: "TEXT", nullable: false),
                     Timestamp = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    RST1 = table.Column<string>(type: "TEXT", nullable: true),
+                    RST2 = table.Column<string>(type: "TEXT", nullable: true),
                     EventId = table.Column<Guid>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_QSOs", x => x.Id);
+                    table.PrimaryKey("PK_QSOs", x => new { x.Callsign1, x.Callsign2, x.Band, x.Mode, x.Timestamp });
                     table.ForeignKey(
                         name: "FK_QSOs_Events_EventId",
                         column: x => x.EventId,
@@ -52,8 +54,8 @@ namespace HamEvent.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "Events",
-                columns: new[] { "Id", "Name", "SecretKey" },
-                values: new object[] { new Guid("fd99b134-8f84-429e-94d8-89a517abbd2a"), "YP20KQT", new Guid("aba8ed87-4f79-4a00-8f1e-67e12bbbff4a") });
+                columns: new[] { "Id", "Description", "DiplomaURL", "EndDate", "Name", "SecretKey", "StartDate" },
+                values: new object[] { new Guid("c8a610d0-9892-4d59-a7aa-6b6fbdfdaabe"), "YP20KQT Event", "https://hamevent.brudiu.ro/static/diploma-background.jpg", null, "YP20KQT", new Guid("8e3cd49f-0d5b-41e7-b3b6-ea7096f550ca"), null });
 
             migrationBuilder.CreateIndex(
                 name: "IX_QSOs_EventId",

@@ -31,11 +31,17 @@ namespace HamEvent.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("SecretKey")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("StartDate")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -45,37 +51,32 @@ namespace HamEvent.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("a17c1722-dde5-478d-ba97-a7a007ba1d79"),
-                            Description = "YO2KQT - TM2023 Event",
-                            DiplomaURL = "",
-                            Name = "YO2KQT - TM2023",
-                            SecretKey = new Guid("eab4a750-45a9-4b6a-9c55-963de26f70b5")
+                            Id = new Guid("c8a610d0-9892-4d59-a7aa-6b6fbdfdaabe"),
+                            Description = "YP20KQT Event",
+                            DiplomaURL = "https://hamevent.brudiu.ro/static/diploma-background.jpg",
+                            Name = "YP20KQT",
+                            SecretKey = new Guid("8e3cd49f-0d5b-41e7-b3b6-ea7096f550ca")
                         });
                 });
 
             modelBuilder.Entity("HamEvent.Data.Model.QSO", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Band")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Callsign1")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Callsign2")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("EventId")
+                    b.Property<string>("Band")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Mode")
-                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("EventId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("RST1")
@@ -84,10 +85,7 @@ namespace HamEvent.Data.Migrations
                     b.Property<string>("RST2")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
+                    b.HasKey("Callsign1", "Callsign2", "Band", "Mode", "Timestamp");
 
                     b.HasIndex("EventId");
 

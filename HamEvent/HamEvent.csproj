@@ -37,14 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Database\QSOs.db" />
     <None Remove="resources\diploma.html" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Database\QSOs.db">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -65,6 +58,11 @@
     <Content Update="wwwroot\static\radio-icon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Database\" />
+    <Folder Include="Data\Migrations\" />
   </ItemGroup>
 
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

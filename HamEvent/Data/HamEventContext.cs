@@ -33,6 +33,16 @@ namespace HamEvent.Data
                         DiplomaURL = "https://hamevent.brudiu.ro/static/diploma-background.jpg"
                     }
                 );
+            modelBuilder.Entity<Event>().HasData(
+                   new Event
+                   {
+                       Id = Guid.NewGuid(),
+                       SecretKey = Guid.NewGuid(),
+                       Name = "YP100UPT",
+                       Description = "YP100UPT Event",
+                       DiplomaURL = "https://hamevent.brudiu.ro/static/diploma-background.jpg"
+                   }
+               );
             modelBuilder.Entity<QSO>().HasKey(q => new { q.Callsign1, q.Callsign2, q.Band, q.Mode, q.Timestamp, q.EventId });
         }
 

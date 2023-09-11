@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HamEvent.Data.Migrations
 {
     [DbContext(typeof(HamEventContext))]
-    [Migration("20230907055008_InitialCreate")]
+    [Migration("20230911155612_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -54,11 +54,19 @@ namespace HamEvent.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("c8a610d0-9892-4d59-a7aa-6b6fbdfdaabe"),
+                            Id = new Guid("65ae0e1c-bc4e-4d63-9cac-45aa4287a7a4"),
                             Description = "YP20KQT Event",
                             DiplomaURL = "https://hamevent.brudiu.ro/static/diploma-background.jpg",
                             Name = "YP20KQT",
-                            SecretKey = new Guid("8e3cd49f-0d5b-41e7-b3b6-ea7096f550ca")
+                            SecretKey = new Guid("d80e6662-22a5-412a-abac-0ee75b6435c6")
+                        },
+                        new
+                        {
+                            Id = new Guid("dd2cb606-bde9-4c93-b1eb-efdda0f5e86d"),
+                            Description = "YP100UPT Event",
+                            DiplomaURL = "https://hamevent.brudiu.ro/static/diploma-background.jpg",
+                            Name = "YP100UPT",
+                            SecretKey = new Guid("8479efeb-8b7a-445c-92ba-89a2a068224f")
                         });
                 });
 
@@ -88,7 +96,7 @@ namespace HamEvent.Data.Migrations
                     b.Property<string>("RST2")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Callsign1", "Callsign2", "Band", "Mode", "Timestamp");
+                    b.HasKey("Callsign1", "Callsign2", "Band", "Mode", "Timestamp", "EventId");
 
                     b.HasIndex("EventId");
 

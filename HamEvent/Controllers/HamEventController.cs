@@ -140,7 +140,7 @@ namespace HamEvent.Controllers
                 var qsosCount = qsos.Count();
                 var bandsCount = qsos.GroupBy(qso => qso.Band).Count();
                 var modesCount = qsos.GroupBy(qso => qso.Mode).Count();
-                diplomahtml = diplomahtml.Replace("--Points--", qsosCount.ToString());
+                diplomahtml = diplomahtml.Replace("--Points--", (qsosCount* bandsCount* modesCount).ToString());
                 diplomahtml = diplomahtml.Replace("--QSOs--", qsosCount.ToString());
                 diplomahtml = diplomahtml.Replace("--Bands--", bandsCount.ToString());
                 diplomahtml = diplomahtml.Replace("--Modes--", modesCount.ToString());

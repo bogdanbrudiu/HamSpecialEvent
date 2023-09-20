@@ -26,6 +26,7 @@
     "@ngx-translate/core": "^15.0.0",
     "@ngx-translate/http-loader": "^8.0.0",
     "bootstrap": "^5.2.0",
+    "bootstrap-icons": "^1.11.1",
     "jquery": "^3.6.0",
     "ngx-pagination": "^6.0.3",
     "oidc-client": "^1.11.5",

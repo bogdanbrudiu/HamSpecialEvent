@@ -40,33 +40,12 @@ namespace HamEvent.Data
         margin-bottom: 20px;
     }
 
-    h2 {
-        text-align: center;
-        font-size: x-large;
-        margin-top: 30px;
-        margin-bottom: 10px;
-    }
-
     h3 {
         text-align: center;
         font-size: large;
         margin-top: 20px;
         margin-bottom: 10px;
     }
-
-    p {
-        font-size: 18px;
-        line-height: 1.5;
-        text-align: center;
-        margin-bottom: 10px;
-    }
-
-    img {
-        display: block;
-        margin: 20px auto 0;
-        max-width: 150px;
-    }
-
     .background {
         background-image: url(https://hamevent.brudiu.ro/static/YP20KQT.jpg);
         width: 842px;
@@ -88,23 +67,46 @@ namespace HamEvent.Data
         margin: 0 auto;
         padding: 30px;
     }
+.callsign{
+    position: absolute;
+        top: 375px;
+        left: 50%;
+    transform: translate(-50%, 0);
+}
+.Points{
+    position: absolute;
+        top:60px;
+        left: 126px;
+    transform: translate(-50%, 0);
+}
+.QSOs{
+    position: absolute;
+        top:60px;
+        left: 224px;
+    transform: translate(-50%, 0);
+}
+.Bands{
+    position: absolute;
+        top:60px;
+        left: 618px;
+    transform: translate(-50%, 0);
+}
+.Modes{
+    position: absolute;
+        top:60px;
+        left: 716px;
+    transform: translate(-50%, 0);
+}
 </STYLE>
 <html>
 <body>
     <div class=""background"">
-        <div class=""diploma"">
-            <h1>--EventName--</h1>
-            <p>--EventDescription--</p>
-            <p>We take the pleasure in awarding</p>
-            <h2>--callsign2--</h2>
-
-            <h3>Points:--Points--</h3>
-            <h3>QSO:--QSOs--</h3>
-            <h3>Bands:--Bands--</h3>
-            <h3>Modes:--Modes--</h3>
-
-            <img src=""./static/radio-icon.png"" alt=""Ham Special Event"">
-        </div>
+<div class=""callsign""><h1>--callsign2--</h2></div>
+<div class=""Points""><h3>--Points--</h3></div>
+<div class=""QSOs""><h3>--QSOs--</h3></div>
+<div class=""Bands""><h3>--Bands--</h3></div>
+<div class=""Modes""><h3>--Modes--</h3></div>
+       
     </div>
 </body>
 </html>"

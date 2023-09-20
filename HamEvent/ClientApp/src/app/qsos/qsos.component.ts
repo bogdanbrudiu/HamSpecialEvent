@@ -2,8 +2,8 @@ import { Component, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EventsService } from '../events.service';
-import { QSOsService } from '../qsos.service';
+import { HamEvent, EventsService } from '../events.service';
+import { QSO, QSOsService } from '../qsos.service';
 import { PdfService } from '../pdf.service';
 
 @Component({
@@ -98,24 +98,4 @@ export class QSOsComponent {
 
 }
 
-interface PageResult<T>
-{
-  count: number;
-  data: T[];
-}
 
-interface QSO {
-  callsign1: string;
-  callsign2: string;
-  rst1: string;
-  rst2: string;
-  mode: string;
-  band: string;
-  timestamp: Date;
-}
-interface HamEvent {
-  id: string;
-  name: string;
-  description: string;
-
-}

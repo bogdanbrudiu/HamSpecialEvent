@@ -1,7 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { EventsService } from '../events.service';
+import { HamEvent, EventsService } from '../events.service';
 
 @Component({
   selector: 'app-events',
@@ -9,7 +9,7 @@ import { EventsService } from '../events.service';
 })
 export class EventsComponent {
   searchForm!: FormGroup;
-  public Events: Event[] = [];
+  public Events: HamEvent[] = [];
   page: number = 1;
   count: number = 0;
   tableSize: number = 10;
@@ -38,16 +38,10 @@ export class EventsComponent {
     this.page = event;
     this.loadData();
   }
-  gotoEvent(event: Event) {
+  gotoEvent(event: HamEvent) {
     this.router.navigateByUrl(event.id);
   }
 
 }
 
-interface Event {
-  name: string;
-  id: string;
-  description: string;
-  diploma: string;
-}
 

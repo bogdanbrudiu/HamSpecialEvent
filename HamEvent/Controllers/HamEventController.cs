@@ -11,6 +11,7 @@ using System.Drawing.Printing;
 using System.Runtime.CompilerServices;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
+using System.Globalization;
 
 namespace HamEvent.Controllers
 {
@@ -60,6 +61,26 @@ namespace HamEvent.Controllers
                 Data = qsos.Skip((page - 1 ?? 0) * pagesize).Take(pagesize).ToList()
             };
         }
+
+        [HttpDelete("QSOs/{hamevent}/{secret}")]
+        public ActionResult Delete(Guid hamevent, Guid secret, string callsign1, string callsign2, string mode, string band, string timestamp)
+        {
+            _logger.LogInformation(MyLogEvents.DeleteQSO, "Delete QSO callsign1 {0}, callsign2 {1}, mode {2}, band {3}, timestamp {4} from event {5}", callsign1, callsign2, mode, band, timestamp, hamevent);
+            var myqso = _dbcontext.QSOs.Where(qso => qso.EventId== hamevent && 
+                                                       qso.Callsign1==callsign1 &&
+                                                       qso.Callsign2 == callsign2 &&
+                                                       qso.Mode == mode &&
+                                                       qso.Band == band &&
+                                                       qso.Timestamp == DateTime.Parse(timestamp, CultureInfo.InvariantCulture) &&
+                                                       qso.Event.SecretKey == secret).FirstOrDefault();
+            if (myqso == null) return NotFound();
+            _dbcontext.QSOs.Remove(myqso);
+            _dbcontext.SaveChanges();
+            return Ok();
+        }
+
+
+
         [HttpGet("hamevent/{hamevent}")]
         public ActionResult<Event> Get(Guid hamevent)
         {

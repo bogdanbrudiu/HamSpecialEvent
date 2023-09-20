@@ -20,3 +20,9 @@ export class EventsService {
     return this.http.post<any>(this.baseUrl + 'hamevent/hamevent/', event);
   }
 }
+export interface HamEvent {
+  id: string;
+  name: string;
+  description: string;
+  diploma: string;
+}

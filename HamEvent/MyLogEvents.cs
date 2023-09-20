@@ -8,5 +8,6 @@
         public const int GetDiploma = 1003;
         public const int UploadLog = 1004;
         public const int UpdateEvent = 1005;
+        public const int DeleteQSO = 1006;
     }
 }

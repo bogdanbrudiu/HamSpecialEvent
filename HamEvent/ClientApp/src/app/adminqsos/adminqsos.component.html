@@ -31,6 +31,7 @@
               <th>{{'Mode' | translate}}</th>
               <th>{{'Band' | translate}}</th>
               <th>{{'Timestamp' | translate}}</th>
+              <th>{{'Action' | translate}}</th>
             </tr>
           </thead>
           <tbody>
@@ -47,6 +48,7 @@
               <td>{{ QSO.mode }}</td>
               <td>{{ QSO.band }}</td>
               <td>{{ QSO.timestamp }}</td>
+              <td> <i class="bi bi-trash" (click)="delete(QSO)"></i></td>
             </tr>
           </tbody>
         </table>

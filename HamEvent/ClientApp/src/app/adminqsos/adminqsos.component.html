@@ -1,35 +1,40 @@
 <div class="px-4 text-center border-bottom">
   <h1 class="display-4 fw-bold text-body-emphasis" *ngIf="event">{{event.name}}</h1>
-  <div class="col-lg-6 mx-auto">
-
-    <app-upload [eventId]="eventId" [eventsecret]="eventsecret" (onUploadFinished)="uploadFinished($event)"></app-upload>
-
-    <div [formGroup]="searchForm">
-      <div class="d-flex" role="search">
-        <input class="form-control me-2" type="search" placeholder="{{'Callsign 2' | translate}}" aria-label="Search" formControlName="search">
-        <button class="btn btn-outline-primary" (click)="submitForm()">{{'Search' | translate}}</button>
+  <div class="col-6 mx-auto">
+    <div class="row" style="margin-bottom:15px;">
+      <div class="col-6">
+        <app-upload [eventId]="eventId" [eventsecret]="eventSecret" (onUploadFinished)="uploadFinished($event)"></app-upload>
       </div>
-    </div>
-    <div class="py-4 d-flex justify-content-center">
-      <button *ngIf='qualifiesForDiploma()' class="btn btn-outline-success" (click)="genPdf()">{{'Download Diploma' | translate}}</button>
-    </div>
+        <div class="col-6">
+          <button type="button" class="btn btn-primary" (click)="edit()">{{'Edit Event' | translate}}</button>
+        </div>
+      </div>
+        <div [formGroup]="searchForm">
+          <div class="d-flex" role="search">
+            <input class="form-control me-2" type="search" placeholder="{{'Callsign 2' | translate}}" aria-label="Search" formControlName="search">
+            <button class="btn btn-outline-primary" (click)="submitForm()">{{'Search' | translate}}</button>
+          </div>
+        </div>
+        <div class="py-4 d-flex justify-content-center">
+          <button *ngIf='qualifiesForDiploma()' class="btn btn-outline-success" (click)="genPdf()">{{'Download Diploma' | translate}}</button>
+        </div>
 
-    <p *ngIf="loaded && !QSOs?.length"><em>{{'No entries...' | translate}}</em></p>
+        <p *ngIf="loaded && !QSOs?.length"><em>{{'No entries...' | translate}}</em></p>
 
-    <table class='table table-striped' aria-labelledby="tableLabel" *ngIf="QSOs.length">
-      <thead>
-        <tr>
-          <th>{{'Callsign 1' | translate}}</th>
-          <th>{{'Callsign 2' | translate}}</th>
-          <!--<th>RST1</th>
+        <table class='table table-striped' aria-labelledby="tableLabel" *ngIf="QSOs.length">
+          <thead>
+            <tr>
+              <th>{{'Callsign 1' | translate}}</th>
+              <th>{{'Callsign 2' | translate}}</th>
+              <!--<th>RST1</th>
         <th>RST2</th>-->
-          <th>{{'Mode' | translate}}</th>
-          <th>{{'Band' | translate}}</th>
-          <th>{{'Timestamp' | translate}}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor=" let QSO of QSOs
+              <th>{{'Mode' | translate}}</th>
+              <th>{{'Band' | translate}}</th>
+              <th>{{'Timestamp' | translate}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor=" let QSO of QSOs
             | paginate
               : {
                   itemsPerPage: tableSize,
@@ -37,21 +42,21 @@
                   totalItems: count
                 };
           let i = index">
-          <td>{{ QSO.callsign1 }}</td>
-          <td>{{ QSO.callsign2 }}</td>
-          <td>{{ QSO.mode }}</td>
-          <td>{{ QSO.band }}</td>
-          <td>{{ QSO.timestamp }}</td>
-        </tr>
-      </tbody>
-    </table>
-    <div class="d-flex justify-content-center">
-      <pagination-controls previousLabel="Prev"
-                           nextLabel="Next"
-                           (pageChange)="onTableDataChange($event)">
-      </pagination-controls>
-    </div>
-  </div>
+              <td>{{ QSO.callsign1 }}</td>
+              <td>{{ QSO.callsign2 }}</td>
+              <td>{{ QSO.mode }}</td>
+              <td>{{ QSO.band }}</td>
+              <td>{{ QSO.timestamp }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="d-flex justify-content-center">
+          <pagination-controls previousLabel="Prev"
+                               nextLabel="Next"
+                               (pageChange)="onTableDataChange($event)">
+          </pagination-controls>
+        </div>
+      </div>
 
-</div>
+  </div>
 

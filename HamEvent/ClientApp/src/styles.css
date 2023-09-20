@@ -1,9 +1,5 @@
 
-#myfooter {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-}
+
 
 .trow {
   transition: transform .2s;

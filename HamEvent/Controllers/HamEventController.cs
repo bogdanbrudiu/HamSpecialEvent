@@ -67,7 +67,7 @@ namespace HamEvent.Controllers
 
             try
             {
-                var myevent = _dbcontext.Events.Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, DiplomaURL = e.DiplomaURL }).Where(e => e.Id == hamevent).FirstOrDefault();
+                var myevent = _dbcontext.Events.Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Diploma = e.Diploma }).Where(e => e.Id == hamevent).FirstOrDefault();
                 if (myevent == null) return NotFound();
                 else return Ok(myevent);
             }
@@ -79,7 +79,31 @@ namespace HamEvent.Controllers
             }
          
         }
+        [HttpPost("hamevent")]
+        public ActionResult<Event> Post(Event hamevent)
+        {
+            _logger.LogInformation(MyLogEvents.UpdateEvent, "Update Event {0}", hamevent);
 
+            try
+            {
+                var myevent = _dbcontext.Events.Where(e => e.Id == hamevent.Id && e.SecretKey==hamevent.SecretKey).FirstOrDefault();
+                if (myevent == null) return NotFound();
+                else {
+                    myevent.Diploma= hamevent.Diploma;
+                    myevent.Description = hamevent.Description;
+                    myevent.Name=hamevent.Name;
+                    _dbcontext.SaveChanges();
+                    return Ok(myevent);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(MyLogEvents.GetEvent, ex, "Failed updating Event {0}", hamevent);
+
+                return NotFound();
+            }
+
+        }
         [HttpGet("hamevents")]
         public PageResult<Event> Get(int? page, int pagesize = 10)
         {
@@ -93,7 +117,7 @@ namespace HamEvent.Controllers
                         (!e.StartDate.HasValue || e.StartDate < DateTime.Now) 
                         &&
                         (!e.EndDate.HasValue || e.EndDate> DateTime.Now)
-                    ).Select(e => new Event() {  Id=e.Id,  Name=e.Name, Description=e.Description, DiplomaURL=e.DiplomaURL});
+                    ).Select(e => new Event() {  Id=e.Id,  Name=e.Name, Description=e.Description, Diploma=e.Diploma});
             }
             catch(Exception ex)
             {
@@ -121,14 +145,24 @@ namespace HamEvent.Controllers
 
             var myevent =_dbcontext.Events.Where(e => e.Id.Equals(hamevent)).FirstOrDefault();
             var assembly = Assembly.GetExecutingAssembly();
-            using Stream diplomastream = assembly.GetManifestResourceStream("HamEvent.resources.diploma.html");
-            if (myevent!=null && !String.IsNullOrEmpty(myevent.DiplomaURL) && diplomastream != null)
+            string diplomahtml = "";
+
+            if (myevent!=null  )
             {
-                   
-                using StreamReader reader = new(diplomastream);
-                    
-                var diplomahtml = reader.ReadToEnd();
-                diplomahtml = diplomahtml.Replace("imgurl", myevent.DiplomaURL);
+                if (!String.IsNullOrEmpty(myevent.Diploma))
+                {
+                    diplomahtml = myevent.Diploma;
+                }
+                else
+                {
+                    using Stream? diplomastream = assembly.GetManifestResourceStream("HamEvent.resources.diploma.html");
+                    if (diplomastream != null)
+                    {
+                        using StreamReader reader = new(diplomastream);
+                        diplomahtml = reader.ReadToEnd();
+                    }
+                }
+
                 diplomahtml = diplomahtml.Replace("--callsign2--", callsign.ToUpper());
                 diplomahtml = diplomahtml.Replace("--EventName--", myevent.Name);
                 diplomahtml = diplomahtml.Replace("--EventDescription--", myevent.Description);

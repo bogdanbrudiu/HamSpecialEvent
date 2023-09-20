@@ -11,9 +11,12 @@ import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
 import { QSOsComponent } from './qsos/qsos.component';
-import { AdminQSOsComponent } from './adminqsos/adminqsos.component';
 import { EventsComponent } from './events/events.component';
+
+import { AdminQSOsComponent } from './adminqsos/adminqsos.component';
+import { AdminEventComponent } from './adminevent/adminevent.component';
 import { UploadComponent } from './upload/upload.component';
+import { SanitizedHtmlPipe } from './sanitized-html.pipe';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -25,9 +28,11 @@ export function createTranslateLoader(http: HttpClient) {
     NavMenuComponent,
     HomeComponent,
     QSOsComponent,
-    AdminQSOsComponent,
     EventsComponent,
-    UploadComponent
+    AdminQSOsComponent,
+    AdminEventComponent,
+    UploadComponent,
+    SanitizedHtmlPipe
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -47,11 +52,14 @@ export function createTranslateLoader(http: HttpClient) {
       
       { path: '', component: HomeComponent, pathMatch: 'full' },
       { path: 'Events', component: EventsComponent, pathMatch: 'full' },
-      { path: ':id', component: QSOsComponent, pathMatch: 'full' },
+
+      { path: ':id/:secret/edit', component: AdminEventComponent, pathMatch: 'full' },
       { path: ':id/:secret', component: AdminQSOsComponent, pathMatch: 'full' },
+      { path: ':id', component: QSOsComponent, pathMatch: 'full' },
     ])
   ],
   providers: [],
+  exports: [SanitizedHtmlPipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

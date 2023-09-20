@@ -117,5 +117,5 @@ interface HamEvent {
   id: string;
   name: string;
   description: string;
-  diplomaURL: string;
+
 }

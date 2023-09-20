@@ -16,4 +16,7 @@ export class EventsService {
   getEvent(eventId:string): Observable<any> {
     return this.http.get(this.baseUrl + 'hamevent/hamevent/' + eventId);
   }
+  updateEvent(event:any): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'hamevent/hamevent/', event);
+  }
 }

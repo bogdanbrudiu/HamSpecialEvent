@@ -1,0 +1,20 @@
+<div class="row" style="margin-bottom:15px;">
+  <p *ngIf="!event"><em>{{'Loading...' | translate}}</em></p>
+  <form *ngIf="event">
+    <div class="mb-3">
+      <label for="name" class="form-label">{{'Name' | translate}}</label>
+      <input type="text" class="form-control" id="name" [(ngModel)]="event.name" name="name">
+    </div>
+    <div class="mb-3">
+      <label for="description" class="form-label">{{'Description' | translate}}</label>
+      <input type="text" class="form-control" id="description" [(ngModel)]="event.description" name="description">
+    </div>
+    <div class="mb-3">
+      <label for="diploma" class="form-label">{{'Diploma' | translate}}</label>
+      <textarea rows="10" style="height:100%;" class="form-control" id="diploma" [(ngModel)]="event.diploma" name="diploma"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary" (click)="onSubmit()">{{'Update' | translate}}</button>
+    <div [innerHtml]="event.diploma | sanitizedHtml" width="842" height="595"></div>
+
+  </form>
+</div>

@@ -21,13 +21,13 @@ export class AdminQSOsComponent {
   count: number = 0;
   tableSize: number = 10;
   public eventId: string = '';
-  public eventsecret: string = '';
+  public eventSecret: string = '';
   public event: HamEvent | undefined;
   public searchInput = '';
   public loaded = false;
   public blob: Blob | undefined;
 
-  constructor(private formBuilder: FormBuilder, private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService, private pdfService: PdfService) {
+  constructor(private formBuilder: FormBuilder, private router: Router, private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService, private pdfService: PdfService) {
 
     this.searchForm = this.formBuilder.group({
       search: "",
@@ -37,7 +37,7 @@ export class AdminQSOsComponent {
   ngOnInit() {
     this.routes.paramMap.subscribe(params => {
       this.eventId = params.get('id')!;
-      this.eventsecret = params.get('secret')!;
+      this.eventSecret = params.get('secret')!;
       this.eventsService.getEvent(this.eventId).subscribe(
         (response) => {
           this.event = response;
@@ -58,7 +58,9 @@ export class AdminQSOsComponent {
     this.loadData();
  
   }
-
+  edit() {
+    this.router.navigate([this.eventId, this.eventSecret,'edit']);
+  }
   genPdf() {
     return this.pdfService.getPdf(this.eventId, this.searchInput).subscribe((data: any) => {
 
@@ -119,5 +121,5 @@ interface HamEvent {
   id: string;
   name: string;
   description: string;
-  diplomaURL: string;
+  diploma: string;
 }

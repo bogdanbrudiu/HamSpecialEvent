@@ -10,7 +10,6 @@
         <tr>
           <th>{{'Name' | translate}}</th>
           <th>{{'Description' | translate}}</th>
-          <th>{{'Diploma' | translate}}</th>
         </tr>
       </thead>
       <tbody>
@@ -24,7 +23,6 @@
           let i = index" (click)="gotoEvent(event)" class="trow">
           <td>{{ event.name }}</td>
           <td>{{ event.description }}</td>
-          <td><img [src]="event.diplomaURL" width="100px"/></td>
         </tr>
       </tbody>
     </table>

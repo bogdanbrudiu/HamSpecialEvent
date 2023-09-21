@@ -12,6 +12,7 @@ using System.Runtime.CompilerServices;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace HamEvent.Controllers
 {
@@ -61,6 +62,55 @@ namespace HamEvent.Controllers
                 Data = qsos.Skip((page - 1 ?? 0) * pagesize).Take(pagesize).ToList()
             };
         }
+        public class Participant
+        {
+            public string Callsign { get; set; }
+            public int Count { get; set; }
+            public int Band { get; set; }
+            public int Mode { get; set; }
+            public int Points { get; set; }
+        }
+        [HttpGet("Top/{hamevent}")]
+        public PageResult<Participant> Top(Guid hamevent, int? page, int pagesize = 10, string callsign = "")
+        {
+           
+        _logger.LogInformation(MyLogEvents.GetQSOs, "Get Top for event {0} page {1} paginated by {2} per page, filtered by {3}", hamevent, page, pagesize, callsign);
+            IQueryable<QSO> qsos;
+            IQueryable<Participant> participants;
+            try
+            {
+                qsos = _dbcontext.QSOs.Where(qso => qso.EventId.Equals(hamevent));
+                if (!String.IsNullOrEmpty(callsign))
+                {
+                    qsos = qsos.Where(qso => string.Equals(callsign.ToLower(), qso.Callsign2.ToLower()));
+                }
+                participants = qsos.GroupBy(qso => new { qso.Callsign2 }).Select(grup => new Participant()
+                {
+                    Callsign = grup.Key.Callsign2,
+                    Count = grup.Count(),
+                    Band = grup.GroupBy(g => new { g.Band}).Count(),
+                    Mode = grup.GroupBy(g => new { g.Mode }).Count(),
+                    Points = grup.Count()* grup.GroupBy(g => new { g.Band }).Count()* grup.GroupBy(g => new { g.Mode }).Count()
+                }).OrderByDescending(o=>o.Points);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(MyLogEvents.GetQSOs, ex, "Failed getting Top for event {0} page {1} paginated by {2} per page, filtered by {3}", hamevent, page, pagesize, callsign);
+
+                return new PageResult<Participant>
+                {
+                    Count = 0,
+                    Data = new List<Participant>()
+                };
+            }
+            var countDetails = participants.Count();
+            return new PageResult<Participant>
+            {
+                Count = countDetails,
+                Data = participants.Skip((page - 1 ?? 0) * pagesize).Take(pagesize).ToList()
+            };
+        }
+
 
         [HttpDelete("QSOs/{hamevent}/{secret}")]
         public ActionResult Delete(Guid hamevent, Guid secret, string callsign1, string callsign2, string mode, string band, string timestamp)

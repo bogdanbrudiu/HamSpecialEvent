@@ -11,13 +11,7 @@
         <div class="collapse navbar-collapse" id="tableMenu">
           <ul class="navbar-nav me-auto">
             <li class="nav-item">
-              <app-upload [eventId]="eventId" [eventsecret]="eventSecret" (onUploadFinished)="uploadFinished($event)"></app-upload>
-            </li>
-            <li class="nav-item">
-              <button class="btn btn-link" (click)="edit()">{{'Edit Event' | translate}}</button>
-            </li>
-            <li class="nav-item">
-              <button class="btn btn-link" (click)="top()">{{'Event Top' | translate}}</button>
+              <button class="btn btn-link" (click)="qsos()">{{'QSOs' | translate}}</button>
             </li>
           </ul>
           <form role="search" (ngSubmit)="submitForm()" [formGroup]="searchForm">
@@ -32,47 +26,38 @@
       </div>
     </nav>
 
+    <p *ngIf="loaded && !Top?.length"><em>{{'No entries...' | translate}}</em></p>
 
-    <div class="py-4 d-flex justify-content-center">
-      <button *ngIf='qualifiesForDiploma()' class="btn btn-outline-success" (click)="genPdf()">{{'Download Diploma' | translate}}</button>
-    </div>
-
-    <p *ngIf="loaded && !QSOs?.length"><em>{{'No entries...' | translate}}</em></p>
-
-    <table class='table table-striped' aria-labelledby="tableLabel" *ngIf="QSOs.length">
+    <table class='table table-striped' aria-labelledby="tableLabel" *ngIf="Top.length">
       <thead>
         <tr>
-          <th>{{'Callsign 1' | translate}}</th>
           <th>{{'Callsign 2' | translate}}</th>
-          <!--<th>RST1</th>
-        <th>RST2</th>-->
+          <th>{{'Points' | translate}}</th>
           <th>{{'Mode' | translate}}</th>
           <th>{{'Band' | translate}}</th>
-          <th>{{'Timestamp' | translate}}</th>
-          <th>{{'Action' | translate}}</th>
+          <th>{{'QSOs' | translate}}</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor=" let QSO of QSOs
-            | paginate
-              : {
-                  itemsPerPage: tableSize,
-                  currentPage: page,
-                  totalItems: count
-                };
-          let i = index">
-          <td>{{ QSO.callsign1 }}</td>
-          <td>{{ QSO.callsign2 }}</td>
-          <td>{{ QSO.mode }}</td>
-          <td>{{ QSO.band }}</td>
-          <td>{{ QSO.timestamp }}</td>
-          <td> <i class="bi bi-trash" (click)="delete(QSO)"></i></td>
+        <tr *ngFor=" let Participant of Top
+          | paginate
+            : {
+                itemsPerPage: tableSize,
+                currentPage: page,
+                totalItems: count
+              };
+        let i = index">
+          <td>{{ Participant.callsign }}</td>
+          <td>{{ Participant.points }}</td>
+          <td>{{ Participant.mode }}</td>
+          <td>{{ Participant.band }}</td>
+          <td>{{ Participant.count }}</td>
         </tr>
       </tbody>
     </table>
     <div class="d-flex justify-content-center">
-      <pagination-controls previousLabel="Prev"
-                           nextLabel="Next"
+      <pagination-controls previousLabel="{{'Prev' | translate}}"
+                           nextLabel="{{'Next' | translate}}"
                            (pageChange)="onTableDataChange($event)">
       </pagination-controls>
     </div>

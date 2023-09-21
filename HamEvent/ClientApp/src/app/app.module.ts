@@ -12,6 +12,7 @@ import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
 import { QSOsComponent } from './qsos/qsos.component';
 import { EventsComponent } from './events/events.component';
+import { EventTopComponent } from './eventtop/eventtop.component';
 
 import { AdminQSOsComponent } from './adminqsos/adminqsos.component';
 import { AdminEventComponent } from './adminevent/adminevent.component';
@@ -29,6 +30,7 @@ export function createTranslateLoader(http: HttpClient) {
     HomeComponent,
     QSOsComponent,
     EventsComponent,
+    EventTopComponent,
     AdminQSOsComponent,
     AdminEventComponent,
     UploadComponent,
@@ -52,9 +54,10 @@ export function createTranslateLoader(http: HttpClient) {
       
       { path: '', component: HomeComponent, pathMatch: 'full' },
       { path: 'Events', component: EventsComponent, pathMatch: 'full' },
-
+      { path: ':id/top', component: EventTopComponent, pathMatch: 'full' },
       { path: ':id/:secret/edit', component: AdminEventComponent, pathMatch: 'full' },
       { path: ':id/:secret', component: AdminQSOsComponent, pathMatch: 'full' },
+
       { path: ':id', component: QSOsComponent, pathMatch: 'full' },
     ])
   ],

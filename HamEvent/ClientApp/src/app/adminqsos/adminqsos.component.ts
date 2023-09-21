@@ -61,6 +61,9 @@ export class AdminQSOsComponent {
   edit() {
     this.router.navigate([this.eventId, this.eventSecret,'edit']);
   }
+  top() {
+    this.router.navigate([this.eventId, 'top']);
+  }
   delete(qso: QSO) {
     this.qsosService.delete(qso, this.eventId, this.eventSecret).subscribe(
       (response) => {

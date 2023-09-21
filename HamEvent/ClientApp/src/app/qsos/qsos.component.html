@@ -1,12 +1,31 @@
 <div class="px-4 text-center border-bottom">
   <h1 class="display-4 fw-bold text-body-emphasis" *ngIf="event">{{event.name}}</h1>
-  <div class="col-lg-6 mx-auto">
-    <div [formGroup]="searchForm">
-      <div class="d-flex" role="search">
-        <input class="form-control me-2" type="search" placeholder="{{'Callsign 2' | translate}}" aria-label="Search" formControlName="search">
-        <button class="btn btn-outline-primary" (click)="submitForm()">{{'Search' | translate}}</button>
+  <div class="col mx-auto">
+    <p *ngIf="event">{{event.description}}</p>
+    <nav class="navbar navbar-expand">
+      <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#tableMenu" aria-controls="tableMenu" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="tableMenu">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <button class="btn btn-link" (click)="top()">{{'Event Top' | translate}}</button>
+            </li>
+          </ul>
+          <form role="search" (ngSubmit)="submitForm()" [formGroup]="searchForm">
+            <div class="input-group mb-3">
+              <input type="search" class="form-control" placeholder="{{'Callsign 2' | translate}}" formControlName="search">
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" (click)="submitForm()">{{'Search' | translate}}</button>
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
+    </nav>
+
     <div class="py-4 d-flex justify-content-center">
 
       <div class="card trow btn btn-outline-success" style="width: 18rem;" *ngIf='qualifiesForDiploma()' (click)="genPdf()">
@@ -56,11 +75,11 @@
     </table>
     <div class="d-flex justify-content-center">
       <pagination-controls previousLabel="{{'Prev' | translate}}"
-                            nextLabel="{{'Next' | translate}}"
-                            (pageChange)="onTableDataChange($event)">
+                           nextLabel="{{'Next' | translate}}"
+                           (pageChange)="onTableDataChange($event)">
       </pagination-controls>
     </div>
   </div>
 
-  </div>
+</div>
 

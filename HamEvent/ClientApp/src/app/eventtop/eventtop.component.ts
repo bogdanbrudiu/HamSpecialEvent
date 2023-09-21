@@ -3,16 +3,15 @@ import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HamEvent, EventsService } from '../events.service';
-import { QSO, QSOsService } from '../qsos.service';
-import { PdfService } from '../pdf.service';
+import { Participant, QSO, QSOsService } from '../qsos.service';
 
 @Component({
-  selector: 'app-qsos',
-  templateUrl: './qsos.component.html'
+  selector: 'app-eventtop',
+  templateUrl: './eventtop.component.html'
 })
-export class QSOsComponent {
+export class EventTopComponent {
   searchForm!: FormGroup;
-  public QSOs: QSO[] = [];
+  public Top: Participant[] = [];
   page: number = 1;
   count: number = 0;
   tableSize: number = 10;
@@ -22,10 +21,8 @@ export class QSOsComponent {
   public searchInput = '';
   public loaded = false;
 
-  public blob: Blob | undefined;
 
-
-  constructor(private formBuilder: FormBuilder, private router: Router, private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService, private pdfService: PdfService) {
+  constructor(private formBuilder: FormBuilder, private router: Router, private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService) {
 
     this.searchForm = this.formBuilder.group({
       search: "",
@@ -55,30 +52,13 @@ export class QSOsComponent {
     this.loadData();
     
   }
-  top() {
-    this.router.navigate([this.eventId, 'top']);
+  qsos() {
+    this.router.navigate([this.eventId]);
   }
-  genPdf() {
-
-    return this.pdfService.getPdf(this.eventId, this.searchInput).subscribe((data: any) => {
-
-      this.blob = new Blob([data], { type: 'application/pdf' });
-
-      let downloadURL = window.URL.createObjectURL(data);
-      let link = document.createElement('a');
-      link.href = downloadURL;
-      link.download = this.event?.name + " " + this.searchInput + ".pdf";
-      link.click();
-
-    });
-   
-  }
-
-
   loadData() {
-    this.qsosService.getAllQSOs(this.eventId, this.searchInput, this.page, this.tableSize).subscribe(
+    this.qsosService.getTop(this.eventId, this.searchInput, this.page, this.tableSize).subscribe(
       (response) => {
-        this.QSOs = response.data;
+        this.Top = response.data;
         this.count = response.count;
         this.loaded = true;
         console.log(response);
@@ -94,9 +74,6 @@ export class QSOsComponent {
     this.loadData();
   }
 
-  qualifiesForDiploma() {
-    return this.QSOs.length > 0 && this.searchInput.length > 0 && this.loaded;
-  }
 
 }
 

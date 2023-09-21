@@ -19,6 +19,9 @@ export class QSOsService {
       + "band=" + encodeURIComponent(qso.band) + "&"
       + "timestamp=" + encodeURIComponent(qso.timestamp));
   }
+  getTop(eventId: string, callsign: string, page: number, size: number): Observable<any> {
+    return this.http.get(this.baseUrl + 'hamevent/Top/' + encodeURIComponent(eventId) + "?page=" + page + "&size=" + size + "&callsign=" + encodeURIComponent(callsign));
+  }
 }
 export interface QSO {
   callsign1: string;
@@ -28,6 +31,13 @@ export interface QSO {
   mode: string;
   band: string;
   timestamp: string;
+}
+export interface Participant {
+  callsign: string;
+  points: string;
+  mode: string;
+  band: string;
+  count: string;
 }
 export interface PageResult<T> {
   count: number;

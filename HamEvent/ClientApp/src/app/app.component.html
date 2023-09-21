@@ -1,20 +1,25 @@
-<header>
-  <app-nav-menu></app-nav-menu>
-</header>
+<div class="min-100 d-flex flex-column" style="height:100%">
 
-<main class="flex-shrink-0">
-  <div class="container">
-    <router-outlet></router-outlet>
+  <header>
+    <app-nav-menu></app-nav-menu>
+  </header>
+
+  <div class="flex-fill">
+    <main>
+      <router-outlet></router-outlet>
+    </main>
   </div>
-</main>
 
-  <footer >
-    <div class="navbar  navbar-dark bg-dark">
-      <p class="navbar-brand">© {{'Copyright' | translate}}</p>
-      <ul class="navbar-nav">
-        <li class="nav-item"> <a class="nav-link" href="https://github.com/bogdanbrudiu/HamSpecialEvent">Contact</a></li>
-      </ul>
-    </div>
+
+  <footer class="px-3 d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+    <p class="col-md-4 mb-0 text-body-secondary">© {{'Copyright' | translate}}</p>
+
+
+    <ul class="nav col-md-4 justify-content-end">
+      <li class="nav-item"> <a class="nav-link" href="https://github.com/bogdanbrudiu/HamSpecialEvent">Contact</a></li>
+    </ul>
   </footer>
 
+
+</div>
 

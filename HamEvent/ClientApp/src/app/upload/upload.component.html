@@ -1,8 +1,8 @@
 
-  <div class="col-md-4">
-    <input type="file" #file placeholder="Choose file" (change)="uploadFile(file.files)" style="display:none;">
-    <button type="button" class="btn btn-primary" (click)="file.click()">{{'Upload' | translate}}</button>
-  </div>
+<div class="col-md-4">
+  <input type="file" #file placeholder="Choose file" (change)="uploadFile(file.files)" style="display:none;">
+  <button class="btn btn-link"  (click)="file.click()" >{{'Upload' | translate}}</button>
+</div>
   <div class="col-md-8">
     <span class="upload" *ngIf="progress > 0">
       {{progress}}%

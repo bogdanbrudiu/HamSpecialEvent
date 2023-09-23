@@ -119,7 +119,55 @@ namespace HamEvent.Data
                        SecretKey = Guid.NewGuid(),
                        Name = "YP100UPT",
                        Description = "YP100UPT Event",
-                       Diploma = ""
+                       Diploma = @"<STYLE type=""text/css"">
+    html, body {
+        margin: 0;
+        padding: 0;
+    }
+
+    h1 {
+        text-align: center;
+        font-size: xx-large;
+        margin-bottom: 20px;
+    }
+
+    .background {
+        background-image: url(https://hamevent.brudiu.ro/static/YP100UPT.jpg);
+        width: 842px;
+        height: 595px;
+        margin: 0;
+        padding: 0;
+        background-position: center center;
+        background-size: 100%;
+        background-repeat: no-repeat;
+        position: relative;
+    }
+
+    .diploma {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+        margin: 0 auto;
+        padding: 30px;
+    }
+.callsign{
+    position: absolute;
+        top: 300px;
+        left: 68%;
+    transform: translate(-50%, 0);
+}
+
+</STYLE>
+<html>
+<body>
+    <div class=""background"">
+<div class=""callsign""><h1>--callsign2--</h2></div>
+      
+    </div>
+</body>
+</html>"
                    }
                ); 
             modelBuilder.Entity<QSO>().HasKey(q => new { q.Callsign1, q.Callsign2, q.Band, q.Mode, q.Timestamp, q.EventId });

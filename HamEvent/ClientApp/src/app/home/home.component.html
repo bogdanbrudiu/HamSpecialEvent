@@ -1,4 +1,10 @@
 <div class="px-4 text-center border-bottom">
+  <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item active" aria-current="page">{{'Home' | translate}}</li>
+      <li class="breadcrumb-item" aria-current="page"><a routerLink ="/Events">{{'HamEvents' | translate}}</a></li>
+    </ol>
+  </nav>
   <h1 class="display-4 fw-bold text-body-emphasis">{{'HamEventTitle' | translate}}</h1>
   <div class="col mx-auto">
     <p class="lead mb-4">{{'HamEventDescription' | translate}}</p>

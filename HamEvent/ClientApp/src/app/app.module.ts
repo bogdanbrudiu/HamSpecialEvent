@@ -52,7 +52,8 @@ export function createTranslateLoader(http: HttpClient) {
     ReactiveFormsModule,
     RouterModule.forRoot([
       
-      { path: '', component: HomeComponent, pathMatch: 'full' },
+      { path: 'Home', component: HomeComponent, pathMatch: 'full' },
+      { path: '', component: EventsComponent, pathMatch: 'full' },
       { path: 'Events', component: EventsComponent, pathMatch: 'full' },
       { path: ':id/top', component: EventTopComponent, pathMatch: 'full' },
       { path: ':id/:secret/edit', component: AdminEventComponent, pathMatch: 'full' },

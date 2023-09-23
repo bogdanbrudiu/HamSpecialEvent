@@ -1,4 +1,13 @@
 <div class="px-4 text-center border-bottom">
+  <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item" aria-current="page"><a routerLink="/Home">{{'Home' | translate}}</a></li>
+      <li class="breadcrumb-item" aria-current="page"><a routerLink="/Events">{{'HamEvents' | translate}}</a></li>
+      <li class="breadcrumb-item active" aria-current="page" *ngIf="event">{{event.name}}</li>
+      <li class="breadcrumb-item" aria-current="page" *ngIf="event"><a href="#" (click)="qsos();$event.preventDefault()">{{'QSOs' | translate}}</a></li>
+      <li class="breadcrumb-item active" aria-current="page" *ngIf="event">{{'Event Top' | translate}}</li>
+    </ol>
+  </nav>
   <h1 class="display-4 fw-bold text-body-emphasis" *ngIf="event">{{event.name}}</h1>
   <div class="col mx-auto">
     <p *ngIf="event">{{event.description}}</p>
@@ -9,11 +18,6 @@
         </button>
 
         <div class="collapse navbar-collapse" id="tableMenu">
-          <ul class="navbar-nav me-auto">
-            <li class="nav-item">
-              <button class="btn btn-link" (click)="qsos()">{{'QSOs' | translate}}</button>
-            </li>
-          </ul>
           <form role="search" (ngSubmit)="submitForm()" [formGroup]="searchForm">
             <div class="input-group mb-3">
               <input type="search" class="form-control" placeholder="{{'Callsign 2' | translate}}" formControlName="search">
@@ -63,5 +67,5 @@
     </div>
   </div>
 
-  </div>
+</div>
 

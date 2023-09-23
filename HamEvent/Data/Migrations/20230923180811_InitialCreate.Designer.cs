@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HamEvent.Data.Migrations
 {
     [DbContext(typeof(HamEventContext))]
-    [Migration("20230914124257_InitialCreate")]
+    [Migration("20230923180811_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -54,19 +54,19 @@ namespace HamEvent.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("17f1e8ba-a39e-4d43-b627-89c4a6bb6de2"),
+                            Id = new Guid("cf8c1aa9-33c0-4cfb-8b5e-87d3365827d7"),
                             Description = "YP20KQT Event",
-                            Diploma = "<STYLE type=\"text/css\">\r\n    html, body {\r\n        margin: 0;\r\n        padding: 0;\r\n    }\r\n\r\n    h1 {\r\n        text-align: center;\r\n        font-size: xx-large;\r\n        margin-bottom: 20px;\r\n    }\r\n\r\n    h2 {\r\n        text-align: center;\r\n        font-size: x-large;\r\n        margin-top: 30px;\r\n        margin-bottom: 10px;\r\n    }\r\n\r\n    h3 {\r\n        text-align: center;\r\n        font-size: large;\r\n        margin-top: 20px;\r\n        margin-bottom: 10px;\r\n    }\r\n\r\n    p {\r\n        font-size: 18px;\r\n        line-height: 1.5;\r\n        text-align: center;\r\n        margin-bottom: 10px;\r\n    }\r\n\r\n    img {\r\n        display: block;\r\n        margin: 20px auto 0;\r\n        max-width: 150px;\r\n    }\r\n\r\n    .background {\r\n        background-image: url(https://hamevent.brudiu.ro/static/diploma-background.jpg);\r\n        width: 842px;\r\n        height: 595px;\r\n        margin: 0;\r\n        padding: 0;\r\n        background-position: center center;\r\n        background-size: 100%;\r\n        background-repeat: no-repeat;\r\n        position: relative;\r\n    }\r\n\r\n    .diploma {\r\n        position: absolute;\r\n        top: 50%;\r\n        left: 50%;\r\n        -ms-transform: translate(-50%, -50%);\r\n        transform: translate(-50%, -50%);\r\n        margin: 0 auto;\r\n        padding: 30px;\r\n    }\r\n</STYLE>\r\n<html>\r\n<body>\r\n    <div class=\"background\">\r\n        <div class=\"diploma\">\r\n            <h1>--EventName--</h1>\r\n            <p>--EventDescription--</p>\r\n            <p>We take the pleasure in awarding</p>\r\n            <h2>--callsign2--</h2>\r\n\r\n            <h3>Points:--Points--</h3>\r\n            <h3>QSO:--QSOs--</h3>\r\n            <h3>Bands:--Bands--</h3>\r\n            <h3>Modes:--Modes--</h3>\r\n\r\n            <img src=\"./static/radio-icon.png\" alt=\"Ham Special Event\">\r\n        </div>\r\n    </div>\r\n</body>\r\n</html>",
+                            Diploma = "<STYLE type=\"text/css\">\r\n    html, body {\r\n        margin: 0;\r\n        padding: 0;\r\n    }\r\n\r\n    h1 {\r\n        text-align: center;\r\n        font-size: xx-large;\r\n        margin-bottom: 20px;\r\n    }\r\n\r\n    h3 {\r\n        text-align: center;\r\n        font-size: large;\r\n        margin-top: 20px;\r\n        margin-bottom: 10px;\r\n    }\r\n    .background {\r\n        background-image: url(https://hamevent.brudiu.ro/static/YP20KQT.jpg);\r\n        width: 842px;\r\n        height: 595px;\r\n        margin: 0;\r\n        padding: 0;\r\n        background-position: center center;\r\n        background-size: 100%;\r\n        background-repeat: no-repeat;\r\n        position: relative;\r\n    }\r\n\r\n    .diploma {\r\n        position: absolute;\r\n        top: 50%;\r\n        left: 50%;\r\n        -ms-transform: translate(-50%, -50%);\r\n        transform: translate(-50%, -50%);\r\n        margin: 0 auto;\r\n        padding: 30px;\r\n    }\r\n.callsign{\r\n    position: absolute;\r\n        top: 375px;\r\n        left: 50%;\r\n    transform: translate(-50%, 0);\r\n}\r\n.Points{\r\n    position: absolute;\r\n        top:60px;\r\n        left: 126px;\r\n    transform: translate(-50%, 0);\r\n}\r\n.QSOs{\r\n    position: absolute;\r\n        top:60px;\r\n        left: 224px;\r\n    transform: translate(-50%, 0);\r\n}\r\n.Bands{\r\n    position: absolute;\r\n        top:60px;\r\n        left: 618px;\r\n    transform: translate(-50%, 0);\r\n}\r\n.Modes{\r\n    position: absolute;\r\n        top:60px;\r\n        left: 716px;\r\n    transform: translate(-50%, 0);\r\n}\r\n</STYLE>\r\n<html>\r\n<body>\r\n    <div class=\"background\">\r\n<div class=\"callsign\"><h1>--callsign2--</h2></div>\r\n<div class=\"Points\"><h3>--Points--</h3></div>\r\n<div class=\"QSOs\"><h3>--QSOs--</h3></div>\r\n<div class=\"Bands\"><h3>--Bands--</h3></div>\r\n<div class=\"Modes\"><h3>--Modes--</h3></div>\r\n       \r\n    </div>\r\n</body>\r\n</html>",
                             Name = "YP20KQT",
-                            SecretKey = new Guid("300d22d7-12dd-4c2a-bd3c-72092412867e")
+                            SecretKey = new Guid("900eb0fd-5e13-42f2-84a4-5aa2e9dd71db")
                         },
                         new
                         {
-                            Id = new Guid("d6ba0da8-7d84-419c-8f2f-d33835e66625"),
+                            Id = new Guid("fd4e191b-9e95-433c-a01f-067c25fbe373"),
                             Description = "YP100UPT Event",
-                            Diploma = "",
+                            Diploma = "<STYLE type=\"text/css\">\r\n    html, body {\r\n        margin: 0;\r\n        padding: 0;\r\n    }\r\n\r\n    h1 {\r\n        text-align: center;\r\n        font-size: xx-large;\r\n        margin-bottom: 20px;\r\n    }\r\n\r\n    .background {\r\n        background-image: url(https://hamevent.brudiu.ro/static/YP100UPT.jpg);\r\n        width: 842px;\r\n        height: 595px;\r\n        margin: 0;\r\n        padding: 0;\r\n        background-position: center center;\r\n        background-size: 100%;\r\n        background-repeat: no-repeat;\r\n        position: relative;\r\n    }\r\n\r\n    .diploma {\r\n        position: absolute;\r\n        top: 50%;\r\n        left: 50%;\r\n        -ms-transform: translate(-50%, -50%);\r\n        transform: translate(-50%, -50%);\r\n        margin: 0 auto;\r\n        padding: 30px;\r\n    }\r\n.callsign{\r\n    position: absolute;\r\n        top: 300px;\r\n        left: 68%;\r\n    transform: translate(-50%, 0);\r\n}\r\n\r\n</STYLE>\r\n<html>\r\n<body>\r\n    <div class=\"background\">\r\n<div class=\"callsign\"><h1>--callsign2--</h2></div>\r\n      \r\n    </div>\r\n</body>\r\n</html>",
                             Name = "YP100UPT",
-                            SecretKey = new Guid("360a0e32-a84e-4e6b-ba50-180ce51cc8b5")
+                            SecretKey = new Guid("25bd2ac3-9c2e-498d-9760-95d846936142")
                         });
                 });
 

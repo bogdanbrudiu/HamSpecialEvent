@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HamEvent, EventsService } from '../events.service';
 import { Participant, QSO, QSOsService } from '../qsos.service';
+import { PdfService } from '../pdf.service';
 
 @Component({
   selector: 'app-eventtop',
@@ -20,9 +21,9 @@ export class EventTopComponent {
   public event: HamEvent | undefined;
   public searchInput = '';
   public loaded = false;
+  public blob: Blob | undefined;
 
-
-  constructor(private formBuilder: FormBuilder, private router: Router, private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService) {
+  constructor(private formBuilder: FormBuilder, private router: Router, private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService, private pdfService: PdfService) {
 
     this.searchForm = this.formBuilder.group({
       search: "",
@@ -73,8 +74,24 @@ export class EventTopComponent {
     this.page = event;
     this.loadData();
   }
+  genPdf() {
 
+    return this.pdfService.getPdf(this.eventId, this.searchInput).subscribe((data: any) => {
 
+      this.blob = new Blob([data], { type: 'application/pdf' });
+
+      let downloadURL = window.URL.createObjectURL(data);
+      let link = document.createElement('a');
+      link.href = downloadURL;
+      link.download = this.event?.name + " " + this.searchInput + ".pdf";
+      link.click();
+
+    });
+
+  }
+  qualifiesForDiploma() {
+    return this.Top.length > 0 && this.searchInput.length > 0 && this.loaded;
+  }
 }
 
 

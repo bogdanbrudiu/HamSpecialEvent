@@ -1,7 +1,8 @@
 <div class="px-4 text-center border-bottom">
+  <p *ngIf="!event"><em>{{'Loading...' | translate}}</em></p>
   <h1 class="display-4 fw-bold text-body-emphasis" *ngIf="event">{{event.name}}</h1>
-  <div class="col mx-auto">
-    <p *ngIf="event">{{event.description}}</p>
+  <div class="col mx-auto" *ngIf="event">
+    <p>{{event.description}}</p>
     <nav class="navbar navbar-expand">
       <div class="container-fluid">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#tableMenu" aria-controls="tableMenu" aria-expanded="false" aria-label="Toggle navigation">

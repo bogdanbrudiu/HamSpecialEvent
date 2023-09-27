@@ -18,7 +18,7 @@ export class AdminEventComponent implements OnInit {
     this.routes.paramMap.subscribe(params => {
       this.eventId = params.get('id')!;
       this.eventSecret = params.get('secret')!;
-      this.eventsService.getEvent(this.eventId).subscribe(
+      this.eventsService.getEvent(this.eventId, this.eventSecret).subscribe(
         (response) => {
           this.event = response;
           console.log(response);

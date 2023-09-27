@@ -13,6 +13,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Text;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using Microsoft.Extensions.Logging;
 
 namespace HamEvent.Controllers
 {
@@ -69,6 +71,7 @@ namespace HamEvent.Controllers
             public int Band { get; set; }
             public int Mode { get; set; }
             public int Points { get; set; }
+            public int Rank { get; set; }
         }
         [HttpGet("Top/{hamevent}")]
         public PageResult<Participant> Top(Guid hamevent, int? page, int pagesize = 10, string callsign = "")
@@ -77,21 +80,34 @@ namespace HamEvent.Controllers
         _logger.LogInformation(MyLogEvents.GetQSOs, "Get Top for event {0} page {1} paginated by {2} per page, filtered by {3}", hamevent, page, pagesize, callsign);
             IQueryable<QSO> qsos;
             IQueryable<Participant> participants;
+            IEnumerable<Participant> top;
             try
             {
                 qsos = _dbcontext.QSOs.Where(qso => qso.EventId.Equals(hamevent));
-                if (!String.IsNullOrEmpty(callsign))
-                {
-                    qsos = qsos.Where(qso => string.Equals(callsign.ToLower(), qso.Callsign2.ToLower()));
-                }
+
                 participants = qsos.GroupBy(qso => new { qso.Callsign2 }).Select(grup => new Participant()
                 {
                     Callsign = grup.Key.Callsign2,
                     Count = grup.Count(),
-                    Band = grup.GroupBy(g => new { g.Band}).Count(),
+                    Band = grup.GroupBy(g => new { g.Band }).Count(),
                     Mode = grup.GroupBy(g => new { g.Mode }).Count(),
-                    Points = grup.Count()* grup.GroupBy(g => new { g.Band }).Count()* grup.GroupBy(g => new { g.Mode }).Count()
-                }).OrderByDescending(o=>o.Points);
+                    Points = grup.Count() * grup.GroupBy(g => new { g.Band }).Count() * grup.GroupBy(g => new { g.Mode }).Count()
+                }).OrderByDescending(o => o.Points);
+                top = participants.ToList();
+                top = top.Join(top.GroupBy(p => p.Points).Select((p, idx) => new { Points = p.Key, Rank = idx }), p => p.Points, t => t.Points, (p, t) => new Participant()
+                {
+                    Callsign = p.Callsign,
+                    Count = p.Count,
+                    Band = p.Band,
+                    Mode = p.Mode,
+                    Points = p.Points,
+                    Rank = t.Rank+1
+                });
+              
+                if (!String.IsNullOrEmpty(callsign))
+                {
+                    top = top.Where(qso => string.Equals(callsign.ToLower(), qso.Callsign.ToLower()));
+                }
             }
             catch (Exception ex)
             {
@@ -103,11 +119,11 @@ namespace HamEvent.Controllers
                     Data = new List<Participant>()
                 };
             }
-            var countDetails = participants.Count();
+            var countDetails = top.Count();
             return new PageResult<Participant>
             {
                 Count = countDetails,
-                Data = participants.Skip((page - 1 ?? 0) * pagesize).Take(pagesize).ToList()
+                Data = top.Skip((page - 1 ?? 0) * pagesize).Take(pagesize).ToList()
             };
         }
 
@@ -132,13 +148,22 @@ namespace HamEvent.Controllers
 
 
         [HttpGet("hamevent/{hamevent}")]
-        public ActionResult<Event> Get(Guid hamevent)
+        public ActionResult<Event> Get(Guid hamevent, Guid? secret)
         {
             _logger.LogInformation(MyLogEvents.GetEvent, "Get Event {0}", hamevent);
 
             try
             {
-                var myevent = _dbcontext.Events.Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Diploma = e.Diploma }).Where(e => e.Id == hamevent).FirstOrDefault();
+                Event myevent;
+                if (secret.HasValue)
+                {
+                    myevent = _dbcontext.Events.Where(e=> e.Id.Equals(hamevent) && e.SecretKey.Equals(secret)).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Diploma = e.Diploma }).FirstOrDefault();
+                }
+                else
+                {
+                    myevent = _dbcontext.Events.Where(e => e.Id == hamevent).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Diploma = e.Diploma }).FirstOrDefault();
+                }
+
                 if (myevent == null) return NotFound();
                 else return Ok(myevent);
             }
@@ -238,19 +263,42 @@ namespace HamEvent.Controllers
                 diplomahtml = diplomahtml.Replace("--EventName--", myevent.Name);
                 diplomahtml = diplomahtml.Replace("--EventDescription--", myevent.Description);
 
-              
 
-                var qsos=_dbcontext.QSOs.Where(qso => qso.EventId.Equals(hamevent) && string.Equals(callsign.ToLower(), qso.Callsign2.ToLower()));
 
-                var qsosCount = qsos.Count();
-                var bandsCount = qsos.GroupBy(qso => qso.Band).Count();
-                var modesCount = qsos.GroupBy(qso => qso.Mode).Count();
-                diplomahtml = diplomahtml.Replace("--Points--", (qsosCount* bandsCount* modesCount).ToString());
-                diplomahtml = diplomahtml.Replace("--QSOs--", qsosCount.ToString());
-                diplomahtml = diplomahtml.Replace("--Bands--", bandsCount.ToString());
-                diplomahtml = diplomahtml.Replace("--Modes--", modesCount.ToString());
+                var qsos = _dbcontext.QSOs.Where(qso => qso.EventId.Equals(hamevent));
 
-                SelectPdf.HtmlToPdf converter = new SelectPdf.HtmlToPdf();
+                var participants = qsos.GroupBy(qso => new { qso.Callsign2 }).Select(grup => new Participant()
+                {
+                    Callsign = grup.Key.Callsign2,
+                    Count = grup.Count(),
+                    Band = grup.GroupBy(g => new { g.Band }).Count(),
+                    Mode = grup.GroupBy(g => new { g.Mode }).Count(),
+                    Points = grup.Count() * grup.GroupBy(g => new { g.Band }).Count() * grup.GroupBy(g => new { g.Mode }).Count()
+                }).OrderByDescending(o => o.Points);
+                IEnumerable<Participant> top = participants.ToList();
+                top = top.Join(top.GroupBy(p => p.Points).Select((p, idx) => new { Points = p.Key, Rank = idx }), p => p.Points, t => t.Points, (p, t) => new Participant()
+                {
+                    Callsign = p.Callsign,
+                    Count = p.Count,
+                    Band = p.Band,
+                    Mode = p.Mode,
+                    Points = p.Points,
+                    Rank = t.Rank + 1
+                });
+
+                var participant = top.Where(qso => string.Equals(callsign.ToLower(), qso.Callsign.ToLower())).FirstOrDefault();
+                if (participant!=null)
+                {
+
+                    diplomahtml = diplomahtml.Replace("--Points--", participant.Points.ToString());
+                    diplomahtml = diplomahtml.Replace("--QSOs--", participant.Count.ToString());
+                    diplomahtml = diplomahtml.Replace("--Bands--", participant.Band.ToString());
+                    diplomahtml = diplomahtml.Replace("--Modes--", participant.Mode.ToString());
+
+                    diplomahtml = diplomahtml.Replace("--Rank--", participant.Rank.ToString());
+                    diplomahtml = diplomahtml.Replace("--Timestamp--", DateTime.UtcNow.ToString());
+
+                    SelectPdf.HtmlToPdf converter = new SelectPdf.HtmlToPdf();
                     // set converter options
                     converter.Options.PdfPageSize = PdfPageSize.A4;
                     converter.Options.PdfPageOrientation = PdfPageOrientation.Landscape;
@@ -272,7 +320,8 @@ namespace HamEvent.Controllers
                     converter.Options.ViewerPreferences.CenterWindow = true;
                     SelectPdf.PdfDocument doc = converter.ConvertHtmlString(diplomahtml, $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}");
 
-                    while (doc.Pages.Count > 1) {
+                    while (doc.Pages.Count > 1)
+                    {
                         doc.RemovePageAt(1);
                     }
 
@@ -280,15 +329,12 @@ namespace HamEvent.Controllers
                     doc.Close();
 
                     FileResult fileResult = new FileContentResult(pdf, "application/pdf");
-                    fileResult.FileDownloadName = myevent.Name+" " + callsign + ".pdf";
+                    fileResult.FileDownloadName = myevent.Name + " " + callsign + ".pdf";
                     return fileResult;
+                }
 
-                }
-                else
-                {
-                    return NoContent();
-                }
-           
+            }
+            return NoContent();
         }
 
         [HttpPost("{hamevent}/{eventsecret}/upload")]

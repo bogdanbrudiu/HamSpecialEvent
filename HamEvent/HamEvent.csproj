@@ -68,7 +68,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\Migrations\" />
     <Folder Include="wwwroot\log\" />
   </ItemGroup>
 

@@ -40,6 +40,7 @@
           <th>{{'Mode' | translate}}</th>
           <th>{{'Band' | translate}}</th>
           <th>{{'QSOs' | translate}}</th>
+          <th>{{'Rank' | translate}}</th>
         </tr>
       </thead>
       <tbody>
@@ -50,12 +51,13 @@
                 currentPage: page,
                 totalItems: count
               };
-        let i = index">
+        let i = index" [ngClass]="{'trow':qualifiesForDiploma()}" (click)="qualifiesForDiploma()?genPdf():''">
           <td>{{ Participant.callsign }}</td>
           <td>{{ Participant.points }}</td>
           <td>{{ Participant.mode }}</td>
           <td>{{ Participant.band }}</td>
           <td>{{ Participant.count }}</td>
+          <td>{{ Participant.rank }}</td>
         </tr>
       </tbody>
     </table>

@@ -13,8 +13,8 @@ export class EventsService {
   getAllEvents(page: number, size: number): Observable<any> {
     return this.http.get(this.baseUrl + 'hamevent/hamevents?page='+page+'&size='+size);
   }
-  getEvent(eventId:string): Observable<any> {
-    return this.http.get(this.baseUrl + 'hamevent/hamevent/' + eventId);
+  getEvent(eventId:string, secret:string=""): Observable<any> {
+    return this.http.get(this.baseUrl + 'hamevent/hamevent/' + eventId + (secret ? '?secret=' + encodeURIComponent(secret):''));
   }
   updateEvent(event:any): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'hamevent/hamevent/', event);

@@ -38,6 +38,7 @@ export interface Participant {
   mode: string;
   band: string;
   count: string;
+  rank: string;
 }
 export interface PageResult<T> {
   count: number;

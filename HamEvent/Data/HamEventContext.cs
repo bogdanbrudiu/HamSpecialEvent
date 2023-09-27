@@ -39,7 +39,12 @@ namespace HamEvent.Data
         font-size: xx-large;
         margin-bottom: 20px;
     }
-
+  h2 {
+        text-align: center;
+        font-size: x-large;
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
     h3 {
         text-align: center;
         font-size: large;
@@ -69,32 +74,44 @@ namespace HamEvent.Data
     }
 .callsign{
     position: absolute;
-        top: 375px;
+        top: 240px;
+        left: 35%;
+    transform: translate(-50%, 0);
+}
+.Timestamp{
+    position: absolute;
+        top: 485px;
         left: 50%;
+    transform: translate(-50%, 0);
+}
+.Rank{
+    position: absolute;
+        top: 240px;
+        left: 610px;
     transform: translate(-50%, 0);
 }
 .Points{
     position: absolute;
-        top:60px;
-        left: 126px;
+        top: 357px;
+        left: 232px;
     transform: translate(-50%, 0);
 }
 .QSOs{
     position: absolute;
-        top:60px;
-        left: 224px;
+        top: 357px;
+        left: 358px;
     transform: translate(-50%, 0);
 }
 .Bands{
     position: absolute;
-        top:60px;
-        left: 618px;
+        top: 357px;
+        left: 484px;
     transform: translate(-50%, 0);
 }
 .Modes{
     position: absolute;
-        top:60px;
-        left: 716px;
+        top: 357px;
+        left: 610px;
     transform: translate(-50%, 0);
 }
 </STYLE>
@@ -106,7 +123,8 @@ namespace HamEvent.Data
 <div class=""QSOs""><h3>--QSOs--</h3></div>
 <div class=""Bands""><h3>--Bands--</h3></div>
 <div class=""Modes""><h3>--Modes--</h3></div>
-       
+<div class=""Rank""><h2>--Rank--</h2></div>
+<div class=""Timestamp""><h3>--Timestamp--</h3></div>       
     </div>
 </body>
 </html>"
@@ -154,7 +172,7 @@ namespace HamEvent.Data
     }
 .callsign{
     position: absolute;
-        top: 300px;
+        top: 280px;
         left: 68%;
     transform: translate(-50%, 0);
 }

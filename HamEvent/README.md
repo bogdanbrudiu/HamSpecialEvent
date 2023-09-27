@@ -35,7 +35,7 @@ Awards will be issued for having worked at least once in the Award time all/at l
 
 # Why?
 Help HAMs community. HAM is a hobby that tries to get involved in a lot of public service activities. Special event station events are to commemorate a particular event or anniversary, such as a historic battle, a famous person's birthday, or a significant scientific discovery.
-YO2KQT (Ham radio club from Timisoara) has a special event in 2023 promoting TM2023 and such an app would help them generate the diplomas.
+YO2KQT (Ham radio club from Timisoara) has a special event in 2023 celebrating 20 years of activity, special event YP20KQT and such an app would help them generate the diplomas.
 
 # Extra
 On request print QSLs/diplomas and ship them. 

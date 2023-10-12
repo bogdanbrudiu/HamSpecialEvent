@@ -4,17 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using HamEvent.Data;
 using HamEvent.Data.Model;
 using System.Reflection;
-using System.IO;
 using SelectPdf;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Drawing.Printing;
-using System.Runtime.CompilerServices;
-using Microsoft.EntityFrameworkCore;
-using System.Text;
 using System.Globalization;
-using System.Text.RegularExpressions;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using Microsoft.Extensions.Logging;
+
+
 
 namespace HamEvent.Controllers
 {
@@ -144,6 +137,29 @@ namespace HamEvent.Controllers
             _dbcontext.SaveChanges();
             return Ok();
         }
+        [HttpPost("QSOs/{hamevent}/{secret}")]
+        public ActionResult Post(Guid hamevent, Guid secret, [FromQuery] string callsign1, [FromQuery] string callsign2, [FromQuery] string mode, [FromQuery] string band, [FromQuery] string timestamp, [FromBody] QSO updatedQSO)
+        {
+            _logger.LogInformation(MyLogEvents.UpdateQSO, "Update QSO callsign1 {0}, callsign2 {1}, mode {2}, band {3}, timestamp {4} from event {5} to callsign1 {6}, callsign2 {7}, mode {8}, band {9}, timestamp {10}", callsign1, callsign2, mode, band, timestamp, hamevent, updatedQSO.Callsign1, updatedQSO.Callsign2, updatedQSO.Mode, updatedQSO.Band, updatedQSO.Timestamp);
+            var myqso = _dbcontext.QSOs.Where(qso => qso.EventId == hamevent &&
+                                                       qso.Callsign1 == callsign1 &&
+                                                       qso.Callsign2 == callsign2 &&
+                                                       qso.Mode == mode &&
+                                                       qso.Band == band &&
+                                                       qso.Timestamp == DateTime.Parse(timestamp, CultureInfo.InvariantCulture) &&
+                                                       qso.Event.SecretKey == secret).FirstOrDefault();
+            if (myqso == null) return NotFound();
+            updatedQSO.RST1=myqso.RST1;
+            updatedQSO.RST2 = myqso.RST2;
+            updatedQSO.EventId = myqso.EventId;
+
+            _dbcontext.QSOs.Remove(myqso);
+            _dbcontext.QSOs.Add(updatedQSO);
+
+            _dbcontext.SaveChanges();
+            return Ok();
+        }
+
 
 
 
@@ -225,6 +241,7 @@ namespace HamEvent.Controllers
                     Data = new List<Event>()
                 };
             }
+            events = events.OrderByDescending(e=>e.Name);
             var countDetails = events.Count();
             return new PageResult<Event>
             {

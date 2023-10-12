@@ -19,6 +19,14 @@ export class QSOsService {
       + "band=" + encodeURIComponent(qso.band) + "&"
       + "timestamp=" + encodeURIComponent(qso.timestamp));
   }
+  update(qso: QSO, updatedQSO: QSO, eventId: string, secret: string): Observable<any> {
+    return this.http.post(this.baseUrl + 'hamevent/QSOs/' + encodeURIComponent(eventId) + "/" + encodeURIComponent(secret) + "?"
+      + "callsign1=" + encodeURIComponent(qso.callsign1) + "&"
+      + "callsign2=" + encodeURIComponent(qso.callsign2) + "&"
+      + "mode=" + encodeURIComponent(qso.mode) + "&"
+      + "band=" + encodeURIComponent(qso.band) + "&"
+      + "timestamp=" + encodeURIComponent(qso.timestamp),  updatedQSO  );
+  }
   getTop(eventId: string, callsign: string, page: number, size: number): Observable<any> {
     return this.http.get(this.baseUrl + 'hamevent/Top/' + encodeURIComponent(eventId) + "?page=" + page + "&size=" + size + "&callsign=" + encodeURIComponent(callsign));
   }

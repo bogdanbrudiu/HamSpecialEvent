@@ -16,13 +16,14 @@ export class AdminQSOsComponent {
 
 
   searchForm!: FormGroup;
-  public QSOs: QSO[] = [];
+  public QSOs: any[] = [];
   page: number = 1;
   count: number = 0;
   tableSize: number = 10;
   public eventId: string = '';
   public eventSecret: string = '';
   public event: HamEvent | undefined;
+  public originalQSO: QSO | undefined;
   public searchInput = '';
   public loaded = false;
   public blob: Blob | undefined;
@@ -57,6 +58,22 @@ export class AdminQSOsComponent {
     this.page = 0;
     this.loadData();
  
+  }
+  editQSO(qso: any) {
+    this.originalQSO = Object.assign({}, qso);
+    qso.editable = true;
+  }
+  saveQSO(qso: any) {
+    if (this.originalQSO) {
+      this.qsosService.update(this.originalQSO, qso, this.eventId, this.eventSecret).subscribe(
+        (response) => {
+          this.loadData();
+          console.log(response);
+        },
+        (error) => {
+          console.log(error);
+        });
+      }
   }
   edit() {
     this.router.navigate([this.eventId, this.eventSecret,'edit']);

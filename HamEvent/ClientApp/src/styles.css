@@ -1,4 +1,7 @@
-
+.bi:hover {
+  color: red;
+  cursor: pointer;
+}
 
 
 .trow {

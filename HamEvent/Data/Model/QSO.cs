@@ -10,6 +10,6 @@ namespace HamEvent.Data.Model
         public required string Mode { get; set; }
         public required DateTime Timestamp { get; set; }
         public Guid EventId { get; set; }
-        public required Event Event { get; set; }
+        public Event? Event { get; set; }
     }
 }

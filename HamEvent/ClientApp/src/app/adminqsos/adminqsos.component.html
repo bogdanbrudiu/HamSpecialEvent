@@ -20,6 +20,9 @@
             <li class="nav-item">
               <button class="btn btn-link" (click)="top()">{{'Event Top' | translate}}</button>
             </li>
+            <li class="nav-item">
+              <button class="btn btn-link" (click)="deleteall()">{{'Delete all QSOs' | translate}}</button>
+            </li>
           </ul>
           <form role="search" (ngSubmit)="submitForm()" [formGroup]="searchForm">
             <div class="input-group mb-3">

@@ -9,6 +9,7 @@
         public const int UploadLog = 1004;
         public const int UpdateEvent = 1005;
         public const int DeleteQSO = 1006;
-        public const int UpdateQSO = 1007;
+        public const int DeleteAllQSOs = 1007;
+        public const int UpdateQSO = 1008;
     }
 }

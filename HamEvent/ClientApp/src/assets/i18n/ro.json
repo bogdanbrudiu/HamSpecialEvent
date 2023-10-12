@@ -27,5 +27,7 @@
   "Action": "Acțiune",
   "Event Top": "Clasament",
   "QSOs": "QSO-uri",
-  "Home": "Acasă"
+  "Home": "Acasă",
+  "Delete all QSOs": "Șterge toate QSO-urile",
+  "Are you sure?": "Ești sigur?"
 }

@@ -27,5 +27,7 @@
   "Action": "Action",
   "Event Top": "Event Top",
   "QSOs": "QSOs",
-  "Home": "Home"
+  "Home": "Home",
+  "Delete all QSOs": "Delete all QSOs",
+  "Are you sure?": "Are you sure?"
 }

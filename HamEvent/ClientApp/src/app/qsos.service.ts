@@ -19,6 +19,9 @@ export class QSOsService {
       + "band=" + encodeURIComponent(qso.band) + "&"
       + "timestamp=" + encodeURIComponent(qso.timestamp));
   }
+  deleteAll(eventId: string, secret: string): Observable<any> {
+    return this.http.delete(this.baseUrl + 'hamevent/QSOs/' + encodeURIComponent(eventId) + "/" + encodeURIComponent(secret)+"/all");
+  }
   update(qso: QSO, updatedQSO: QSO, eventId: string, secret: string): Observable<any> {
     return this.http.post(this.baseUrl + 'hamevent/QSOs/' + encodeURIComponent(eventId) + "/" + encodeURIComponent(secret) + "?"
       + "callsign1=" + encodeURIComponent(qso.callsign1) + "&"

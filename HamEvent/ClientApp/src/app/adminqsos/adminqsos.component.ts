@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { EventsService, HamEvent } from '../events.service';
 import { QSO, QSOsService } from '../qsos.service';
 import { PdfService } from '../pdf.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-adminqsos',
@@ -28,7 +29,7 @@ export class AdminQSOsComponent {
   public loaded = false;
   public blob: Blob | undefined;
 
-  constructor(private formBuilder: FormBuilder, private router: Router, private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService, private pdfService: PdfService) {
+  constructor(private formBuilder: FormBuilder, private router: Router, private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService, private pdfService: PdfService, private translate: TranslateService) {
 
     this.searchForm = this.formBuilder.group({
       search: "",
@@ -80,6 +81,19 @@ export class AdminQSOsComponent {
   }
   top() {
     this.router.navigate([this.eventId, 'top']);
+  }
+  deleteall() {
+    if (confirm(this.translate.instant('Are you sure?'))) {
+      this.qsosService.deleteAll(this.eventId, this.eventSecret).subscribe(
+        (response) => {
+          this.loadData();
+          console.log(response);
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+    }
   }
   delete(qso: QSO) {
     this.qsosService.delete(qso, this.eventId, this.eventSecret).subscribe(

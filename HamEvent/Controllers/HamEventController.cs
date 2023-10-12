@@ -6,8 +6,7 @@ using HamEvent.Data.Model;
 using System.Reflection;
 using SelectPdf;
 using System.Globalization;
-
-
+using Microsoft.EntityFrameworkCore;
 
 namespace HamEvent.Controllers
 {
@@ -135,6 +134,14 @@ namespace HamEvent.Controllers
             if (myqso == null) return NotFound();
             _dbcontext.QSOs.Remove(myqso);
             _dbcontext.SaveChanges();
+            return Ok();
+        }
+
+        [HttpDelete("QSOs/{hamevent}/{secret}/all")]
+        public ActionResult DeleteAll(Guid hamevent, Guid secret)
+        {
+            _logger.LogInformation(MyLogEvents.DeleteAllQSOs, "Delete All QSOs from event {0}",  hamevent);
+            _dbcontext.QSOs.ExecuteDeleteAsync();
             return Ok();
         }
         [HttpPost("QSOs/{hamevent}/{secret}")]

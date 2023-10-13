@@ -4,8 +4,12 @@ Project Description
 ### ToDo
 
 - [ ] As event admin I can export all qsos  #feat
+- [ ] As a site visitor in the event list I can view statistics (days, First QSO, Last QSO, QSOs count, Uniques)
+- [ ] As a site visitor I can view statistics per band/mode/day #feat
 - [ ] As a site visitor I can request new event creation  #feat
 - [ ] As admin I can aprove new event creation  #feat
+- [ ] As admin I receive an email with access informations for my events  #feat
+
 
 ### In Progress
 

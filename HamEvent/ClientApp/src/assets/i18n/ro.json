@@ -29,5 +29,10 @@
   "QSOs": "QSO-uri",
   "Home": "Acasă",
   "Delete all QSOs": "Șterge toate QSO-urile",
-  "Are you sure?": "Ești sigur?"
+  "Are you sure?": "Ești sigur?",
+  "Days": "Zile",
+  "First QSO": "Primul QSO",
+  "Last QSO": "Ultimul QSO",
+  "QSOs count": "Numărul de QSO-uri",
+  "Uniques": "Unice"
 }

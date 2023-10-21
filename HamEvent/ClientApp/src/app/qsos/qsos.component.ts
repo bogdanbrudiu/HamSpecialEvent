@@ -44,10 +44,12 @@ export class QSOsComponent {
           console.log(error);
         }
       );
-      this.loadData();
+      //this.loadData();
     });
   }
-
+  searchIsValid() {
+    return !(this.searchForm.get('search')?.value == "" || this.searchForm.get('search')?.value == null);
+  }
   submitForm() {
     this.searchInput = encodeURIComponent(this.searchForm.get('search')?.value);
     this.loaded = false;

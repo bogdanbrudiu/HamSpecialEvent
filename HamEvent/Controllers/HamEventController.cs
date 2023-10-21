@@ -7,6 +7,7 @@ using System.Reflection;
 using SelectPdf;
 using System.Globalization;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.Intrinsics.X86;
 
 namespace HamEvent.Controllers
 {
@@ -232,11 +233,7 @@ namespace HamEvent.Controllers
             try
             {
 
-                events= _dbcontext.Events.Where(e=> 
-                        (!e.StartDate.HasValue || e.StartDate < DateTime.Now) 
-                        &&
-                        (!e.EndDate.HasValue || e.EndDate> DateTime.Now)
-                    ).Select(e => new Event() {  Id=e.Id,  Name=e.Name, Description=e.Description, Diploma=e.Diploma});
+                events = _dbcontext.Events.Include(e => e.QSOs);
             }
             catch(Exception ex)
             {
@@ -249,6 +246,7 @@ namespace HamEvent.Controllers
                 };
             }
             events = events.OrderByDescending(e=>e.Name);
+            events.ForEachAsync(e => e.SecretKey = Guid.Empty);
             var countDetails = events.Count();
             return new PageResult<Event>
             {

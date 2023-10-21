@@ -29,5 +29,11 @@
   "QSOs": "QSOs",
   "Home": "Home",
   "Delete all QSOs": "Delete all QSOs",
-  "Are you sure?": "Are you sure?"
+  "Are you sure?": "Are you sure?",
+  "Days": "Days",
+  "First QSO": "First QSO",
+  "Last QSO": "Last QSO",
+  "QSOs count": "QSOs count",
+  "Uniques": "Uniques"
+
 }

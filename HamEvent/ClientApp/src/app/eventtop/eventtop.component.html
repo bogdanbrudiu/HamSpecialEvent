@@ -49,7 +49,8 @@
             : {
                 itemsPerPage: tableSize,
                 currentPage: page,
-                totalItems: count
+                totalItems: count,
+            id :'top'
               };
         let i = index" [ngClass]="{'trow':qualifiesForDiploma()}" (click)="qualifiesForDiploma()?genPdf():''">
           <td>{{ Participant.callsign }}</td>
@@ -62,7 +63,7 @@
       </tbody>
     </table>
     <div class="d-flex justify-content-center">
-      <pagination-controls previousLabel="{{'Prev' | translate}}"
+      <pagination-controls id="top" previousLabel="{{'Prev' | translate}}"
                            nextLabel="{{'Next' | translate}}"
                            (pageChange)="onTableDataChange($event)">
       </pagination-controls>

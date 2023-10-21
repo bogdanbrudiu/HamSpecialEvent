@@ -25,4 +25,9 @@ export interface HamEvent {
   name: string;
   description: string;
   diploma: string;
+  days: number;
+  first: string;
+  last: string;
+  count: number;
+  unique: number;
 }

@@ -17,12 +17,12 @@
           <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse" id="tableMenu">
+        <div class="collapse navbar-collapse align-items-center justify-content-center" id="tableMenu">
           <form role="search" (ngSubmit)="submitForm()" [formGroup]="searchForm">
             <div class="input-group mb-3">
               <input type="search" class="form-control" placeholder="{{'Callsign 2' | translate}}" formControlName="search">
               <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button" (click)="submitForm()">{{'Search' | translate}}</button>
+                <button class="btn btn-outline-secondary" type="button" (click)="submitForm()" [attr.disabled]="searchIsValid()?null:true" >{{'Search' | translate}}</button>
               </div>
             </div>
           </form>
@@ -66,7 +66,8 @@
             : {
                 itemsPerPage: tableSize,
                 currentPage: page,
-                totalItems: count
+                totalItems: count,
+                id :'qsos'
               };
         let i = index">
           <td>{{ QSO.callsign1 }}</td>
@@ -78,7 +79,7 @@
       </tbody>
     </table>
     <div class="d-flex justify-content-center">
-      <pagination-controls previousLabel="{{'Prev' | translate}}"
+      <pagination-controls id="qsos" previousLabel="{{'Prev' | translate}}"
                            nextLabel="{{'Next' | translate}}"
                            (pageChange)="onTableDataChange($event)">
       </pagination-controls>

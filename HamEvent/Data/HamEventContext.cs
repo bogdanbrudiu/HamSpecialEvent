@@ -1,5 +1,6 @@
 ﻿using HamEvent.Data.Model;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Reflection.Metadata;
 
@@ -28,6 +29,9 @@ namespace HamEvent.Data
                         SecretKey = Guid.NewGuid(),
                         Name = "YP20KQT",
                         Description = "YP20KQT Event",
+                        HasTop = true,
+                        StartDate = new DateTime(2023,12, 1, 0, 0, 0, DateTimeKind.Utc),
+                        EndDate = new DateTime(2023, 12, 31, 23, 59, 59, DateTimeKind.Utc),
                         Diploma = @"<STYLE type=""text/css"">
     html, body {
         margin: 0;
@@ -136,7 +140,10 @@ namespace HamEvent.Data
                        Id = Guid.NewGuid(),
                        SecretKey = Guid.NewGuid(),
                        Name = "YP100UPT",
-                       Description = "YP100UPT Event",
+                       Description = "YP100UPT is a special event on the Open Campus Night, part of the European Researchers Night project. This event is supported by Politehnica University Timisoara, Faculty of Electronics Telecommunications and Information Technologies, Measurements and Optoelectronics Department in partenership with QSO Banat Timisoara (YO2KQT) radio ham club.",
+                       HasTop = false,
+                       StartDate = new DateTime(2023, 9, 29, 0, 0, 0, DateTimeKind.Utc),
+                       EndDate = new DateTime(2023, 9, 29, 23, 59, 59, DateTimeKind.Utc),
                        Diploma = @"<STYLE type=""text/css"">
     html, body {
         margin: 0;
@@ -187,7 +194,7 @@ namespace HamEvent.Data
 </body>
 </html>"
                    }
-               ); 
+               ); ; 
             modelBuilder.Entity<QSO>().HasKey(q => new { q.Callsign1, q.Callsign2, q.Band, q.Mode, q.Timestamp, q.EventId });
         }
 

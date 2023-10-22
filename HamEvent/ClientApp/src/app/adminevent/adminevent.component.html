@@ -13,6 +13,10 @@
       <label for="diploma" class="form-label">{{'Diploma' | translate}}</label>
       <textarea rows="10" style="height:100%;" class="form-control" id="diploma" [(ngModel)]="event.diploma" name="diploma"></textarea>
     </div>
+    <div class="mb-3">
+      <label for="hastop" class="form-label">{{'HasTop' | translate}}</label>
+      <input type="checkbox" class="form-check-input" id="hastop" [(ngModel)]="event.hasTop" name="hastop">
+    </div>
     <button type="submit" class="btn btn-primary" (click)="onSubmit()">{{'Update' | translate}}</button>
     <div [innerHtml]="event.diploma | sanitizedHtml" width="842" height="595"></div>
 

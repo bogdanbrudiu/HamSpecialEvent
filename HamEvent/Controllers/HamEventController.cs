@@ -181,11 +181,11 @@ namespace HamEvent.Controllers
                 Event myevent;
                 if (secret.HasValue)
                 {
-                    myevent = _dbcontext.Events.Where(e=> e.Id.Equals(hamevent) && e.SecretKey.Equals(secret)).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Diploma = e.Diploma }).FirstOrDefault();
+                    myevent = _dbcontext.Events.Where(e=> e.Id.Equals(hamevent) && e.SecretKey.Equals(secret)).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Diploma = e.Diploma, HasTop=e.HasTop }).FirstOrDefault();
                 }
                 else
                 {
-                    myevent = _dbcontext.Events.Where(e => e.Id == hamevent).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Diploma = e.Diploma }).FirstOrDefault();
+                    myevent = _dbcontext.Events.Where(e => e.Id == hamevent).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Diploma = e.Diploma, HasTop = e.HasTop }).FirstOrDefault();
                 }
 
                 if (myevent == null) return NotFound();
@@ -212,6 +212,7 @@ namespace HamEvent.Controllers
                     myevent.Diploma= hamevent.Diploma;
                     myevent.Description = hamevent.Description;
                     myevent.Name=hamevent.Name;
+                    myevent.HasTop = hamevent.HasTop;
                     _dbcontext.SaveChanges();
                     return Ok(myevent);
                 }

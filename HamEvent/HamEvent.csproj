@@ -33,14 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Database\QSOs.db" />
     <None Remove="resources\diploma.html" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Database\QSOs.db">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -64,6 +57,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Database\" />
     <Folder Include="SampleLogs\" />
     <Folder Include="wwwroot\log\" />
   </ItemGroup>

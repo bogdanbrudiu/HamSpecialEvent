@@ -3,6 +3,7 @@ using System;
 using HamEvent.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HamEvent.Data.Migrations
 {
     [DbContext(typeof(HamEventContext))]
-    partial class HamEventContextModelSnapshot : ModelSnapshot
+    [Migration("20231022071222_HasTop")]
+    partial class HasTop
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.5");
@@ -54,24 +57,24 @@ namespace HamEvent.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("E7AE6452-1D55-4989-9879-22E4F02E78FA"),
+                            Id = new Guid("83eeb505-05cb-4b1f-be77-0973e001c634"),
                             Description = "YP20KQT Event",
                             Diploma = "<STYLE type=\"text/css\">\r\n    html, body {\r\n        margin: 0;\r\n        padding: 0;\r\n    }\r\n\r\n    h1 {\r\n        text-align: center;\r\n        font-size: xx-large;\r\n        margin-bottom: 20px;\r\n    }\r\n  h2 {\r\n        text-align: center;\r\n        font-size: x-large;\r\n        margin-top: 20px;\r\n        margin-bottom: 10px;\r\n    }\r\n    h3 {\r\n        text-align: center;\r\n        font-size: large;\r\n        margin-top: 20px;\r\n        margin-bottom: 10px;\r\n    }\r\n    .background {\r\n        background-image: url(https://hamevent.brudiu.ro/static/YP20KQT.jpg);\r\n        width: 842px;\r\n        height: 595px;\r\n        margin: 0;\r\n        padding: 0;\r\n        background-position: center center;\r\n        background-size: 100%;\r\n        background-repeat: no-repeat;\r\n        position: relative;\r\n    }\r\n\r\n    .diploma {\r\n        position: absolute;\r\n        top: 50%;\r\n        left: 50%;\r\n        -ms-transform: translate(-50%, -50%);\r\n        transform: translate(-50%, -50%);\r\n        margin: 0 auto;\r\n        padding: 30px;\r\n    }\r\n.callsign{\r\n    position: absolute;\r\n        top: 240px;\r\n        left: 35%;\r\n    transform: translate(-50%, 0);\r\n}\r\n.Timestamp{\r\n    position: absolute;\r\n        top: 485px;\r\n        left: 50%;\r\n    transform: translate(-50%, 0);\r\n}\r\n.Rank{\r\n    position: absolute;\r\n        top: 240px;\r\n        left: 610px;\r\n    transform: translate(-50%, 0);\r\n}\r\n.Points{\r\n    position: absolute;\r\n        top: 357px;\r\n        left: 232px;\r\n    transform: translate(-50%, 0);\r\n}\r\n.QSOs{\r\n    position: absolute;\r\n        top: 357px;\r\n        left: 358px;\r\n    transform: translate(-50%, 0);\r\n}\r\n.Bands{\r\n    position: absolute;\r\n        top: 357px;\r\n        left: 484px;\r\n    transform: translate(-50%, 0);\r\n}\r\n.Modes{\r\n    position: absolute;\r\n        top: 357px;\r\n        left: 610px;\r\n    transform: translate(-50%, 0);\r\n}\r\n</STYLE>\r\n<html>\r\n<body>\r\n    <div class=\"background\">\r\n<div class=\"callsign\"><h1>--callsign2--</h2></div>\r\n<div class=\"Points\"><h3>--Points--</h3></div>\r\n<div class=\"QSOs\"><h3>--QSOs--</h3></div>\r\n<div class=\"Bands\"><h3>--Bands--</h3></div>\r\n<div class=\"Modes\"><h3>--Modes--</h3></div>\r\n<div class=\"Rank\"><h2>--Rank--</h2></div>\r\n<div class=\"Timestamp\"><h3>--Timestamp--</h3></div>       \r\n    </div>\r\n</body>\r\n</html>",
                             EndDate = new DateTime(2023, 12, 31, 23, 59, 59, 0, DateTimeKind.Utc),
                             HasTop = true,
                             Name = "YP20KQT",
-                            SecretKey = new Guid("651EB6F4-137B-4885-8D32-6A6E2D6A5D8F"),
+                            SecretKey = new Guid("dfb313dc-b5df-4597-8751-95831c93ed53"),
                             StartDate = new DateTime(2023, 12, 1, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
-                            Id = new Guid("3DADC51D-D08B-4D19-B556-237991A785FF"),
+                            Id = new Guid("E7AE6452-1D55-4989-9879-22E4F02E78FA"),
                             Description = "YP100UPT is a special event on the Open Campus Night, part of the European Researchers Night project. This event is supported by Politehnica University Timisoara, Faculty of Electronics Telecommunications and Information Technologies, Measurements and Optoelectronics Department in partenership with QSO Banat Timisoara (YO2KQT) radio ham club.",
                             Diploma = "<STYLE type=\"text/css\">\r\n    html, body {\r\n        margin: 0;\r\n        padding: 0;\r\n    }\r\n\r\n    h1 {\r\n        text-align: center;\r\n        font-size: xx-large;\r\n        margin-bottom: 20px;\r\n    }\r\n\r\n    .background {\r\n        background-image: url(https://hamevent.brudiu.ro/static/YP100UPT.jpg);\r\n        width: 842px;\r\n        height: 595px;\r\n        margin: 0;\r\n        padding: 0;\r\n        background-position: center center;\r\n        background-size: 100%;\r\n        background-repeat: no-repeat;\r\n        position: relative;\r\n    }\r\n\r\n    .diploma {\r\n        position: absolute;\r\n        top: 50%;\r\n        left: 50%;\r\n        -ms-transform: translate(-50%, -50%);\r\n        transform: translate(-50%, -50%);\r\n        margin: 0 auto;\r\n        padding: 30px;\r\n    }\r\n.callsign{\r\n    position: absolute;\r\n        top: 280px;\r\n        left: 68%;\r\n    transform: translate(-50%, 0);\r\n}\r\n\r\n</STYLE>\r\n<html>\r\n<body>\r\n    <div class=\"background\">\r\n<div class=\"callsign\"><h1>--callsign2--</h2></div>\r\n      \r\n    </div>\r\n</body>\r\n</html>",
                             EndDate = new DateTime(2023, 9, 29, 23, 59, 59, 0, DateTimeKind.Utc),
                             HasTop = false,
                             Name = "YP100UPT",
-                            SecretKey = new Guid("E8359B40-419C-4E96-A8FD-FEF3FD51979E"),
+                            SecretKey = new Guid("4df2facf-4d0b-459c-b6e6-f152caf62adb"),
                             StartDate = new DateTime(2023, 9, 29, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });

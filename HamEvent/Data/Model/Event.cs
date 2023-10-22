@@ -15,7 +15,7 @@ namespace HamEvent.Data.Model
         public ICollection<QSO> QSOs { get; } = new List<QSO>();
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
-
+        public bool HasTop { get; set; }
         [NotMapped]
         public int? Days
         {

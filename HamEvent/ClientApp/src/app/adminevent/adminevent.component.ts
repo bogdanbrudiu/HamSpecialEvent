@@ -52,4 +52,5 @@ interface HamEvent {
   name: string;
   description: string;
   diploma: string;
+  hasTop: boolean;
 }

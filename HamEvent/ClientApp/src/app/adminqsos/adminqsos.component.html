@@ -17,7 +17,7 @@
             <li class="nav-item">
               <button class="btn btn-link" (click)="edit()">{{'Edit Event' | translate}}</button>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" *ngIf="event && event.hasTop">
               <button class="btn btn-link" (click)="top()">{{'Event Top' | translate}}</button>
             </li>
             <li class="nav-item">

@@ -106,6 +106,19 @@ export class AdminQSOsComponent {
       }
     );
   }
+  exportall() {
+    this.qsosService.exportAll(this.eventId, this.eventSecret).subscribe((data: any) => {
+
+      this.blob = new Blob([data], { type: 'text/xml' });
+
+      let downloadURL = window.URL.createObjectURL(data);
+      let link = document.createElement('a');
+      link.href = downloadURL;
+      link.download = "log.adif";
+      link.click();
+
+    });
+  }
   genPdf() {
     return this.pdfService.getPdf(this.eventId, this.searchInput).subscribe((data: any) => {
 

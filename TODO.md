@@ -3,8 +3,6 @@ Project Description
 
 ### ToDo
 
-- [ ] As event admin I can export all qsos  #feat
-- [ ] As admin I can specify if an event has top or not and the top buton is not visible if not needed  #feat
 - [ ] As a site visitor I can view statistics per band/mode/day #feat
 - [ ] As a site visitor I can request new event creation  #feat
 - [ ] As admin I can aprove new event creation  #feat
@@ -13,11 +11,15 @@ Project Description
 
 ### In Progress
 
+
+
 - [ ] Drag & Drop editor for diploma  #feat @crisanalex08
 
 
 ### Done ✓
 
+- [✓] As event admin I can export all qsos  #feat @bogdanbrudiu
+- [✓] As admin I can specify if an event has top or not and the top buton is not visible if not needed  #feat @bogdanbrudiu
 - [✓] As a site visitor in the event list I can view stats (days, First QSO, Last QSO, QSOs count, Uniques)  #feat @bogdanbrudiu
 - [✓] As a site visitor I canot see the entier log, only the search result  #feat @bogdanbrudiu
 - [✓] As event admin I can delete all qsos at once  #feat @bogdanbrudiu

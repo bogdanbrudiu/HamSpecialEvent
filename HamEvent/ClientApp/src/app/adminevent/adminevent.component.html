@@ -17,6 +17,14 @@
       <label for="hastop" class="form-label">{{'HasTop' | translate}}</label>
       <input type="checkbox" class="form-check-input" id="hastop" [(ngModel)]="event.hasTop" name="hastop">
     </div>
+    <div class="mb-3">
+      <label for="startDate" class="form-label">{{'Start date' | translate}}</label>
+      <input type="datetime" class="form-control" id="hastop" [ngModel]="event.startDate | date:'yyyy-MM-ddTHH:mm'" (ngModelChange)="event.startDate = $event" name="startDate">
+    </div>
+    <div class="mb-3">
+      <label for="endDate" class="form-label">{{'End date' | translate}}</label>
+      <input type="datetime" class="form-control" id="hastop" [ngModel]="event.endDate | date:'yyyy-MM-ddTHH:mm'" (ngModelChange)="event.endDate = $event" name="endDate">
+    </div>
     <button type="submit" class="btn btn-primary" (click)="onSubmit()">{{'Update' | translate}}</button>
     <div [innerHtml]="event.diploma | sanitizedHtml" width="842" height="595"></div>
 

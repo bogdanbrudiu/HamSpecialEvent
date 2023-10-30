@@ -34,6 +34,9 @@
   "First QSO": "Primul QSO",
   "Last QSO": "Ultimul QSO",
   "QSOs count": "Numărul de QSO-uri",
-  "Uniques": "Unice",
-  "HasTop": "Are clasament"
+  "Uniques": "Indicative Unice",
+  "HasTop": "Are clasament",
+  "Export all QSOs": "Exportă toate QSO-urile",
+  "Start date": "Data de începere",
+  "End date": "Data de încheiere"
 }

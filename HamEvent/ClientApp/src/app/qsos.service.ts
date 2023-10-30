@@ -22,6 +22,12 @@ export class QSOsService {
   deleteAll(eventId: string, secret: string): Observable<any> {
     return this.http.delete(this.baseUrl + 'hamevent/QSOs/' + encodeURIComponent(eventId) + "/" + encodeURIComponent(secret)+"/all");
   }
+  exportAll(eventId: string, secret: string): Observable<any> {
+    const httpOptions = {
+      responseType: 'blob' as 'json'
+    };
+    return this.http.get(this.baseUrl + 'hamevent/ADIF/' + encodeURIComponent(eventId) + "/" + encodeURIComponent(secret) , httpOptions);
+  }
   update(qso: QSO, updatedQSO: QSO, eventId: string, secret: string): Observable<any> {
     return this.http.post(this.baseUrl + 'hamevent/QSOs/' + encodeURIComponent(eventId) + "/" + encodeURIComponent(secret) + "?"
       + "callsign1=" + encodeURIComponent(qso.callsign1) + "&"

@@ -8,6 +8,8 @@ using SelectPdf;
 using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using System.Runtime.Intrinsics.X86;
+using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace HamEvent.Controllers
 {
@@ -181,11 +183,11 @@ namespace HamEvent.Controllers
                 Event myevent;
                 if (secret.HasValue)
                 {
-                    myevent = _dbcontext.Events.Where(e=> e.Id.Equals(hamevent) && e.SecretKey.Equals(secret)).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Diploma = e.Diploma, HasTop=e.HasTop }).FirstOrDefault();
+                    myevent = _dbcontext.Events.Where(e=> e.Id.Equals(hamevent) && e.SecretKey.Equals(secret)).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Diploma = e.Diploma, HasTop=e.HasTop, StartDate = e.StartDate, EndDate = e.EndDate }).FirstOrDefault();
                 }
                 else
                 {
-                    myevent = _dbcontext.Events.Where(e => e.Id == hamevent).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Diploma = e.Diploma, HasTop = e.HasTop }).FirstOrDefault();
+                    myevent = _dbcontext.Events.Where(e => e.Id == hamevent).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Diploma = e.Diploma, HasTop = e.HasTop, StartDate=e.StartDate, EndDate = e.EndDate }).FirstOrDefault();
                 }
 
                 if (myevent == null) return NotFound();
@@ -255,8 +257,38 @@ namespace HamEvent.Controllers
                 Data = events.Skip((page - 1 ?? 0) * pagesize).Take(pagesize).ToList()
             };
         }
-     
-        
+        [HttpGet("ADIF/{hamevent}/{secret}")]
+        public ActionResult ExportAll(Guid hamevent, Guid secret)
+        {
+            _logger.LogInformation(MyLogEvents.DeleteAllQSOs, "Export All QSOs from event {0}", hamevent);
+            Event  myevent=_dbcontext.Events.Where(e => e.Id.Equals(hamevent) && e.SecretKey.Equals(secret)).FirstOrDefault();
+            if (myevent != null)
+            {
+                AdifFile export = new AdifFile();
+                export.Header = new AdifHeaderRecord();
+                export.Header.Fields.Add("Event", myevent.Name);
+                export.Header.Fields.Add("Description", myevent.Description);
+                foreach (var qso in _dbcontext.QSOs.Where(q => q.EventId.Equals(hamevent)))
+                {
+                    AdifContactRecord item = new AdifContactRecord();
+                    item.StationCallsign = qso.Callsign1;
+                    item.Call = qso.Callsign2;
+                    item.Band = qso.Band;
+                    item.Mode = qso.Mode;
+                    item.RstSent = qso.RST1;
+                    item.RstReceived = qso.RST2;
+                    item.QsoStart = qso.Timestamp;
+
+                    export.Records.Add(item);
+                }
+
+                FileResult fileResult = new FileContentResult(Encoding.UTF8.GetBytes(export.ToString()), "text/xml");
+                fileResult.FileDownloadName = myevent.Name + ".adi";
+                return fileResult;
+            }
+            return NotFound();
+        }
+
         [HttpGet("Diploma/{hamevent}/{callsign}")]
         public IActionResult PDF(Guid hamevent, string callsign)
         {

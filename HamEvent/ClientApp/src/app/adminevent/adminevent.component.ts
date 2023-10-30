@@ -53,4 +53,6 @@ interface HamEvent {
   description: string;
   diploma: string;
   hasTop: boolean;
+  startDate: string;
+  endDate: string;
 }

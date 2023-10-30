@@ -35,6 +35,9 @@
   "Last QSO": "Last QSO",
   "QSOs count": "QSOs count",
   "Uniques": "Uniques",
-  "HasTop": "Has Top"
+  "HasTop": "Has Top",
+  "Export all QSOs": "Export all QSOs",
+  "Start date": "Start date",
+  "End date": "End date"
 
 }

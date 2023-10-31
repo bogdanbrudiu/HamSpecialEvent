@@ -1,13 +1,4 @@
 <div class="px-4 text-center border-bottom">
-  <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item" aria-current="page"><a routerLink ="/Home">{{'Home' | translate}}</a></li>
-      <li class="breadcrumb-item" aria-current="page"><a routerLink ="/Events">{{'HamEvents' | translate}}</a></li>
-      <li class="breadcrumb-item active" aria-current="page" *ngIf="event">{{event.name}}</li>
-      <li class="breadcrumb-item active" aria-current="page" *ngIf="event">{{'QSOs' | translate}}</li>
-      <li class="breadcrumb-item" aria-current="page" *ngIf="event && event.hasTop"><a href="#" (click)="top();$event.preventDefault()">{{'Event Top' | translate}}</a></li>
-    </ol>
-  </nav>
   <h1 class="display-4 fw-bold text-body-emphasis" *ngIf="event">{{event.name}}</h1>
   <div class="col mx-auto">
     <p *ngIf="event">{{event.description}}</p>

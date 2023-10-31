@@ -18,6 +18,7 @@ Project Description
 
 ### Done ✓
 
+- [✓] UI enhancements (Events table is wider on desktop, header is lighter, navigation in header)  #feat @bogdanbrudiu
 - [✓] As event admin I can export all qsos  #feat @bogdanbrudiu
 - [✓] As admin I can specify if an event has top or not and the top buton is not visible if not needed  #feat @bogdanbrudiu
 - [✓] As a site visitor in the event list I can view stats (days, First QSO, Last QSO, QSOs count, Uniques)  #feat @bogdanbrudiu

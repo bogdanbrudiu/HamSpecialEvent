@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+<nav class="navbar navbar-expand-sm navbar-light bg-light">
   <div class="container-fluid">
     <a class="navbar-brand"  [routerLink]="['/']">{{'HamEvent' | translate}}</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topnavbar"  aria-expanded="false" aria-label="Toggle navigation">
@@ -6,8 +6,29 @@
     </button>
 
     <div class="collapse navbar-collapse" id="topnavbar">
+      <ul class="navbar-nav">
+      <!--<li class="nav-item">
+        <a [routerLink]="['/Home']" class="nav-link" routerLinkActive="active"
+           [routerLinkActiveOptions]="{exact:true}">{{'Home' | translate}}</a>
+      </li>-->
+      <li class="nav-item">
+        <a [routerLink]="['/Events']" class="nav-link" routerLinkActive="active"
+           [routerLinkActiveOptions]="{exact:true}">{{'HamEvents' | translate}}</a>
+      </li>
+      <li class="nav-item" *ngIf="event">
+        <a class="nav-link">{{event.name}}</a>
+      </li>
+      <li class="nav-item" *ngIf="event">
+        <a [routerLink]="[eventId]" class="nav-link" routerLinkActive="active"
+           [routerLinkActiveOptions]="{exact:true}">{{'QSOs' | translate}}</a>
+      </li>
+      <li class="nav-item" *ngIf="event && event.hasTop">
+        <a [routerLink]="[eventId,'top']" class="nav-link" routerLinkActive="active"
+           [routerLinkActiveOptions]="{exact:true}">{{'Event Top' | translate}}</a>
+      </li>
+      </ul>
       <ul class="navbar-nav ms-auto">
-
+      
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">{{siteLanguage}}</a>
           <ul class="dropdown-menu dropdown-menu-end">
@@ -22,7 +43,7 @@
           </ul>
         </li>
 
-     
+
       </ul>
     </div>
   </div>

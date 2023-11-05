@@ -72,7 +72,7 @@ namespace HamEvent.Controllers
         public PageResult<Participant> Top(Guid hamevent, int? page, int pagesize = 10, string callsign = "")
         {
            
-        _logger.LogInformation(MyLogEvents.GetQSOs, "Get Top for event {0} page {1} paginated by {2} per page, filtered by {3}", hamevent, page, pagesize, callsign);
+        _logger.LogInformation(MyLogEvents.GetTop, "Get Top for event {0} page {1} paginated by {2} per page, filtered by {3}", hamevent, page, pagesize, callsign);
             IQueryable<QSO> qsos;
             IQueryable<Participant> participants;
             IEnumerable<Participant> top;
@@ -106,7 +106,7 @@ namespace HamEvent.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(MyLogEvents.GetQSOs, ex, "Failed getting Top for event {0} page {1} paginated by {2} per page, filtered by {3}", hamevent, page, pagesize, callsign);
+                _logger.LogError(MyLogEvents.GetTop, ex, "Failed getting Top for event {0} page {1} paginated by {2} per page, filtered by {3}", hamevent, page, pagesize, callsign);
 
                 return new PageResult<Participant>
                 {
@@ -121,85 +121,32 @@ namespace HamEvent.Controllers
                 Data = top.Skip((page - 1 ?? 0) * pagesize).Take(pagesize).ToList()
             };
         }
-
-
-        [HttpDelete("QSOs/{hamevent}/{secret}")]
-        public ActionResult Delete(Guid hamevent, Guid secret, string callsign1, string callsign2, string mode, string band, string timestamp)
+        public class Operator
         {
-            _logger.LogInformation(MyLogEvents.DeleteQSO, "Delete QSO callsign1 {0}, callsign2 {1}, mode {2}, band {3}, timestamp {4} from event {5}", callsign1, callsign2, mode, band, timestamp, hamevent);
-            var myqso = _dbcontext.QSOs.Where(qso => qso.EventId== hamevent && 
-                                                       qso.Callsign1==callsign1 &&
-                                                       qso.Callsign2 == callsign2 &&
-                                                       qso.Mode == mode &&
-                                                       qso.Band == band &&
-                                                       qso.Timestamp == DateTime.Parse(timestamp, CultureInfo.InvariantCulture) &&
-                                                       qso.Event.SecretKey == secret).FirstOrDefault();
-            if (myqso == null) return NotFound();
-            _dbcontext.QSOs.Remove(myqso);
-            _dbcontext.SaveChanges();
-            return Ok();
+            public string Callsign { get; set; }
+            public IEnumerable<QSO> lastQSOs { get; set; }
         }
 
-        [HttpDelete("QSOs/{hamevent}/{secret}/all")]
-        public ActionResult DeleteAll(Guid hamevent, Guid secret)
+        [HttpGet("Live/{hamevent}")]
+        public ActionResult<List<Operator>> Live(Guid hamevent, int? page, int pagesize = 10, string callsign = "")
         {
-            _logger.LogInformation(MyLogEvents.DeleteAllQSOs, "Delete All QSOs from event {0}",  hamevent);
-            _dbcontext.QSOs.ExecuteDeleteAsync();
-            return Ok();
-        }
-        [HttpPost("QSOs/{hamevent}/{secret}")]
-        public ActionResult Post(Guid hamevent, Guid secret, [FromQuery] string callsign1, [FromQuery] string callsign2, [FromQuery] string mode, [FromQuery] string band, [FromQuery] string timestamp, [FromBody] QSO updatedQSO)
-        {
-            _logger.LogInformation(MyLogEvents.UpdateQSO, "Update QSO callsign1 {0}, callsign2 {1}, mode {2}, band {3}, timestamp {4} from event {5} to callsign1 {6}, callsign2 {7}, mode {8}, band {9}, timestamp {10}", callsign1, callsign2, mode, band, timestamp, hamevent, updatedQSO.Callsign1, updatedQSO.Callsign2, updatedQSO.Mode, updatedQSO.Band, updatedQSO.Timestamp);
-            var myqso = _dbcontext.QSOs.Where(qso => qso.EventId == hamevent &&
-                                                       qso.Callsign1 == callsign1 &&
-                                                       qso.Callsign2 == callsign2 &&
-                                                       qso.Mode == mode &&
-                                                       qso.Band == band &&
-                                                       qso.Timestamp == DateTime.Parse(timestamp, CultureInfo.InvariantCulture) &&
-                                                       qso.Event.SecretKey == secret).FirstOrDefault();
-            if (myqso == null) return NotFound();
-            updatedQSO.RST1=myqso.RST1;
-            updatedQSO.RST2 = myqso.RST2;
-            updatedQSO.EventId = myqso.EventId;
 
-            _dbcontext.QSOs.Remove(myqso);
-            _dbcontext.QSOs.Add(updatedQSO);
-
-            _dbcontext.SaveChanges();
-            return Ok();
-        }
-
-
-
-
-        [HttpGet("hamevent/{hamevent}")]
-        public ActionResult<Event> Get(Guid hamevent, Guid? secret)
-        {
-            _logger.LogInformation(MyLogEvents.GetEvent, "Get Event {0}", hamevent);
-
+            _logger.LogInformation(MyLogEvents.GetLive, "Get Live QSOs for event {0}", hamevent);
+            IQueryable<Operator> operators;
             try
             {
-                Event myevent;
-                if (secret.HasValue)
-                {
-                    myevent = _dbcontext.Events.Where(e=> e.Id.Equals(hamevent) && e.SecretKey.Equals(secret)).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Diploma = e.Diploma, HasTop=e.HasTop, StartDate = e.StartDate, EndDate = e.EndDate }).FirstOrDefault();
-                }
-                else
-                {
-                    myevent = _dbcontext.Events.Where(e => e.Id == hamevent).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Diploma = e.Diploma, HasTop = e.HasTop, StartDate=e.StartDate, EndDate = e.EndDate }).FirstOrDefault();
-                }
-
-                if (myevent == null) return NotFound();
-                else return Ok(myevent);
+                operators = _dbcontext.QSOs.Where(qso => qso.EventId.Equals(hamevent) && qso.Timestamp.AddMinutes(30) > DateTime.Now).OrderByDescending(qso=>qso.Timestamp)
+                    .GroupBy(qso => new { qso.Callsign1 }).Select(group => new Operator() { Callsign = group.Key.Callsign1, lastQSOs = group.Take(10) });
+             
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _logger.LogError(MyLogEvents.GetEvent,ex, "Failed getting Event {0}", hamevent);
+                _logger.LogError(MyLogEvents.GetLive, ex, "Failed getting Live QSOs for event {0} ", hamevent);
 
-                return NotFound();
+                return new List<Operator>();
             }
          
+            return operators.ToList();
         }
         [HttpPost("hamevent")]
         public ActionResult<Event> Post(Event hamevent)
@@ -257,37 +204,7 @@ namespace HamEvent.Controllers
                 Data = events.Skip((page - 1 ?? 0) * pagesize).Take(pagesize).ToList()
             };
         }
-        [HttpGet("ADIF/{hamevent}/{secret}")]
-        public ActionResult ExportAll(Guid hamevent, Guid secret)
-        {
-            _logger.LogInformation(MyLogEvents.DeleteAllQSOs, "Export All QSOs from event {0}", hamevent);
-            Event  myevent=_dbcontext.Events.Where(e => e.Id.Equals(hamevent) && e.SecretKey.Equals(secret)).FirstOrDefault();
-            if (myevent != null)
-            {
-                AdifFile export = new AdifFile();
-                export.Header = new AdifHeaderRecord();
-                export.Header.Fields.Add("Event", myevent.Name);
-                export.Header.Fields.Add("Description", myevent.Description);
-                foreach (var qso in _dbcontext.QSOs.Where(q => q.EventId.Equals(hamevent)))
-                {
-                    AdifContactRecord item = new AdifContactRecord();
-                    item.StationCallsign = qso.Callsign1;
-                    item.Call = qso.Callsign2;
-                    item.Band = qso.Band;
-                    item.Mode = qso.Mode;
-                    item.RstSent = qso.RST1;
-                    item.RstReceived = qso.RST2;
-                    item.QsoStart = qso.Timestamp;
 
-                    export.Records.Add(item);
-                }
-
-                FileResult fileResult = new FileContentResult(Encoding.UTF8.GetBytes(export.ToString()), "text/xml");
-                fileResult.FileDownloadName = myevent.Name + ".adi";
-                return fileResult;
-            }
-            return NotFound();
-        }
 
         [HttpGet("Diploma/{hamevent}/{callsign}")]
         public IActionResult PDF(Guid hamevent, string callsign)
@@ -392,6 +309,35 @@ namespace HamEvent.Controllers
             return NoContent();
         }
 
+        #region For Admin
+        [HttpGet("hamevent/{hamevent}")]
+        public ActionResult<Event> Get(Guid hamevent, Guid? secret)
+        {
+            _logger.LogInformation(MyLogEvents.GetEvent, "Get Event {0}", hamevent);
+
+            try
+            {
+                Event myevent;
+                if (secret.HasValue)
+                {
+                    myevent = _dbcontext.Events.Where(e => e.Id.Equals(hamevent) && e.SecretKey.Equals(secret)).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Diploma = e.Diploma, HasTop = e.HasTop, StartDate = e.StartDate, EndDate = e.EndDate }).FirstOrDefault();
+                }
+                else
+                {
+                    myevent = _dbcontext.Events.Where(e => e.Id == hamevent).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Diploma = e.Diploma, HasTop = e.HasTop, StartDate = e.StartDate, EndDate = e.EndDate }).FirstOrDefault();
+                }
+
+                if (myevent == null) return NotFound();
+                else return Ok(myevent);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(MyLogEvents.GetEvent, ex, "Failed getting Event {0}", hamevent);
+
+                return NotFound();
+            }
+
+        }
         [HttpPost("{hamevent}/{eventsecret}/upload")]
         public IActionResult Upload(Guid hamevent, Guid eventsecret)
         {
@@ -442,7 +388,83 @@ namespace HamEvent.Controllers
                 return StatusCode(500, $"Internal server error: {ex}");
             }
         }
+        [HttpGet("ADIF/{hamevent}/{secret}")]
+        public ActionResult ExportAll(Guid hamevent, Guid secret)
+        {
+            _logger.LogInformation(MyLogEvents.DeleteAllQSOs, "Export All QSOs from event {0}", hamevent);
+            Event myevent = _dbcontext.Events.Where(e => e.Id.Equals(hamevent) && e.SecretKey.Equals(secret)).FirstOrDefault();
+            if (myevent != null)
+            {
+                AdifFile export = new AdifFile();
+                export.Header = new AdifHeaderRecord();
+                export.Header.Fields.Add("Event", myevent.Name);
+                export.Header.Fields.Add("Description", myevent.Description);
+                foreach (var qso in _dbcontext.QSOs.Where(q => q.EventId.Equals(hamevent)))
+                {
+                    AdifContactRecord item = new AdifContactRecord();
+                    item.StationCallsign = qso.Callsign1;
+                    item.Call = qso.Callsign2;
+                    item.Band = qso.Band;
+                    item.Mode = qso.Mode;
+                    item.RstSent = qso.RST1;
+                    item.RstReceived = qso.RST2;
+                    item.QsoStart = qso.Timestamp;
 
-      
+                    export.Records.Add(item);
+                }
+
+                FileResult fileResult = new FileContentResult(Encoding.UTF8.GetBytes(export.ToString()), "text/xml");
+                fileResult.FileDownloadName = myevent.Name + ".adi";
+                return fileResult;
+            }
+            return NotFound();
+        }
+        [HttpDelete("QSOs/{hamevent}/{secret}")]
+        public ActionResult Delete(Guid hamevent, Guid secret, string callsign1, string callsign2, string mode, string band, string timestamp)
+        {
+            _logger.LogInformation(MyLogEvents.DeleteQSO, "Delete QSO callsign1 {0}, callsign2 {1}, mode {2}, band {3}, timestamp {4} from event {5}", callsign1, callsign2, mode, band, timestamp, hamevent);
+            var myqso = _dbcontext.QSOs.Where(qso => qso.EventId == hamevent &&
+                                                       qso.Callsign1 == callsign1 &&
+                                                       qso.Callsign2 == callsign2 &&
+                                                       qso.Mode == mode &&
+                                                       qso.Band == band &&
+                                                       qso.Timestamp == DateTime.Parse(timestamp, CultureInfo.InvariantCulture) &&
+                                                       qso.Event.SecretKey == secret).FirstOrDefault();
+            if (myqso == null) return NotFound();
+            _dbcontext.QSOs.Remove(myqso);
+            _dbcontext.SaveChanges();
+            return Ok();
+        }
+        [HttpDelete("QSOs/{hamevent}/{secret}/all")]
+        public ActionResult DeleteAll(Guid hamevent, Guid secret)
+        {
+            _logger.LogInformation(MyLogEvents.DeleteAllQSOs, "Delete All QSOs from event {0}", hamevent);
+            _dbcontext.QSOs.ExecuteDeleteAsync();
+            return Ok();
+        }
+        [HttpPost("QSOs/{hamevent}/{secret}")]
+        public ActionResult Post(Guid hamevent, Guid secret, [FromQuery] string callsign1, [FromQuery] string callsign2, [FromQuery] string mode, [FromQuery] string band, [FromQuery] string timestamp, [FromBody] QSO updatedQSO)
+        {
+            _logger.LogInformation(MyLogEvents.UpdateQSO, "Update QSO callsign1 {0}, callsign2 {1}, mode {2}, band {3}, timestamp {4} from event {5} to callsign1 {6}, callsign2 {7}, mode {8}, band {9}, timestamp {10}", callsign1, callsign2, mode, band, timestamp, hamevent, updatedQSO.Callsign1, updatedQSO.Callsign2, updatedQSO.Mode, updatedQSO.Band, updatedQSO.Timestamp);
+            var myqso = _dbcontext.QSOs.Where(qso => qso.EventId == hamevent &&
+                                                       qso.Callsign1 == callsign1 &&
+                                                       qso.Callsign2 == callsign2 &&
+                                                       qso.Mode == mode &&
+                                                       qso.Band == band &&
+                                                       qso.Timestamp == DateTime.Parse(timestamp, CultureInfo.InvariantCulture) &&
+                                                       qso.Event.SecretKey == secret).FirstOrDefault();
+            if (myqso == null) return NotFound();
+            updatedQSO.RST1 = myqso.RST1;
+            updatedQSO.RST2 = myqso.RST2;
+            updatedQSO.EventId = myqso.EventId;
+
+            _dbcontext.QSOs.Remove(myqso);
+            _dbcontext.QSOs.Add(updatedQSO);
+
+            _dbcontext.SaveChanges();
+            return Ok();
+        }
+        #endregion
+
     }
 }

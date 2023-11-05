@@ -3,6 +3,7 @@ import { ActivatedRoute, NavigationEnd, NavigationStart, Params, Router } from '
 import { TranslateService } from '@ngx-translate/core';
 import { filter, map } from 'rxjs';
 import { EventsService, HamEvent } from '../events.service';
+import { QSOsService } from '../qsos.service';
 
 @Component({
   selector: 'app-nav-menu',
@@ -18,7 +19,9 @@ export class NavMenuComponent {
   ];
   public eventId: string = '';
   public event: HamEvent | undefined;
-  constructor(private translate: TranslateService, private routes: ActivatedRoute, private eventsService: EventsService, private router: Router) { }
+  public isLive: boolean = false;
+
+  constructor(private translate: TranslateService, private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService, private router: Router) { }
   changeSiteLanguage(localeCode: string): void {
     const selectedLanguage = this.languageList
       .find((language) => language.code === localeCode)
@@ -38,6 +41,7 @@ export class NavMenuComponent {
   toggle() {
     this.isExpanded = !this.isExpanded;
   }
+
   private rootRoute(route: ActivatedRoute): ActivatedRoute {
     while (route.firstChild) {
       route = route.firstChild;
@@ -64,8 +68,18 @@ export class NavMenuComponent {
             console.log(error);
           }
         );
+        this.qsosService.getLive(this.eventId).subscribe(
+          (response) => {
+            this.isLive = response != null && (<Array<any>>response).length>0;
+            console.log(response);
+          },
+          (error) => {
+            console.log(error);
+          }
+        );
       } else {
         this.eventId = '';
+        this.isLive = false;
         this.event = undefined;
       }
     });

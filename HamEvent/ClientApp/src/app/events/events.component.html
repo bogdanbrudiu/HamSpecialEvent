@@ -9,6 +9,7 @@
       <thead>
         <tr>
           <th>{{'Name' | translate}}</th>
+          <th>{{'Start date' | translate}}</th>
           <th>{{'Description' | translate}}</th>
           <th>{{'Days' | translate}}</th>
           <th>{{'First QSO' | translate}}</th>
@@ -27,6 +28,7 @@
                 };
           let i = index" (click)="gotoEvent(event)" class="trow">
           <td>{{ event.name }}</td>
+          <td>{{ event.startDate | date: "dd.MM.yyyy HH:mm":"+0000" }}</td>
           <td>{{ event.description }}</td>
           <td>{{ event.days }}</td>
           <td>{{ event.first }}</td>

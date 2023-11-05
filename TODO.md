@@ -3,9 +3,6 @@ Project Description
 
 ### ToDo
 
-- [ ] As a site visitor I can view live dashbord of an event only if QSOs submited in the last 30 mins #feat
-- [ ] Live dashbord of an event shows last 10 QSOs for every operator no older than 30min #feat
-- [ ] Live dashbord of an event shows online operators (that have submited QSOs in the last 30mins) #feat
 - [ ] As a site visitor I can view statistics per band/mode/day #feat
 - [ ] As a site visitor I can request new event creation  #feat
 - [ ] As admin I can aprove new event creation  #feat
@@ -15,7 +12,9 @@ Project Description
 ### In Progress
 
 
-
+- [ ] As a site visitor I can view live dashbord of an event only if QSOs submited in the last 30 mins #feat @bogdanbrudiu
+- [ ] Live dashbord of an event shows last 10 QSOs for every operator no older than 30min #feat @bogdanbrudiu
+- [ ] Live dashbord of an event shows online operators (that have submited QSOs in the last 30mins) #feat @bogdanbrudiu
 - [ ] Drag & Drop editor for diploma  #feat @crisanalex08
 
 

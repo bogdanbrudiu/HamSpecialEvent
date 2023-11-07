@@ -11,5 +11,7 @@
         public const int DeleteQSO = 1006;
         public const int DeleteAllQSOs = 1007;
         public const int UpdateQSO = 1008;
+        public const int GetTop = 1009;
+        public const int GetLive = 1010;
     }
 }

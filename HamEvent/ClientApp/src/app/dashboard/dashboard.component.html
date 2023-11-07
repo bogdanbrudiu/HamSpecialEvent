@@ -1,0 +1,62 @@
+<div class="px-4 text-center border-bottom">
+
+  <h1 class="display-4 fw-bold text-body-emphasis" *ngIf="event">{{event.name}}</h1>
+  <div class="col mx-auto">
+    <p *ngIf="event">{{event.description}}</p>
+
+
+    <p *ngIf="!Operators?.length"><em>{{'No entries...' | translate}}</em></p>
+    <table class='table table-striped' aria-labelledby="tableLabel" *ngIf="Operators.length">
+      <thead>
+        <tr>
+          <th>{{'Callsign' | translate}}</th>
+          <th [ngClass]="{'table-success' : bandStatus('160')}">160</th>
+          <th [ngClass]="{'table-success' : bandStatus('80')}">80</th>
+          <th [ngClass]="{'table-success' : bandStatus('40')}">40</th>
+          <th [ngClass]="{'table-success' : bandStatus('30')}">30</th>
+          <th [ngClass]="{'table-success' : bandStatus('20')}">20</th>
+          <th [ngClass]="{'table-success' : bandStatus('15')}">15</th>
+          <th [ngClass]="{'table-success' : bandStatus('10')}">10</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let operator of Operators">
+          <td>{{ operator.callsign }}</td>
+          <td>{{ status(operator, "160") }}</td>
+          <td>{{ status(operator, "80") }}</td>
+          <td>{{ status(operator, "40") }}</td>
+          <td>{{ status(operator, "30") }}</td>
+          <td>{{ status(operator, "20") }}</td>
+          <td>{{ status(operator, "15") }}</td>
+          <td>{{ status(operator, "10") }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+ 
+    <table class='table table-striped' aria-labelledby="tableLabel" *ngIf="QSOs.length">
+      <thead>
+        <tr>
+          <th>{{'Callsign 1' | translate}}</th>
+          <th>{{'Callsign 2' | translate}}</th>
+          <!--<th>RST1</th>
+        <th>RST2</th>-->
+          <th>{{'Mode' | translate}}</th>
+          <th>{{'Band' | translate}}</th>
+          <th>{{'Timestamp' | translate}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let QSO of QSOs">
+          <td>{{ QSO.callsign1 }}</td>
+          <td>{{ QSO.callsign2 }}</td>
+          <td>{{ QSO.mode }}</td>
+          <td>{{ QSO.band }}</td>
+          <td>{{ QSO.timestamp }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+

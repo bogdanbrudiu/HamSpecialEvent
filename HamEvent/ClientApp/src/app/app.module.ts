@@ -18,6 +18,7 @@ import { AdminQSOsComponent } from './adminqsos/adminqsos.component';
 import { AdminEventComponent } from './adminevent/adminevent.component';
 import { UploadComponent } from './upload/upload.component';
 import { SanitizedHtmlPipe } from './sanitized-html.pipe';
+import { DashboardComponent } from './dashboard/dashboard.component';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -31,6 +32,7 @@ export function createTranslateLoader(http: HttpClient) {
     QSOsComponent,
     EventsComponent,
     EventTopComponent,
+    DashboardComponent,
     AdminQSOsComponent,
     AdminEventComponent,
     UploadComponent,
@@ -56,6 +58,7 @@ export function createTranslateLoader(http: HttpClient) {
       { path: '', component: EventsComponent, pathMatch: 'full' },
       { path: 'Events', component: EventsComponent, pathMatch: 'full' },
       { path: ':id/top', component: EventTopComponent, pathMatch: 'full' },
+      { path: ':id/live', component: DashboardComponent, pathMatch: 'full' },
       { path: ':id/:secret/edit', component: AdminEventComponent, pathMatch: 'full' },
       { path: ':id/:secret', component: AdminQSOsComponent, pathMatch: 'full' },
 

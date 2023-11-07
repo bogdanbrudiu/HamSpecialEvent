@@ -23,6 +23,8 @@ export class EventsService {
 export interface HamEvent {
   id: string;
   name: string;
+  startDate: string;
+  endDate: string;
   description: string;
   hasTop: boolean;
   diploma: string;

@@ -128,7 +128,7 @@ namespace HamEvent.Controllers
         }
 
         [HttpGet("Live/{hamevent}")]
-        public ActionResult<List<Operator>> Live(Guid hamevent, int? page, int pagesize = 10, string callsign = "")
+        public ActionResult<List<Operator>> Live(Guid hamevent)
         {
 
             _logger.LogInformation(MyLogEvents.GetLive, "Get Live QSOs for event {0}", hamevent);

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HamEvent.Data.Migrations
 {
     [DbContext(typeof(HamEventContext))]
-    [Migration("20231107145915_AddFreq")]
+    [Migration("20231107151817_AddFreq")]
     partial class AddFreq
     {
         /// <inheritdoc />

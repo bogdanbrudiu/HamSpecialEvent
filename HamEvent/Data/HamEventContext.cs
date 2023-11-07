@@ -10,11 +10,12 @@ namespace HamEvent.Data
     {
         public HamEventContext(DbContextOptions<HamEventContext> options) : base(options)
         {
-
         }
-
-        public DbSet<QSO> QSOs { get; set; }
-        public DbSet<Event> Events { get; set; }
+        public HamEventContext()
+        {
+        }
+        public virtual DbSet<QSO> QSOs { get; set; }
+        public virtual DbSet<Event> Events { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Event>()

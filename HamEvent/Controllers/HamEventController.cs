@@ -135,8 +135,8 @@ namespace HamEvent.Controllers
             IQueryable<Operator> operators;
             try
             {
-                operators = _dbcontext.QSOs.Where(qso => qso.EventId.Equals(hamevent) && qso.Timestamp.AddMinutes(30) > DateTime.Now).OrderByDescending(qso=>qso.Timestamp)
-                    .GroupBy(qso => new { qso.Callsign1 }).Select(group => new Operator() { Callsign = group.Key.Callsign1, lastQSOs = group.Take(10) });
+                operators = _dbcontext.QSOs.Where(qso => qso.EventId.Equals(hamevent) && qso.Timestamp.AddMinutes(30) > DateTime.Now).OrderByDescending(qso => qso.Timestamp)
+                    .GroupBy(qso => new { qso.Callsign1 }).Select(group => new Operator() { Callsign = group.Key.Callsign1, lastQSOs = group.ToList() }) ;
              
             }
             catch (Exception ex)
@@ -365,6 +365,7 @@ namespace HamEvent.Controllers
                                 && qso.Callsign2.Equals(myQSO.Callsign2)
                                 && qso.Band.Equals(myQSO.Band)
                                 && qso.Mode.Equals(myQSO.Mode)
+                                && qso.Freq.Equals(myQSO.Freq)
                                 && qso.Timestamp.Equals(myQSO.Timestamp)
                                 ) == 0)
                             {
@@ -406,6 +407,7 @@ namespace HamEvent.Controllers
                     item.Call = qso.Callsign2;
                     item.Band = qso.Band;
                     item.Mode = qso.Mode;
+                    item.FreqMHz = qso.Freq;
                     item.RstSent = qso.RST1;
                     item.RstReceived = qso.RST2;
                     item.QsoStart = qso.Timestamp;
@@ -457,7 +459,7 @@ namespace HamEvent.Controllers
             updatedQSO.RST1 = myqso.RST1;
             updatedQSO.RST2 = myqso.RST2;
             updatedQSO.EventId = myqso.EventId;
-
+            updatedQSO.Freq = myqso.Freq;
             _dbcontext.QSOs.Remove(myqso);
             _dbcontext.QSOs.Add(updatedQSO);
 

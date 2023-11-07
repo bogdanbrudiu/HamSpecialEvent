@@ -17,6 +17,22 @@ export class DashboardComponent {
   constructor(private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService) {
 
   }
+  bandStatus(band: string): boolean {
+    if (this.Operators) {
+      for (let operator of this.Operators) {
+        if (this.status(operator, band) != "") {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+  status(operator: Operator, band: string): string {
+    if (operator.lastQSOs.filter(qso => qso.band.startsWith(band)).length > 0) {
+      return operator.lastQSOs.filter(qso => qso.band.startsWith(band))[0].freq + "/" + operator.lastQSOs.filter(qso => qso.band.startsWith(band))[0].mode;
+    }
+    return "";
+  }
 
   ngOnInit() {
     this.routes.paramMap.subscribe(params => {

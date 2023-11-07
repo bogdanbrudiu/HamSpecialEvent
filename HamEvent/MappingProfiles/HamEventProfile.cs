@@ -15,6 +15,7 @@ namespace HamEvent.MappingProfiles
                   .ForMember(dest => dest.RST2, act => act.MapFrom(src => src.RstReceived))
                   .ForMember(dest => dest.Mode, act => act.MapFrom(src => src.Mode))
                   .ForMember(dest => dest.Band, act => act.MapFrom(src => src.Band))
+                  .ForMember(dest => dest.Freq, act => act.MapFrom(src => src.FreqMHz))
                   .ForMember(dest => dest.Timestamp, act => act.MapFrom(src => src.QsoStart));
     }
   }

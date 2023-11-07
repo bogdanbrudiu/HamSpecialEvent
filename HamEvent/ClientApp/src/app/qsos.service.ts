@@ -48,6 +48,7 @@ export interface QSO {
   callsign2: string;
   rst1: string;
   rst2: string;
+  freq: string;
   mode: string;
   band: string;
   timestamp: string;
@@ -60,10 +61,10 @@ export interface Participant {
   count: string;
   rank: string;
 }
-export interface Operator {
-  callsign: string;
-  lastQSOs: QSO[];
-}
+export class Operator {
+  callsign: string="";
+  lastQSOs: QSO[]=[];
+  }
 export interface PageResult<T> {
   count: number;
   data: T[];

@@ -12,14 +12,15 @@ Project Description
 ### In Progress
 
 
-- [ ] As a site visitor I can view live dashbord of an event only if QSOs submited in the last 30 mins #feat @bogdanbrudiu
-- [ ] Live dashbord of an event shows last 10 QSOs for every operator no older than 30min #feat @bogdanbrudiu
-- [ ] Live dashbord of an event shows online operators (that have submited QSOs in the last 30mins) #feat @bogdanbrudiu
 - [ ] Drag & Drop editor for diploma  #feat @crisanalex08
 
 
 ### Done ✓
 
+- [✓] As a site visitor I can view live dashbord of an event only if QSOs submited in the last 30 mins #feat
+- [✓] Live dashbord of an event shows last QSOs no older than 30min #feat
+- [✓] Live dashbord of an event shows online operators (that have submited QSOs in the last 30mins) #feat
+- [✓] Live dashbord of an event shows online bands status (based on QSOs in the last 30min) - active band, last freq/mode per band #feat
 - [✓] UI enhancements (Events table is wider on desktop, header is lighter, navigation in header)  #feat @bogdanbrudiu
 - [✓] As event admin I can export all qsos  #feat @bogdanbrudiu
 - [✓] As admin I can specify if an event has top or not and the top buton is not visible if not needed  #feat @bogdanbrudiu

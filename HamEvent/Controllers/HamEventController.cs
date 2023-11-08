@@ -136,7 +136,7 @@ namespace HamEvent.Controllers
             try
             {
                 var nowUTC = DateTime.UtcNow;
-                operators = _dbcontext.QSOs.Where(qso => qso.EventId.Equals(hamevent) && qso.Timestamp.AddMinutes(60) > nowUTC).OrderByDescending(qso => qso.Timestamp)
+                operators = _dbcontext.QSOs.Where(qso => qso.EventId.Equals(hamevent) && qso.Timestamp.AddMinutes(30) > nowUTC).OrderByDescending(qso => qso.Timestamp)
                     .GroupBy(qso => new { qso.Callsign1 }).Select(group => new Operator() { Callsign = group.Key.Callsign1, lastQSOs = group.OrderByDescending(qso => qso.Timestamp).ToList() }) ;
              
             }

@@ -58,14 +58,7 @@
 
   <ItemGroup>
     <Folder Include="Database\" />
-    <Folder Include="SampleLogs\" />
     <Folder Include="wwwroot\log\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Database\QSOs.db">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

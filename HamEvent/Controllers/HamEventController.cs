@@ -342,7 +342,7 @@ namespace HamEvent.Controllers
         public IActionResult Upload(Guid hamevent, Guid eventsecret)
         {
             _logger.LogInformation(MyLogEvents.UploadLog, "Uploading log for event {0}", hamevent);
-
+            int added = 0;
             try
             {
                 var myevent=_dbcontext.Events.Where(e => e.Id.Equals(hamevent) && e.SecretKey.Equals(eventsecret)).FirstOrDefault();
@@ -369,13 +369,14 @@ namespace HamEvent.Controllers
                                 && qso.Timestamp.Equals(myQSO.Timestamp)
                                 ) == 0)
                             {
+                                added++;
                                 _dbcontext.QSOs.Add(myQSO);
                             }
                             }
                             _dbcontext.SaveChanges();
                         }
 
-                        return Ok();
+                        return Ok($"<P>Number of QSO's Added to the Database:<b>{added}qso's</b></P>");
                     }
                     else
                     {

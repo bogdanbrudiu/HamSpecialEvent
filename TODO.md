@@ -17,10 +17,14 @@ Project Description
 
 ### Done ✓
 
-- [✓] As a site visitor I can view live dashbord of an event only if QSOs submited in the last 30 mins #feat
-- [✓] Live dashbord of an event shows last QSOs no older than 30min #feat
-- [✓] Live dashbord of an event shows online operators (that have submited QSOs in the last 30mins) #feat
-- [✓] Live dashbord of an event shows online bands status (based on QSOs in the last 30min) - active band, last freq/mode per band #feat
+- [✓] Log32Sync error message at sync #bug @bogdanbrudiu
+- [✓] Live Dashboard should be renamed to Live stream, QSO list should be sorted descending by timestamp #bug @bogdanbrudiu
+- [✓] Live Dashboard should check QSO Timestamp timezone differences #bug @bogdanbrudiu
+- [✓] Delete All QSOs should delete all the event QSOs, now deletes all the QSOs in the system.... #bug @bogdanbrudiu
+- [✓] As a site visitor I can view live dashbord of an event only if QSOs submited in the last 30 mins #feat @bogdanbrudiu
+- [✓] Live dashbord of an event shows last QSOs no older than 30min #feat @bogdanbrudiu
+- [✓] Live dashbord of an event shows online operators (that have submited QSOs in the last 30mins) #feat @bogdanbrudiu
+- [✓] Live dashbord of an event shows online bands status (based on QSOs in the last 30min) - active band, last freq/mode per band #feat @bogdanbrudiu
 - [✓] UI enhancements (Events table is wider on desktop, header is lighter, navigation in header)  #feat @bogdanbrudiu
 - [✓] As event admin I can export all qsos  #feat @bogdanbrudiu
 - [✓] As admin I can specify if an event has top or not and the top buton is not visible if not needed  #feat @bogdanbrudiu

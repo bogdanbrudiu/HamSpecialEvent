@@ -135,8 +135,9 @@ namespace HamEvent.Controllers
             IQueryable<Operator> operators;
             try
             {
-                operators = _dbcontext.QSOs.Where(qso => qso.EventId.Equals(hamevent) && qso.Timestamp.AddMinutes(30) > DateTime.Now).OrderByDescending(qso => qso.Timestamp)
-                    .GroupBy(qso => new { qso.Callsign1 }).Select(group => new Operator() { Callsign = group.Key.Callsign1, lastQSOs = group.ToList() }) ;
+                var nowUTC = DateTime.UtcNow;
+                operators = _dbcontext.QSOs.Where(qso => qso.EventId.Equals(hamevent) && qso.Timestamp.AddMinutes(30) > nowUTC).OrderByDescending(qso => qso.Timestamp)
+                    .GroupBy(qso => new { qso.Callsign1 }).Select(group => new Operator() { Callsign = group.Key.Callsign1, lastQSOs = group.OrderByDescending(qso => qso.Timestamp).ToList() }) ;
              
             }
             catch (Exception ex)
@@ -442,7 +443,12 @@ namespace HamEvent.Controllers
         public ActionResult DeleteAll(Guid hamevent, Guid secret)
         {
             _logger.LogInformation(MyLogEvents.DeleteAllQSOs, "Delete All QSOs from event {0}", hamevent);
-            _dbcontext.QSOs.ExecuteDeleteAsync();
+            var myevent=_dbcontext.Events.Where(e => e.Id.Equals(hamevent) && e.SecretKey.Equals(secret)).Include(e => e.QSOs).FirstOrDefault();
+            foreach (var qso in myevent.QSOs)
+            {
+                _dbcontext.QSOs.Remove(qso);
+            }
+            _dbcontext.SaveChanges();
             return Ok();
         }
         [HttpPost("QSOs/{hamevent}/{secret}")]

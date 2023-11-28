@@ -19,6 +19,7 @@ Project Description
 
 ### Done ✓
 
+- [✓] Log32Sync error message at sync #bug @bogdanbrudiu
 - [✓] Live Dashboard should be renamed to Live stream, QSO list should be sorted descending by timestamp #bug @bogdanbrudiu
 - [✓] Live Dashboard should check QSO Timestamp timezone differences #bug @bogdanbrudiu
 - [✓] Delete All QSOs should delete all the event QSOs, now deletes all the QSOs in the system.... #bug @bogdanbrudiu

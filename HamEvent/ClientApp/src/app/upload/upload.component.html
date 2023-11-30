@@ -1,7 +1,7 @@
 
 <div class="col-md-4">
   <input type="file" #file placeholder="Choose file" (change)="uploadFile(file.files)" style="display:none;">
-  <button class="btn btn-link"  (click)="file.click()" >{{'Upload' | translate}}</button>
+  <a routerLink="." class="nav-link" (click)="file.click()">{{'Upload' | translate}}</a>
 </div>
   <div class="col-md-8">
     <span class="upload" *ngIf="progress > 0">

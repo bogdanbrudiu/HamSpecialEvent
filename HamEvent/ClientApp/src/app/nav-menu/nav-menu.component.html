@@ -1,6 +1,6 @@
-<nav class="navbar navbar-expand-sm navbar-light bg-light">
+<nav class="navbar navbar-expand-sm navbar-blue">
   <div class="container-fluid">
-    <a class="navbar-brand"  [routerLink]="['/']">{{'HamEvent' | translate}}</a>
+    <a class="navbar-brand nav-link-white"  [routerLink]="['/']">{{'HamEvent' | translate}}</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topnavbar"  aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -12,14 +12,14 @@
        [routerLinkActiveOptions]="{exact:true}">{{'Home' | translate}}</a>
   </li>-->
         <li class="nav-item">
-          <a [routerLink]="['/Events']" class="nav-link" routerLinkActive="active"
+          <a [routerLink]="['/Events']" class="nav-link nav-link-white" routerLinkActive="active"
              [routerLinkActiveOptions]="{exact:true}">{{'HamEvents' | translate}}</a>
         </li>
         <li class="nav-item" *ngIf="event">
-          <a class="nav-link">{{event.name}}</a>
+          <a class="nav-link nav-link-white">{{event.name}}</a>
         </li>
-        <li class="nav-item" *ngIf="event">
-          <a [routerLink]="[eventId]" class="nav-link" routerLinkActive="active"
+<!--        <li class="nav-item" *ngIf="event">
+          <a [routerLink]="[eventId]" class="nav-link nav-link-white" routerLinkActive="active"
              [routerLinkActiveOptions]="{exact:true}">{{'QSOs' | translate}}</a>
         </li>
         <li class="nav-item" *ngIf="event && event.hasTop">
@@ -30,11 +30,11 @@
           <a [routerLink]="[eventId,'live']" class="nav-link" routerLinkActive="active"
              [routerLinkActiveOptions]="{exact:true}">{{'Live' | translate}}</a>
         </li>
-      </ul>
+-->      </ul>
+
       <ul class="navbar-nav ms-auto">
-      
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">{{siteLanguage}}</a>
+          <a class="nav-link nav-link-white dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">{{siteLanguage}}</a>
           <ul class="dropdown-menu dropdown-menu-end">
             <ng-container *ngFor="let language of languageList">
               <li>
@@ -46,9 +46,8 @@
             </ng-container>
           </ul>
         </li>
-
-
       </ul>
+
     </div>
   </div>
 </nav>

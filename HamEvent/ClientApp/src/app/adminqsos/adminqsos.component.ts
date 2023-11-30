@@ -28,6 +28,7 @@ export class AdminQSOsComponent {
   public searchInput = '';
   public loaded = false;
   public blob: Blob | undefined;
+  public isLive: boolean = false;
 
   constructor(private formBuilder: FormBuilder, private router: Router, private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService, private pdfService: PdfService, private translate: TranslateService) {
 
@@ -49,10 +50,18 @@ export class AdminQSOsComponent {
           console.log(error);
         }
       );
+      this.qsosService.getLive(this.eventId).subscribe(
+        (response) => {
+          this.isLive = response != null && (<Array<any>>response).length > 0;
+          console.log(response);
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
       this.loadData();
     });
   }
-
   submitForm() {
     this.searchInput = encodeURIComponent(this.searchForm.get('search')?.value);
     this.loaded = false;
@@ -81,6 +90,9 @@ export class AdminQSOsComponent {
   }
   top() {
     this.router.navigate([this.eventId, 'top']);
+  }
+  live() {
+    this.router.navigate([this.eventId, 'live']);
   }
   deleteall() {
     if (confirm(this.translate.instant('Are you sure?'))) {

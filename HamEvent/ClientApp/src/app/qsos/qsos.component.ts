@@ -23,7 +23,7 @@ export class QSOsComponent {
   public loaded = false;
 
   public blob: Blob | undefined;
-
+  public isLive: boolean = false;
 
   constructor(private formBuilder: FormBuilder, private router: Router, private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService, private pdfService: PdfService) {
 
@@ -44,6 +44,16 @@ export class QSOsComponent {
           console.log(error);
         }
       );
+      this.qsosService.getLive(this.eventId).subscribe(
+        (response) => {
+          this.isLive = response != null && (<Array<any>>response).length > 0;
+          console.log(response);
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
+
       //this.loadData();
     });
   }
@@ -73,7 +83,6 @@ export class QSOsComponent {
       link.click();
 
     });
-   
   }
 
 

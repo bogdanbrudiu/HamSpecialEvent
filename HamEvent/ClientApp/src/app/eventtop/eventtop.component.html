@@ -3,15 +3,33 @@
   <h1 class="display-4 fw-bold text-body-emphasis" *ngIf="event">{{event.name}}</h1>
   <div class="col mx-auto">
     <p *ngIf="event">{{event.description}}</p>
-    <nav class="navbar navbar-expand">
+    <nav class="navbar navbar-expand navbar-light bg-light">
+      <div class="container-fluid">
+        <div class="collapse navbar-collapse" id="topnavbar">
+          <ul class="navbar-nav">
+            <li class="nav-item" *ngIf="event">
+              <a [routerLink]="['/',eventId]" class="nav-link" routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact:true}">{{'QSOs' | translate}}</a>
+            </li>
+            <li class="nav-item" *ngIf="event && event.hasTop">
+              <a [routerLink]="['/',eventId,'top']" class="nav-link" routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact:true}">{{'Event Top' | translate}}</a>
+            </li>
+            <li class="nav-item" *ngIf="event && isLive">
+              <a [routerLink]="['/',eventId,'live']" class="nav-link" routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact:true}">{{'Live' | translate}}</a>
+            </li>
+          </ul>
+        </div>
+      </div>
       <div class="container-fluid">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#tableMenu" aria-controls="tableMenu" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse" id="tableMenu">
+        <div class="collapse navbar-collapse align-items-center justify-content-center" id="tableMenu">
           <form role="search" (ngSubmit)="submitForm()" [formGroup]="searchForm">
-            <div class="input-group mb-3">
+            <div class="input-group">
               <input type="search" class="form-control" placeholder="{{'Callsign 2' | translate}}" formControlName="search">
               <div class="input-group-append">
                 <button class="btn btn-outline-secondary" type="button" (click)="submitForm()">{{'Search' | translate}}</button>

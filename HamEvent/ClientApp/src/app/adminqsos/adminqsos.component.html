@@ -3,32 +3,41 @@
   <h1 class="display-4 fw-bold text-body-emphasis" *ngIf="event">{{event.name}}</h1>
   <div class="col mx-auto" *ngIf="event">
     <p>{{event.description}}</p>
-    <nav class="navbar navbar-expand">
+
+
+    <nav class="navbar navbar-expand navbar-light bg-light">
+      <div class="container-fluid">
+        <div class="collapse navbar-collapse" id="topnavbar">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <app-upload [eventId]="eventId" [eventsecret]="eventSecret" (onUploadFinished)="uploadFinished($event)"></app-upload>
+            </li>
+            <li class="nav-item">
+              <a routerLink="." class="nav-link" (click)="edit()">{{'Edit Event' | translate}}</a>
+            </li>
+            <li class="nav-item" *ngIf="event && event.hasTop">
+              <a routerLink="." class="nav-link" (click)="top()">{{'Event Top' | translate}}</a>
+            </li>
+            <li class="nav-item" *ngIf="event && isLive">
+              <a routerLink="." class="nav-link" (click)="live()">{{'Live' | translate}}</a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="." class="nav-link" (click)="deleteall()">{{'Delete all QSOs' | translate}}</a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="." class="nav-link" (click)="exportall()">{{'Export all QSOs' | translate}}</a>
+            </li>
+          </ul>
+        </div>
+      </div>
       <div class="container-fluid">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#tableMenu" aria-controls="tableMenu" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse" id="tableMenu">
-          <ul class="navbar-nav me-auto">
-            <li class="nav-item">
-              <app-upload [eventId]="eventId" [eventsecret]="eventSecret" (onUploadFinished)="uploadFinished($event)"></app-upload>
-            </li>
-            <li class="nav-item">
-              <button class="btn btn-link" (click)="edit()">{{'Edit Event' | translate}}</button>
-            </li>
-            <li class="nav-item" *ngIf="event && event.hasTop">
-              <button class="btn btn-link" (click)="top()">{{'Event Top' | translate}}</button>
-            </li>
-            <li class="nav-item">
-              <button class="btn btn-link" (click)="deleteall()">{{'Delete all QSOs' | translate}}</button>
-            </li>
-            <li class="nav-item">
-              <button class="btn btn-link" (click)="exportall()">{{'Export all QSOs' | translate}}</button>
-            </li>
-          </ul>
+        <div class="collapse navbar-collapse align-items-center justify-content-center" id="tableMenu">
           <form role="search" (ngSubmit)="submitForm()" [formGroup]="searchForm">
-            <div class="input-group mb-3">
+            <div class="input-group">
               <input type="search" class="form-control" placeholder="{{'Callsign 2' | translate}}" formControlName="search">
               <div class="input-group-append">
                 <button class="btn btn-outline-secondary" type="button" (click)="submitForm()">{{'Search' | translate}}</button>
@@ -38,7 +47,6 @@
         </div>
       </div>
     </nav>
-
 
     <div class="py-4 d-flex justify-content-center">
       <button *ngIf='qualifiesForDiploma()' class="btn btn-outline-success" (click)="genPdf()">{{'Download Diploma' | translate}}</button>
@@ -52,7 +60,7 @@
           <th>{{'Callsign 1' | translate}}</th>
           <th>{{'Callsign 2' | translate}}</th>
           <!--<th>RST1</th>
-          <th>RST2</th>-->
+        <th>RST2</th>-->
           <th>{{'Mode' | translate}}</th>
           <th>{{'Band' | translate}}</th>
           <th>{{'Timestamp' | translate}}</th>
@@ -65,7 +73,8 @@
               : {
                   itemsPerPage: tableSize,
                   currentPage: page,
-                  totalItems: count
+                  totalItems: count,
+                  id :'adminqsos'
                 };
           let i = index">
           <td>
@@ -88,14 +97,16 @@
             <span *ngIf="!QSO.editable">{{QSO.timestamp}}</span>
             <input type="text" class="form-control" [(ngModel)]="QSO.timestamp" *ngIf="QSO.editable" />
           </td>
-          <td> <i class="bi bi-trash" (click)="delete(QSO)"></i>
-               <i *ngIf="!QSO.editable" class="bi bi-pen" (click)="editQSO(QSO)"></i>
-               <i *ngIf="QSO.editable" class="bi bi-floppy" (click)="saveQSO(QSO)"></i></td>
+          <td>
+            <i class="bi bi-trash" (click)="delete(QSO)"></i>
+            <i *ngIf="!QSO.editable" class="bi bi-pen" (click)="editQSO(QSO)"></i>
+            <i *ngIf="QSO.editable" class="bi bi-floppy" (click)="saveQSO(QSO)"></i>
+          </td>
         </tr>
       </tbody>
     </table>
     <div class="d-flex justify-content-center">
-      <pagination-controls previousLabel="Prev"
+      <pagination-controls id="adminqsos" previousLabel="Prev"
                            nextLabel="Next"
                            (pageChange)="onTableDataChange($event)">
       </pagination-controls>

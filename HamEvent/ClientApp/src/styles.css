@@ -22,3 +22,11 @@ body, html {
   background-color: #198754 !important;
   border-color: #198754 !important;
 }
+
+.navbar-blue {
+  background-color: #0099F7;
+}
+.nav-link-white {
+  font-family: sans-serif;
+  color: white;
+}

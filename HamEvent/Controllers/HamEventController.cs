@@ -10,6 +10,9 @@ using Microsoft.EntityFrameworkCore;
 using System.Runtime.Intrinsics.X86;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Security.Cryptography;
+using Microsoft.AspNetCore.DataProtection;
+using System.Net.Sockets;
 
 namespace HamEvent.Controllers
 {
@@ -149,32 +152,6 @@ namespace HamEvent.Controllers
          
             return operators.ToList();
         }
-        [HttpPost("hamevent")]
-        public ActionResult<Event> Post(Event hamevent)
-        {
-            _logger.LogInformation(MyLogEvents.UpdateEvent, "Update Event {0}", hamevent);
-
-            try
-            {
-                var myevent = _dbcontext.Events.Where(e => e.Id == hamevent.Id && e.SecretKey==hamevent.SecretKey).FirstOrDefault();
-                if (myevent == null) return NotFound();
-                else {
-                    myevent.Diploma= hamevent.Diploma;
-                    myevent.Description = hamevent.Description;
-                    myevent.Name=hamevent.Name;
-                    myevent.HasTop = hamevent.HasTop;
-                    _dbcontext.SaveChanges();
-                    return Ok(myevent);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(MyLogEvents.GetEvent, ex, "Failed updating Event {0}", hamevent);
-
-                return NotFound();
-            }
-
-        }
         [HttpGet("hamevents")]
         public PageResult<Event> Get(int? page, int pagesize = 10)
         {
@@ -197,7 +174,7 @@ namespace HamEvent.Controllers
                 };
             }
             events = events.OrderByDescending(e=>e.Name);
-            events.ForEachAsync(e => e.SecretKey = Guid.Empty);
+            events.ForEachAsync(e => e.SecretKey = "");
             var countDetails = events.Count();
             return new PageResult<Event>
             {
@@ -311,9 +288,38 @@ namespace HamEvent.Controllers
         }
 
         #region For Admin
+        [HttpPost("hamevent")]
+        public ActionResult<Event> Post(Event hamevent)
+        {
+            _logger.LogInformation(MyLogEvents.UpdateEvent, "Update Event {0}", hamevent);
+
+            try
+            {
+                var myevent = _dbcontext.Events.Where(e => e.Id == hamevent.Id && e.SecretKey == ComputeSha256Hash(new Guid(hamevent.SecretKey))).FirstOrDefault();
+                if (myevent == null) return NotFound();
+                else
+                {
+                    myevent.Diploma = hamevent.Diploma;
+                    myevent.Description = hamevent.Description;
+                    myevent.Name = hamevent.Name;
+                    myevent.HasTop = hamevent.HasTop;
+                    _dbcontext.SaveChanges();
+                    return Ok(myevent);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(MyLogEvents.GetEvent, ex, "Failed updating Event {0}", hamevent);
+
+                return NotFound();
+            }
+
+        }
+
         [HttpGet("hamevent/{hamevent}")]
         public ActionResult<Event> Get(Guid hamevent, Guid? secret)
         {
+            
             _logger.LogInformation(MyLogEvents.GetEvent, "Get Event {0}", hamevent);
 
             try
@@ -321,7 +327,8 @@ namespace HamEvent.Controllers
                 Event myevent;
                 if (secret.HasValue)
                 {
-                    myevent = _dbcontext.Events.Where(e => e.Id.Equals(hamevent) && e.SecretKey.Equals(secret)).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Diploma = e.Diploma, HasTop = e.HasTop, StartDate = e.StartDate, EndDate = e.EndDate }).FirstOrDefault();
+                    var hashedSecret = ComputeSha256Hash(secret.Value);
+                    myevent = _dbcontext.Events.Where(e => e.Id.Equals(hamevent) && e.SecretKey.Equals(hashedSecret)).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Diploma = e.Diploma, HasTop = e.HasTop, StartDate = e.StartDate, EndDate = e.EndDate }).FirstOrDefault();
                 }
                 else
                 {
@@ -342,11 +349,12 @@ namespace HamEvent.Controllers
         [HttpPost("{hamevent}/{eventsecret}/upload")]
         public IActionResult Upload(Guid hamevent, Guid eventsecret)
         {
+            var hashedSecret = ComputeSha256Hash(eventsecret);
             _logger.LogInformation(MyLogEvents.UploadLog, "Uploading log for event {0}", hamevent);
             int added = 0;
             try
             {
-                var myevent=_dbcontext.Events.Where(e => e.Id.Equals(hamevent) && e.SecretKey.Equals(eventsecret)).FirstOrDefault();
+                var myevent=_dbcontext.Events.Where(e => e.Id.Equals(hamevent) && e.SecretKey.Equals(hashedSecret)).FirstOrDefault();
 
                     var adifInport = Request.Form.Files[0];
                     if (adifInport.Length > 0 && myevent != null)
@@ -394,8 +402,9 @@ namespace HamEvent.Controllers
         [HttpGet("ADIF/{hamevent}/{secret}")]
         public ActionResult ExportAll(Guid hamevent, Guid secret)
         {
+            var hashedSecret = ComputeSha256Hash(secret);
             _logger.LogInformation(MyLogEvents.DeleteAllQSOs, "Export All QSOs from event {0}", hamevent);
-            Event myevent = _dbcontext.Events.Where(e => e.Id.Equals(hamevent) && e.SecretKey.Equals(secret)).FirstOrDefault();
+            Event myevent = _dbcontext.Events.Where(e => e.Id.Equals(hamevent) && e.SecretKey.Equals(hashedSecret)).FirstOrDefault();
             if (myevent != null)
             {
                 AdifFile export = new AdifFile();
@@ -426,6 +435,7 @@ namespace HamEvent.Controllers
         [HttpDelete("QSOs/{hamevent}/{secret}")]
         public ActionResult Delete(Guid hamevent, Guid secret, string callsign1, string callsign2, string mode, string band, string timestamp)
         {
+            var hashedSecret = ComputeSha256Hash(secret);
             _logger.LogInformation(MyLogEvents.DeleteQSO, "Delete QSO callsign1 {0}, callsign2 {1}, mode {2}, band {3}, timestamp {4} from event {5}", callsign1, callsign2, mode, band, timestamp, hamevent);
             var myqso = _dbcontext.QSOs.Where(qso => qso.EventId == hamevent &&
                                                        qso.Callsign1 == callsign1 &&
@@ -433,7 +443,7 @@ namespace HamEvent.Controllers
                                                        qso.Mode == mode &&
                                                        qso.Band == band &&
                                                        qso.Timestamp == DateTime.Parse(timestamp, CultureInfo.InvariantCulture) &&
-                                                       qso.Event.SecretKey == secret).FirstOrDefault();
+                                                       qso.Event.SecretKey == hashedSecret).FirstOrDefault();
             if (myqso == null) return NotFound();
             _dbcontext.QSOs.Remove(myqso);
             _dbcontext.SaveChanges();
@@ -442,8 +452,9 @@ namespace HamEvent.Controllers
         [HttpDelete("QSOs/{hamevent}/{secret}/all")]
         public ActionResult DeleteAll(Guid hamevent, Guid secret)
         {
+            var hashedSecret = ComputeSha256Hash(secret);
             _logger.LogInformation(MyLogEvents.DeleteAllQSOs, "Delete All QSOs from event {0}", hamevent);
-            var myevent=_dbcontext.Events.Where(e => e.Id.Equals(hamevent) && e.SecretKey.Equals(secret)).Include(e => e.QSOs).FirstOrDefault();
+            var myevent=_dbcontext.Events.Where(e => e.Id.Equals(hamevent) && e.SecretKey.Equals(hashedSecret)).Include(e => e.QSOs).FirstOrDefault();
             foreach (var qso in myevent.QSOs)
             {
                 _dbcontext.QSOs.Remove(qso);
@@ -454,6 +465,7 @@ namespace HamEvent.Controllers
         [HttpPost("QSOs/{hamevent}/{secret}")]
         public ActionResult Post(Guid hamevent, Guid secret, [FromQuery] string callsign1, [FromQuery] string callsign2, [FromQuery] string mode, [FromQuery] string band, [FromQuery] string timestamp, [FromBody] QSO updatedQSO)
         {
+            var hashedSecret = ComputeSha256Hash(secret);
             _logger.LogInformation(MyLogEvents.UpdateQSO, "Update QSO callsign1 {0}, callsign2 {1}, mode {2}, band {3}, timestamp {4} from event {5} to callsign1 {6}, callsign2 {7}, mode {8}, band {9}, timestamp {10}", callsign1, callsign2, mode, band, timestamp, hamevent, updatedQSO.Callsign1, updatedQSO.Callsign2, updatedQSO.Mode, updatedQSO.Band, updatedQSO.Timestamp);
             var myqso = _dbcontext.QSOs.Where(qso => qso.EventId == hamevent &&
                                                        qso.Callsign1 == callsign1 &&
@@ -461,7 +473,7 @@ namespace HamEvent.Controllers
                                                        qso.Mode == mode &&
                                                        qso.Band == band &&
                                                        qso.Timestamp == DateTime.Parse(timestamp, CultureInfo.InvariantCulture) &&
-                                                       qso.Event.SecretKey == secret).FirstOrDefault();
+                                                       qso.Event.SecretKey == hashedSecret).FirstOrDefault();
             if (myqso == null) return NotFound();
             updatedQSO.RST1 = myqso.RST1;
             updatedQSO.RST2 = myqso.RST2;
@@ -472,6 +484,24 @@ namespace HamEvent.Controllers
 
             _dbcontext.SaveChanges();
             return Ok();
+        }
+
+        public static string ComputeSha256Hash(Guid rawData)
+        {
+            // Create a SHA256
+            using (SHA256 sha256Hash = SHA256.Create())
+            {
+                // ComputeHash - returns byte array
+                byte[] bytes = sha256Hash.ComputeHash(rawData.ToByteArray());
+
+                // Convert byte array to a string
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    builder.Append(bytes[i].ToString("x2"));
+                }
+                return builder.ToString();
+            }
         }
         #endregion
 

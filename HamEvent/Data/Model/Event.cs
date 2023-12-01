@@ -7,7 +7,7 @@ namespace HamEvent.Data.Model
     public class Event
     {
         public Guid Id { get; set; }
-        public Guid SecretKey { get; set; }
+        public string SecretKey { get; set; }
         public required string Name { get; set; }
         public required string Description { get; set; }
         public required string Diploma { get; set; }

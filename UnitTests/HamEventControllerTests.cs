@@ -31,7 +31,7 @@ namespace UnitTests
             Assert.NotNull(events);
             Assert.Equal(100, events.Count);
             Assert.Equal(10, events.Data.Count);
-            Assert.Equal(Guid.Empty,events.Data[0].SecretKey);
+            Assert.Equal("",events.Data[0].SecretKey);
         }
 
         [Fact]

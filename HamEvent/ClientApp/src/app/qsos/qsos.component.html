@@ -7,15 +7,15 @@
         <div class="collapse navbar-collapse" id="topnavbar">
           <ul class="navbar-nav">
             <li class="nav-item" *ngIf="event">
-              <a [routerLink]="[eventId]" class="nav-link" routerLinkActive="active"
+              <a [routerLink]="['/',eventId]" class="nav-link" routerLinkActive="active"
                  [routerLinkActiveOptions]="{exact:true}">{{'QSOs' | translate}}</a>
             </li>
             <li class="nav-item" *ngIf="event && event.hasTop">
-              <a [routerLink]="[eventId,'top']" class="nav-link" routerLinkActive="active"
+              <a [routerLink]="['/',eventId,'top']" class="nav-link" routerLinkActive="active"
                  [routerLinkActiveOptions]="{exact:true}">{{'Event Top' | translate}}</a>
             </li>
             <li class="nav-item" *ngIf="event && isLive">
-              <a [routerLink]="[eventId,'live']" class="nav-link" routerLinkActive="active"
+              <a [routerLink]="['/',eventId,'live']" class="nav-link" routerLinkActive="active"
                  [routerLinkActiveOptions]="{exact:true}">{{'Live' | translate}}</a>
             </li>
           </ul>
@@ -88,7 +88,7 @@
       </tbody>
     </table>
     <div class="d-flex justify-content-center">
-      <pagination-controls id="qsos" previousLabel="{{'Prev' | translate}}"
+      <pagination-controls *ngIf="loaded && !QSOs?.length" id="qsos" previousLabel="{{'Prev' | translate}}"
                            nextLabel="{{'Next' | translate}}"
                            (pageChange)="onTableDataChange($event)">
       </pagination-controls>

@@ -2,9 +2,8 @@
   <p *ngIf="!event"><em>{{'Loading...' | translate}}</em></p>
   <h1 class="display-4 fw-bold text-body-emphasis" *ngIf="event">{{event.name}}</h1>
   <div class="col mx-auto" *ngIf="event">
-    <p>{{event.description}}</p>
-
-
+    <p [innerHTML]="event.description"></p>
+  
     <nav class="navbar navbar-expand navbar-light bg-light">
       <div class="container-fluid">
         <div class="collapse navbar-collapse" id="topnavbar">

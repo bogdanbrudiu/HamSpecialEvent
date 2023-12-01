@@ -2,7 +2,7 @@
   <p *ngIf="!event"><em>{{'Loading...' | translate}}</em></p>
   <h1 class="display-4 fw-bold text-body-emphasis" *ngIf="event">{{event.name}}</h1>
   <div class="col mx-auto" *ngIf="event">
-    <p>{{event.description}}</p>
+    <p [innerHTML]="event.description"></p>
     <nav class="navbar navbar-expand">
       <div class="container-fluid">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#tableMenu" aria-controls="tableMenu" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,7 +52,7 @@
           <th>{{'Callsign 1' | translate}}</th>
           <th>{{'Callsign 2' | translate}}</th>
           <!--<th>RST1</th>
-          <th>RST2</th>-->
+        <th>RST2</th>-->
           <th>{{'Mode' | translate}}</th>
           <th>{{'Band' | translate}}</th>
           <th>{{'Timestamp' | translate}}</th>
@@ -88,9 +88,11 @@
             <span *ngIf="!QSO.editable">{{QSO.timestamp}}</span>
             <input type="text" class="form-control" [(ngModel)]="QSO.timestamp" *ngIf="QSO.editable" />
           </td>
-          <td> <i class="bi bi-trash" (click)="delete(QSO)"></i>
-               <i *ngIf="!QSO.editable" class="bi bi-pen" (click)="editQSO(QSO)"></i>
-               <i *ngIf="QSO.editable" class="bi bi-floppy" (click)="saveQSO(QSO)"></i></td>
+          <td>
+            <i class="bi bi-trash" (click)="delete(QSO)"></i>
+            <i *ngIf="!QSO.editable" class="bi bi-pen" (click)="editQSO(QSO)"></i>
+            <i *ngIf="QSO.editable" class="bi bi-floppy" (click)="saveQSO(QSO)"></i>
+          </td>
         </tr>
       </tbody>
     </table>

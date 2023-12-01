@@ -2,7 +2,7 @@
 
   <h1 class="display-4 fw-bold text-body-emphasis" *ngIf="event">{{event.name}}</h1>
   <div class="col mx-auto">
-    <p *ngIf="event">{{event.description}}</p>
+    <p *ngIf="event" [innerHTML]="event.description"></p>
 
 
     <p *ngIf="!Operators?.length"><em>{{'No entries...' | translate}}</em></p>
@@ -33,7 +33,7 @@
       </tbody>
     </table>
     <br />
- 
+
     <table class='table table-striped' aria-labelledby="tableLabel" *ngIf="QSOs.length">
       <thead>
         <tr>

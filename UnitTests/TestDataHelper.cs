@@ -1,4 +1,5 @@
-﻿using HamEvent.Data.Model;
+﻿using HamEvent.Controllers;
+using HamEvent.Data.Model;
 
 namespace UnitTests
 {
@@ -13,7 +14,7 @@ namespace UnitTests
                 new Event
                 {
                     Id = Guid.NewGuid(),
-                    SecretKey = Guid.NewGuid(),
+                    SecretKey = HamEventController.ComputeSha256Hash(Guid.NewGuid()),
                     Name = "Name"+i,
                     Description = "Description"+i,
                     Diploma = "Diploma"+i,

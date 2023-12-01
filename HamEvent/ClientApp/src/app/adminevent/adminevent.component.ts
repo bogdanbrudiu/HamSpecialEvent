@@ -37,7 +37,7 @@ export class AdminEventComponent implements OnInit {
       this.eventsService.updateEvent(this.event).subscribe(
         (response) => {
           console.log(response);
-          this.router.navigate([this.eventId, this.eventSecret]);
+          this.router.navigate(['/',this.eventId, this.eventSecret]);
         },
         error => {
           console.log(error); 

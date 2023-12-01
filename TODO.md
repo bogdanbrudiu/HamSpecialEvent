@@ -19,6 +19,8 @@ Project Description
 
 ### Done ✓
 
+- [✓] Live Dashbord should automaticaly refresh #feat
+- [✓] SecretKey is hashed and live db is in the repo #feature @bogdanbrudiu
 - [✓] Log32Sync error message at sync #bug @bogdanbrudiu
 - [✓] Live Dashboard should be renamed to Live stream, QSO list should be sorted descending by timestamp #bug @bogdanbrudiu
 - [✓] Live Dashboard should check QSO Timestamp timezone differences #bug @bogdanbrudiu

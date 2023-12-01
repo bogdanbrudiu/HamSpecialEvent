@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EventsService, HamEvent } from '../events.service';
 import { Operator, QSO, QSOsService } from '../qsos.service';
 
@@ -13,8 +13,9 @@ export class DashboardComponent {
   public isLive: boolean = false;
   public Operators: Operator[] = [];
   public QSOs: QSO[] = [];
+    interval: any;
 
-  constructor(private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService) {
+  constructor(private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService, private router: Router) {
 
   }
   bandStatus(band: string): boolean {
@@ -33,7 +34,6 @@ export class DashboardComponent {
     }
     return "";
   }
-
   ngOnInit() {
     this.routes.paramMap.subscribe(params => {
       this.eventId = params.get('id')!;
@@ -59,6 +59,26 @@ export class DashboardComponent {
           console.log(error);
         }
       );
+      this.interval = setInterval(() => {
+        this.qsosService.getLive(this.eventId).subscribe(
+          (response) => {
+            this.Operators = response;
+            this.Operators.forEach((operator) => {
+              this.QSOs = this.QSOs.concat(operator.lastQSOs);
+            });
+            this.QSOs.sort((n1, n2) => new Date(n1.timestamp) > new Date(n2.timestamp) ? 1 : -1);
+            console.log(response);
+          },
+          (error) => {
+            console.log(error);
+          }
+        );
+      }, 10000);
     });
+  }
+  ngOnDestroy() {
+    if (this.interval) {
+      clearInterval(this.interval);
+    }
   }
 }

@@ -62,6 +62,7 @@ export class DashboardComponent {
       this.interval = setInterval(() => {
         this.qsosService.getLive(this.eventId).subscribe(
           (response) => {
+            this.isLive = response != null && (<Array<any>>response).length > 0;
             this.Operators = response;
             this.Operators.forEach((operator) => {
               this.QSOs = this.QSOs.concat(operator.lastQSOs);

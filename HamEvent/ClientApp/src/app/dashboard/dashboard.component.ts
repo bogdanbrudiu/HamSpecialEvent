@@ -64,6 +64,7 @@ export class DashboardComponent {
           (response) => {
             this.isLive = response != null && (<Array<any>>response).length > 0;
             this.Operators = response;
+            this.QSOs = [];
             this.Operators.forEach((operator) => {
               this.QSOs = this.QSOs.concat(operator.lastQSOs);
             });

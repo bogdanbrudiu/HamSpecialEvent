@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, NavigationStart, Params, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { filter, map } from 'rxjs';
@@ -21,7 +22,7 @@ export class NavMenuComponent {
   public event: HamEvent | undefined;
   public isLive: boolean = false;
 
-  constructor(private translate: TranslateService, private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService, private router: Router) { }
+  constructor(private translate: TranslateService, private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService, private router: Router, private titleService: Title) { }
   changeSiteLanguage(localeCode: string): void {
     const selectedLanguage = this.languageList
       .find((language) => language.code === localeCode)
@@ -62,6 +63,9 @@ export class NavMenuComponent {
         this.eventsService.getEvent(this.eventId).subscribe(
           (response) => {
             this.event = response;
+            if (this.event){ 
+              this.titleService.setTitle(this.event.name);
+            }
             console.log(response);
           },
           (error) => {
@@ -78,6 +82,7 @@ export class NavMenuComponent {
           }
         );
       } else {
+        this.titleService.setTitle(this.translate.instant("HamEvents"));
         this.eventId = '';
         this.isLive = false;
         this.event = undefined;

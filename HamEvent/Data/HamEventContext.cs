@@ -34,6 +34,7 @@ namespace HamEvent.Data
         // The following configures EF to create a Sqlite database file in the
         // special "local" folder for your platform.
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseSqlite($"Data Source={DbPath}");
+            => optionsBuilder.UseSqlite($"Data Source={DbPath}")
+            .LogTo(Console.WriteLine, LogLevel.Information);
     }
 }

@@ -19,6 +19,8 @@ Project Description
 
 ### Done ✓
 
+- [✓] Add 60, 17, 12 bands to dashbord #feat
+- [✓] Title for pages #feat
 - [✓] Live Dashbord should automaticaly refresh #feat
 - [✓] SecretKey is hashed and live db is in the repo #feature @bogdanbrudiu
 - [✓] Log32Sync error message at sync #bug @bogdanbrudiu

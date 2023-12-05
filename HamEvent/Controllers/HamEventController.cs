@@ -77,13 +77,13 @@ namespace HamEvent.Controllers
            
         _logger.LogInformation(MyLogEvents.GetTop, "Get Top for event {0} page {1} paginated by {2} per page, filtered by {3}", hamevent, page, pagesize, callsign);
             IQueryable<QSO> qsos;
-            IQueryable<Participant> participants;
+            IEnumerable<Participant> participants;
             IEnumerable<Participant> top;
             try
             {
                 qsos = _dbcontext.QSOs.Where(qso => qso.EventId.Equals(hamevent));
 
-                participants = qsos.GroupBy(qso => new { qso.Callsign2 }).Select(grup => new Participant()
+                participants = qsos.Select(qso => new { qso.Callsign2, qso.Mode, qso.Band, qso.Timestamp.DayOfYear, qso.EventId }).Distinct().ToList().GroupBy(qso => new { qso.Callsign2 }).Select(grup => new Participant()
                 {
                     Callsign = grup.Key.Callsign2,
                     Count = grup.Count(),

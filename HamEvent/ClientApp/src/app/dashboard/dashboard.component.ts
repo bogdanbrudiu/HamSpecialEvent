@@ -68,7 +68,7 @@ export class DashboardComponent {
             this.Operators.forEach((operator) => {
               this.QSOs = this.QSOs.concat(operator.lastQSOs);
             });
-            this.QSOs.sort((n1, n2) => new Date(n1.timestamp) > new Date(n2.timestamp) ? 1 : -1);
+            this.QSOs.sort((n1, n2) => new Date(n1.timestamp) > new Date(n2.timestamp) ? -1 : 1);
             console.log(response);
           },
           (error) => {

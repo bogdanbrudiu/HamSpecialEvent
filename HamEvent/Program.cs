@@ -14,9 +14,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-builder.Services.AddDbContext<HamEventContext>(opt =>
+builder.Services.AddDbContext<HamEventContext>(options =>
 {
-    opt.EnableSensitiveDataLogging();
+    options.EnableSensitiveDataLogging();
+    options.LogTo(Console.WriteLine, LogLevel.Information);
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 builder.Services.AddHostedService<InitializationService>();
 IPWhitelist wl = new IPWhitelist();

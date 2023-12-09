@@ -12,7 +12,7 @@ jobs:
       - name: Build
       - uses: bogdanbrudiu/HamSpecialEvent/.github/workflows/build.yml@main
       - name: Deploy
-        uses: rasmusbuchholdt/simply-web-deploy@2.1.0
+      - uses: rasmusbuchholdt/simply-web-deploy@2.1.0
         with:
           website-name: ${{ secrets.WEBSITE_NAME }}
           server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}

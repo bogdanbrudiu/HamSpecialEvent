@@ -1,0 +1,22 @@
+name: Build & deploy
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+jobs:
+  build_and_deploy:
+     name: Build package and deploy
+     steps:
+      - name: Build
+      - uses: bogdanbrudiu/HamSpecialEvent/.github/workflows/build.yml@main
+      - name: Deploy
+        uses: rasmusbuchholdt/simply-web-deploy@2.1.0
+        with:
+          website-name: ${{ secrets.WEBSITE_NAME }}
+          server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
+          server-username: ${{ secrets.SERVER_USERNAME }}
+          server-password: ${{ secrets.SERVER_PASSWORD }}
+          source-path: '\build\'
+          target-path: '/my-sub-directory/'

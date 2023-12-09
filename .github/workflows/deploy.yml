@@ -10,13 +10,13 @@ jobs:
      name: Build package and deploy
      steps:
       - name: Build
-      - uses: bogdanbrudiu/HamSpecialEvent/.github/workflows/build.yml@main
+        uses: bogdanbrudiu/HamSpecialEvent/.github/workflows/build.yml@main
       - name: Deploy
-      - uses: rasmusbuchholdt/simply-web-deploy@2.1.0
-        with:
-          website-name: ${{ secrets.WEBSITE_NAME }}
-          server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
-          server-username: ${{ secrets.SERVER_USERNAME }}
-          server-password: ${{ secrets.SERVER_PASSWORD }}
-          source-path: '\build\'
-          target-path: '/my-sub-directory/'
+        uses: rasmusbuchholdt/simply-web-deploy@2.1.0
+          with:
+            website-name: ${{ secrets.WEBSITE_NAME }}
+            server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
+            server-username: ${{ secrets.SERVER_USERNAME }}
+            server-password: ${{ secrets.SERVER_PASSWORD }}
+            source-path: '\build\'
+            target-path: '/my-sub-directory/'

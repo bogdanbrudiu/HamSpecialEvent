@@ -133,7 +133,11 @@ export class AdminQSOsComponent {
   }
   genPdf() {
     return this.pdfService.getPdf(this.eventId, this.searchInput).subscribe((data: any) => {
-
+      gtag('event', "GetDiplomaFromAdmin", {
+        'event_category': "diploma",
+        'event_label': "admin",
+        'value': this.searchInput
+      });
       this.blob = new Blob([data], { type: 'application/pdf' });
 
       let downloadURL = window.URL.createObjectURL(data);

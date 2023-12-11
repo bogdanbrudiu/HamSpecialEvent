@@ -48,12 +48,7 @@ export class DashboardComponent {
       );
       this.qsosService.getLive(this.eventId).subscribe(
         (response) => {
-          this.Operators = response;
-          this.Operators.forEach((operator) => {
-            this.QSOs=this.QSOs.concat(operator.lastQSOs);
-          });
-          this.QSOs.sort((n1, n2) => new Date(n1.timestamp) > new Date(n2.timestamp)?1:-1);
-          console.log(response);
+          this.loadLive(response);
         },
         (error) => {
           console.log(error);
@@ -62,14 +57,7 @@ export class DashboardComponent {
       this.interval = setInterval(() => {
         this.qsosService.getLive(this.eventId).subscribe(
           (response) => {
-            this.isLive = response != null && (<Array<any>>response).length > 0;
-            this.Operators = response;
-            this.QSOs = [];
-            this.Operators.forEach((operator) => {
-              this.QSOs = this.QSOs.concat(operator.lastQSOs);
-            });
-            this.QSOs.sort((n1, n2) => new Date(n1.timestamp) > new Date(n2.timestamp) ? -1 : 1);
-            console.log(response);
+            this.loadLive(response);
           },
           (error) => {
             console.log(error);
@@ -78,6 +66,17 @@ export class DashboardComponent {
       }, 10000);
     });
   }
+  private loadLive(response: any) {
+        this.isLive = response != null && (<Array<any>>response).length > 0;
+        this.Operators = response;
+        this.QSOs = [];
+        this.Operators.forEach((operator) => {
+            this.QSOs = this.QSOs.concat(operator.lastQSOs);
+        });
+        this.QSOs.sort((n1, n2) => new Date(n1.timestamp) > new Date(n2.timestamp) ? -1 : 1);
+        console.log(response);
+    }
+
   ngOnDestroy() {
     if (this.interval) {
       clearInterval(this.interval);

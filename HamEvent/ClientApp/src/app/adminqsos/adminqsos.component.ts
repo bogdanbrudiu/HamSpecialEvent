@@ -6,7 +6,7 @@ import { EventsService, HamEvent } from '../events.service';
 import { QSO, QSOsService } from '../qsos.service';
 import { PdfService } from '../pdf.service';
 import { TranslateService } from '@ngx-translate/core';
-
+declare let gtag: Function;
 @Component({
   selector: 'app-adminqsos',
   templateUrl: './adminqsos.component.html'

@@ -18,12 +18,16 @@
       <input type="checkbox" class="form-check-input" id="hastop" [(ngModel)]="event.hasTop" name="hastop">
     </div>
     <div class="mb-3">
+      <label for="ExcludeCallsigns" class="form-label">{{'ExcludeCallsignsFromTop' | translate}}</label>
+      <input type="text" class="form-control" id="ExcludeCallsigns" [(ngModel)]="event.excludeCallsigns" name="ExcludeCallsigns">
+    </div>
+    <div class="mb-3">
       <label for="startDate" class="form-label">{{'Start date' | translate}}</label>
-      <input type="datetime" class="form-control" id="hastop" [ngModel]="event.startDate | date:'yyyy-MM-ddTHH:mm'" (ngModelChange)="event.startDate = $event" name="startDate">
+      <input type="datetime" class="form-control" id="startDate" [ngModel]="event.startDate | date:'yyyy-MM-ddTHH:mm'" (ngModelChange)="event.startDate = $event" name="startDate">
     </div>
     <div class="mb-3">
       <label for="endDate" class="form-label">{{'End date' | translate}}</label>
-      <input type="datetime" class="form-control" id="hastop" [ngModel]="event.endDate | date:'yyyy-MM-ddTHH:mm'" (ngModelChange)="event.endDate = $event" name="endDate">
+      <input type="datetime" class="form-control" id="endDate" [ngModel]="event.endDate | date:'yyyy-MM-ddTHH:mm'" (ngModelChange)="event.endDate = $event" name="endDate">
     </div>
     <button type="submit" class="btn btn-primary" (click)="onSubmit()">{{'Update' | translate}}</button>
     <div [innerHtml]="event.diploma | sanitizedHtml" width="842" height="595"></div>

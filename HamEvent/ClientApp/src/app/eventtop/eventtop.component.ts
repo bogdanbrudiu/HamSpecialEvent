@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HamEvent, EventsService } from '../events.service';
 import { Participant, QSO, QSOsService } from '../qsos.service';
 import { PdfService } from '../pdf.service';
-
+declare let gtag: Function;
 @Component({
   selector: 'app-eventtop',
   templateUrl: './eventtop.component.html'

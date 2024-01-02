@@ -81,7 +81,8 @@ namespace HamEvent.Controllers
             IEnumerable<Participant> top;
             try
             {
-                qsos = _dbcontext.QSOs.Where(qso => qso.EventId.Equals(hamevent));
+                var myevent=_dbcontext.Events.Where(e => e.Id.Equals(hamevent)).FirstOrDefault();
+                qsos = _dbcontext.QSOs.Where(qso => qso.EventId.Equals(hamevent) && !myevent.ExcludeCallsignsList.Contains(qso.Callsign2) );
 
                 participants = qsos.Select(qso => new { qso.Callsign2, qso.Mode, qso.Band, qso.Timestamp.DayOfYear, qso.EventId }).Distinct().ToList().GroupBy(qso => new { qso.Callsign2 }).Select(grup => new Participant()
                 {
@@ -303,6 +304,9 @@ namespace HamEvent.Controllers
                     myevent.Description = hamevent.Description;
                     myevent.Name = hamevent.Name;
                     myevent.HasTop = hamevent.HasTop;
+                    myevent.ExcludeCallsigns = hamevent.ExcludeCallsigns;
+                    myevent.StartDate = hamevent.StartDate;
+                    myevent.EndDate = hamevent.EndDate;
                     _dbcontext.SaveChanges();
                     return Ok(myevent);
                 }
@@ -328,11 +332,11 @@ namespace HamEvent.Controllers
                 if (secret.HasValue)
                 {
                     var hashedSecret = ComputeSha256Hash(secret.Value);
-                    myevent = _dbcontext.Events.Where(e => e.Id.Equals(hamevent) && e.SecretKey.Equals(hashedSecret)).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Diploma = e.Diploma, HasTop = e.HasTop, StartDate = e.StartDate, EndDate = e.EndDate }).FirstOrDefault();
+                    myevent = _dbcontext.Events.Where(e => e.Id.Equals(hamevent) && e.SecretKey.Equals(hashedSecret)).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Diploma = e.Diploma, HasTop = e.HasTop, StartDate = e.StartDate, EndDate = e.EndDate, ExcludeCallsigns=e.ExcludeCallsigns }).FirstOrDefault();
                 }
                 else
                 {
-                    myevent = _dbcontext.Events.Where(e => e.Id == hamevent).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Diploma = e.Diploma, HasTop = e.HasTop, StartDate = e.StartDate, EndDate = e.EndDate }).FirstOrDefault();
+                    myevent = _dbcontext.Events.Where(e => e.Id == hamevent).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Diploma = e.Diploma, HasTop = e.HasTop, StartDate = e.StartDate, EndDate = e.EndDate, ExcludeCallsigns = e.ExcludeCallsigns }).FirstOrDefault();
                 }
 
                 if (myevent == null) return NotFound();

@@ -83,7 +83,16 @@ namespace UnitTests
                 Freq = "3500",
                 Timestamp = DateTime.Now.AddMinutes(-35),
             });
-         
+            result.Add(new QSO()
+            {
+                EventId = new Guid("21111111-1111-1111-1111-111111111111"),
+                Callsign1 = "Callsign11",
+                Callsign2 = "Callsign2",
+                Band = "80M",
+                Mode = "SSB",
+                Freq = "3500",
+                Timestamp = DateTime.Now.AddMinutes(-35),
+            });
             return result;
 
         }

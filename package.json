@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "angular-gtag": "^1.0.4",
     "bootstrap": "^5.3.1",
     "ngx-pagination": "^6.0.3"
   },

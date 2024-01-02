@@ -19,7 +19,6 @@ import { AdminEventComponent } from './adminevent/adminevent.component';
 import { UploadComponent } from './upload/upload.component';
 import { SanitizedHtmlPipe } from './sanitized-html.pipe';
 import { DashboardComponent } from './dashboard/dashboard.component';
-
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }

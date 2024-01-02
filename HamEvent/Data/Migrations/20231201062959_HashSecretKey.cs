@@ -1,5 +1,7 @@
 ﻿using HamEvent.Controllers;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
+using System.Data.SqlClient;
 
 #nullable disable
 
@@ -11,9 +13,24 @@ namespace HamEvent.Data.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            var context = new HamEventContext();
-            foreach (var hamevent in context.Events) {
-                hamevent.SecretKey = HamEventController.ComputeSha256Hash(new Guid(hamevent.SecretKey));
+
+            IConfiguration configuration = new ConfigurationBuilder()
+             .SetBasePath(Directory.GetCurrentDirectory())
+             .AddJsonFile("appsettings.json")
+             .Build();
+
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+
+            var options = new DbContextOptionsBuilder<HamEventContext>()
+                             .UseSqlite(connectionString)
+                             .Options;
+            var context = new HamEventContext(options);
+            foreach (var hamevent in context.Events)
+            {
+                if (hamevent.SecretKey.Length.Equals(32))
+                {
+                    hamevent.SecretKey = HamEventController.ComputeSha256Hash(new Guid(hamevent.SecretKey));
+                }
             }
             context.SaveChanges();
         }

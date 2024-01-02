@@ -15,6 +15,7 @@ namespace HamEvent.Data.Model
         public ICollection<QSO> QSOs { get; } = new List<QSO>();
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
+        public string ExcludeCallsigns { get; set; }
         public bool HasTop { get; set; }
         [NotMapped]
         public int? Days
@@ -26,6 +27,8 @@ namespace HamEvent.Data.Model
             }
         }
 
+        [NotMapped]
+        public String[] ExcludeCallsignsList { get { return string.IsNullOrEmpty(ExcludeCallsigns)?new String[0] :ExcludeCallsigns.Split(','); } }
 
         [NotMapped]
         public string? Last

@@ -8,7 +8,7 @@ on:
 
 
 jobs:
-  setup:
+  Build_Test_Deploy:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3
@@ -28,10 +28,10 @@ jobs:
       run: dotnet publish HamEvent/HamEvent.csproj --configuration Release --framework net7.0 --output ./publish --runtime win-x64 --self-contained true -p:PublishTrimmed=false -p:PublishSingleFile=false
     - name: Deploy
       if: github.event_name != 'pull_request'
-      uses: rasmusbuchholdt/simply-web-deploy@2.1.0
+    - uses: ChristopheLav/iis-deploy@v1
       with:
         website-name: ${{ secrets.WEBSITE_NAME }}
-        server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
-        server-username: ${{ secrets.SERVER_USERNAME }}
-        server-password: ${{ secrets.SERVER_PASSWORD }}
-        skip-directory-path:  '\\App_Data'
+        msdeploy-service-url: ${{ secrets.SERVER_COMPUTER_NAME }}
+        msdeploy-username: ${{ secrets.SERVER_USERNAME }}
+        msdeploy-password: ${{ secrets.SERVER_PASSWORD }}
+        source-path: ${{ github.workspace }}HamSpecialEvent\HamSpecialEvent\publish\

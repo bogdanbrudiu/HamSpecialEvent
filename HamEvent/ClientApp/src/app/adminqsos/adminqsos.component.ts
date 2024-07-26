@@ -6,7 +6,7 @@ import { EventsService, HamEvent } from '../events.service';
 import { QSO, QSOsService } from '../qsos.service';
 import { PdfService } from '../pdf.service';
 import { TranslateService } from '@ngx-translate/core';
-
+declare let gtag: Function;
 @Component({
   selector: 'app-adminqsos',
   templateUrl: './adminqsos.component.html'
@@ -133,7 +133,11 @@ export class AdminQSOsComponent {
   }
   genPdf() {
     return this.pdfService.getPdf(this.eventId, this.searchInput).subscribe((data: any) => {
-
+      gtag('event', "GetDiplomaFromAdmin", {
+        'event_category': "diploma",
+        'event_label': "admin",
+        'value': this.searchInput
+      });
       this.blob = new Blob([data], { type: 'application/pdf' });
 
       let downloadURL = window.URL.createObjectURL(data);

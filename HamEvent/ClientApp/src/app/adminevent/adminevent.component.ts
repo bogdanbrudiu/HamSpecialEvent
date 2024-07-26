@@ -55,4 +55,5 @@ interface HamEvent {
   hasTop: boolean;
   startDate: string;
   endDate: string;
+  excludeCallsigns: string;
 }

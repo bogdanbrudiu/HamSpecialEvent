@@ -39,5 +39,6 @@
   "Export all QSOs": "Export all QSOs",
   "Start date": "Start date",
   "End date": "End date",
-  "Live": "Live stream"
+  "Live": "Live stream",
+  "ExcludeCallsignsFromTop": "Exclude callsigns from top"
 }

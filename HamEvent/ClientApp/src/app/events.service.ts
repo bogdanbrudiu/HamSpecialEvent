@@ -33,4 +33,5 @@ export interface HamEvent {
   last: string;
   count: number;
   unique: number;
+  excludeCallsigns: string;
 }

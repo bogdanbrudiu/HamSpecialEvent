@@ -54,5 +54,30 @@ namespace UnitTests
             Assert.Equal(2, operators.Where(o => o.Callsign.Equals("Callsign1")).First().lastQSOs.Count());
             Assert.Equal(1, operators.Where(o => o.Callsign.Equals("Callsign11")).First().lastQSOs.Count());
         }
+
+        //add test for [HttpGet("QSOs/{hamevent}")]
+        [Fact]
+        public void GetQSOs()
+        {
+            // Arrange
+            Mock<ILogger<HamEventController>> loggerMock = new Mock<ILogger<HamEventController>>();
+            Mock<IMapper> mapperMock = new Mock<IMapper>();
+            var hamEventContextMock = new Mock<HamEventContext>();
+            hamEventContextMock.Setup<DbSet<QSO>>(x => x.QSOs)
+                .ReturnsDbSet(TestDataHelper.GetFakeLiveQSOsList());
+
+            //Act
+            HamEventController hamEventController = new(loggerMock.Object, mapperMock.Object, hamEventContextMock.Object);
+            var qsos = hamEventController.Get(new Guid("11111111-1111-1111-1111-111111111111"),0);
+
+            //Assert
+            Assert.NotNull(qsos);
+            Assert.Equal(5, qsos.Count);
+           
+        }
+
+
+
+
     }
 }

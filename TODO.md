@@ -19,6 +19,9 @@ Project Description
 
 ### Done ✓
 
+- [✓] Exclude callsign from top #feat
+- [✓] Fix dashboard order #bug
+- [✓] Google analytics #feat
 - [✓] Top counts only 1 point per callsign/mode/band/day #bug
 - [✓] Fix dashbord ordering #bug
 - [✓] Add 60, 17, 12 bands to dashbord #feat

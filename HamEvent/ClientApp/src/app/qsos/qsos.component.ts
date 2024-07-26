@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HamEvent, EventsService } from '../events.service';
 import { QSO, QSOsService } from '../qsos.service';
 import { PdfService } from '../pdf.service';
-
+declare let gtag: Function;
 @Component({
   selector: 'app-qsos',
   templateUrl: './qsos.component.html'
@@ -73,7 +73,11 @@ export class QSOsComponent {
   genPdf() {
 
     return this.pdfService.getPdf(this.eventId, this.searchInput).subscribe((data: any) => {
-
+      gtag('event', "GetDiplomaFromAdmin", {
+        'event_category': "diploma",
+        'event_label': "qsos",
+        'value': this.searchInput
+      });
       this.blob = new Blob([data], { type: 'application/pdf' });
 
       let downloadURL = window.URL.createObjectURL(data);

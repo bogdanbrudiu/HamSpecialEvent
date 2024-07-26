@@ -11,27 +11,27 @@ jobs:
   Build_Test_Deploy:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v3
-      with:
-        submodules: recursive
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 6.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore     
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
-    - name: Publish
-      run: dotnet publish HamEvent/HamEvent.csproj --configuration Release --framework net7.0 --output ./publish --runtime win-x64 --self-contained true -p:PublishTrimmed=false -p:PublishSingleFile=false
-    - name: Deploy
-      if: github.event_name != 'pull_request'
-    - uses: ChristopheLav/iis-deploy@v1
-      with:
-        website-name: ${{ secrets.WEBSITE_NAME }}
-        msdeploy-service-url: ${{ secrets.SERVER_COMPUTER_NAME }}
-        msdeploy-username: ${{ secrets.SERVER_USERNAME }}
-        msdeploy-password: ${{ secrets.SERVER_PASSWORD }}
-        source-path: ${{ github.workspace }}HamSpecialEvent\HamSpecialEvent\publish\
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --no-restore     
+      - name: Test
+        run: dotnet test --no-build --verbosity normal
+      - name: Publish
+        run: dotnet publish HamEvent/HamEvent.csproj --configuration Release --framework net7.0 --output ./publish --runtime win-x64 --self-contained true -p:PublishTrimmed=false -p:PublishSingleFile=false
+      - name: Deploy
+        if: github.event_name != 'pull_request'
+      - uses: ChristopheLav/iis-deploy@v1
+        with:
+          website-name: ${{ secrets.WEBSITE_NAME }}
+          msdeploy-service-url: ${{ secrets.SERVER_COMPUTER_NAME }}
+          msdeploy-username: ${{ secrets.SERVER_USERNAME }}
+          msdeploy-password: ${{ secrets.SERVER_PASSWORD }}
+          source-path: ${{ github.workspace }}HamSpecialEvent\HamSpecialEvent\publish\

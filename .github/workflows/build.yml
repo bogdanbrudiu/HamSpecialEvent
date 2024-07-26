@@ -9,7 +9,7 @@ on:
 
 jobs:
   Build_Test_Deploy:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
@@ -26,4 +26,9 @@ jobs:
         run: dotnet test --no-build --verbosity normal
       - name: Publish
         run: dotnet publish HamEvent/HamEvent.csproj --configuration Release --framework net7.0 --output ./publish --runtime win-x64 --self-contained true -p:PublishTrimmed=false -p:PublishSingleFile=false
-     
+      - name: Deploy
+        uses: azure/webapps-deploy@v2.2.10
+        with:
+          app-name: example.com
+          publish-profile: ${{ secrets.PUBLISH_PROFILE_TEST }}
+          package: ./bin/Release/net6.0/publish

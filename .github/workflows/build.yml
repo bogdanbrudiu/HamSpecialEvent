@@ -18,30 +18,14 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 6.0.x
-  build:
-    needs: [setup]
-    runs-on: windows-latest
-    steps:        
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore
-  test:
-    needs: [build]
-    runs-on: windows-latest
-    steps:       
+      run: dotnet build --no-restore     
     - name: Test
       run: dotnet test --no-build --verbosity normal
-  publish:
-    needs: [test]
-    runs-on: windows-latest
-    steps:  
     - name: Publish
       run: dotnet publish HamEvent/HamEvent.csproj --configuration Release --framework net7.0 --output ./publish --runtime win-x64 --self-contained true -p:PublishTrimmed=false -p:PublishSingleFile=false
-  deploy:
-    needs: [publish]
-    runs-on: windows-latest
-    steps:        
     - name: Deploy
       if: github.event_name != 'pull_request'
       uses: rasmusbuchholdt/simply-web-deploy@2.1.0

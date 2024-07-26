@@ -11,6 +11,10 @@ jobs:
      steps:
       - name: Build
         uses: bogdanbrudiu/HamSpecialEvent/.github/workflows/build.yml@main
+      - name: Publish
+        run: dotnet publish [YOUR_PROJECT_NAME]/[YOUR_PROJECT_NAME].csproj --configuration Release --framework net7.0 --output ./publish --runtime win-x64 --self-contained true -p:PublishTrimmed=false -p:PublishSingleFile=false
+      - name: Test with .NET
+        run: dotnet test
       - name: Deploy
         uses: rasmusbuchholdt/simply-web-deploy@2.1.0
         with:
@@ -18,5 +22,4 @@ jobs:
           server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
           server-username: ${{ secrets.SERVER_USERNAME }}
           server-password: ${{ secrets.SERVER_PASSWORD }}
-          source-path: '\build\'
-          target-path: '/my-sub-directory/'
+          skip-directory-path:  '\\App_Data'

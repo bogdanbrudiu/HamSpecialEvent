@@ -58,6 +58,8 @@ export function createTranslateLoader(http: HttpClient) {
       { path: 'Events', component: EventsComponent, pathMatch: 'full' },
       { path: ':id/top', component: EventTopComponent, pathMatch: 'full' },
       { path: ':id/live', component: DashboardComponent, pathMatch: 'full' },
+
+      
       { path: ':id/:secret/edit', component: AdminEventComponent, pathMatch: 'full' },
       { path: ':id/:secret', component: AdminQSOsComponent, pathMatch: 'full' },
 

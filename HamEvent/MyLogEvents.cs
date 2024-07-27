@@ -13,5 +13,6 @@
         public const int UpdateQSO = 1008;
         public const int GetTop = 1009;
         public const int GetLive = 1010;
+        public const int AddEvent = 1011;
     }
 }

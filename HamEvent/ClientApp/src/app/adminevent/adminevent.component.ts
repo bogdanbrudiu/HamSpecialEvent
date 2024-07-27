@@ -18,15 +18,36 @@ export class AdminEventComponent implements OnInit {
     this.routes.paramMap.subscribe(params => {
       this.eventId = params.get('id')!;
       this.eventSecret = params.get('secret')!;
-      this.eventsService.getEvent(this.eventId, this.eventSecret).subscribe(
-        (response) => {
-          this.event = response;
-          console.log(response);
-        },
-        (error) => {
-          console.log(error);
+      if (this.eventId === this.eventSecret && this.eventId === "00000000-0000-0000-0000-000000000000") {
+        var date = new Date();
+        var now_utc = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(),
+          date.getUTCDate(), date.getUTCHours(),
+          date.getUTCMinutes(), date.getUTCSeconds());
+
+        
+        this.event = {
+            id: '00000000-0000-0000-0000-000000000000',
+            secretKey: '00000000-0000-0000-0000-000000000000',
+            name: '',
+            startDate: new Date(now_utc).toISOString(),
+            endDate: new Date(now_utc).toISOString(),
+            description: '',
+            email: '',
+            hasTop: true,
+            diploma: '',
+            excludeCallsigns: ''
         }
-      );
+      } else {
+        this.eventsService.getEvent(this.eventId, this.eventSecret).subscribe(
+          (response) => {
+            this.event = response;
+            console.log(response);
+          },
+          (error) => {
+            console.log(error);
+          }
+        );
+      }
     });
 
   
@@ -37,7 +58,11 @@ export class AdminEventComponent implements OnInit {
       this.eventsService.updateEvent(this.event).subscribe(
         (response) => {
           console.log(response);
-          this.router.navigate(['/',this.eventId, this.eventSecret]);
+          if (this.event && this.event.id === "00000000-0000-0000-0000-000000000000") {
+            this.router.navigate(['/', response.hamEvent.id, response.secretKey]);
+          } else {
+            this.router.navigate(['/', this.eventId, this.eventSecret]);
+          }
         },
         error => {
           console.log(error); 
@@ -51,6 +76,7 @@ interface HamEvent {
   secretKey: string;
   name: string;
   description: string;
+  email: string;
   diploma: string;
   hasTop: boolean;
   startDate: string;

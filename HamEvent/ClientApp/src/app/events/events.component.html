@@ -1,6 +1,19 @@
 
 <div class="px-4 text-center border-bottom">
   <h1 class="display-4 fw-bold text-body-emphasis">{{'HamEvents' | translate}}</h1>
+  <nav class="navbar navbar-expand navbar-light bg-light">
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="topnavbar">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+          <a [routerLink]="['/00000000-0000-0000-0000-000000000000/00000000-0000-0000-0000-000000000000/edit']" class="nav-link" routerLinkActive="active"
+             [routerLinkActiveOptions]="{exact:true}">{{'AddEvent' | translate}}</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
   <div class="col-lg-10 mx-auto">
     <p *ngIf="!loaded"><em>{{'Loading...' | translate}}</em></p>
 
@@ -11,6 +24,7 @@
           <th>{{'Name' | translate}}</th>
           <th>{{'Start date' | translate}}</th>
           <th>{{'Description' | translate}}</th>
+          <th>{{'Email' | translate}}</th>
           <th>{{'Days' | translate}}</th>
           <th>{{'First QSO' | translate}}</th>
           <th>{{'Last QSO' | translate}}</th>
@@ -31,6 +45,7 @@
           <td>{{ event.startDate | date: "dd.MM.yyyy HH:mm":"+0000" }}</td>
           <td [innerHTML]="event.description">
           </td>
+          <td>{{ event.email }}</td>
           <td>{{ event.days }}</td>
           <td>{{ event.first }}</td>
           <td>{{ event.last }}</td>

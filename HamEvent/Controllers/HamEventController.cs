@@ -290,34 +290,73 @@ namespace HamEvent.Controllers
 
         #region For Admin
         [HttpPost("hamevent")]
-        public ActionResult<Event> Post(Event hamevent)
+        public ActionResult Post(Event hamevent)
         {
-            _logger.LogInformation(MyLogEvents.UpdateEvent, "Update Event {0}", hamevent);
-
-            try
+            if (hamevent.Id.ToString().Equals(hamevent.SecretKey) && hamevent.Id.Equals(Guid.Empty))
             {
-                var myevent = _dbcontext.Events.Where(e => e.Id == hamevent.Id && e.SecretKey == ComputeSha256Hash(new Guid(hamevent.SecretKey))).FirstOrDefault();
-                if (myevent == null) return NotFound();
-                else
+                _logger.LogInformation(MyLogEvents.AddEvent, "Add Event {0}", hamevent);
+
+                try
                 {
-                    myevent.Diploma = hamevent.Diploma;
-                    myevent.Description = hamevent.Description;
-                    myevent.Name = hamevent.Name;
-                    myevent.HasTop = hamevent.HasTop;
-                    myevent.ExcludeCallsigns = hamevent.ExcludeCallsigns;
-                    myevent.StartDate = hamevent.StartDate;
-                    myevent.EndDate = hamevent.EndDate;
-                    _dbcontext.SaveChanges();
-                    return Ok(myevent);
+                    var myevent = new Event()
+                    {
+                        Name = hamevent.Name,
+                        Description = hamevent.Description,
+                        Diploma = hamevent.Diploma,
+                        Email = hamevent.Email
+                    };
+                        myevent.Id = Guid.NewGuid();
+                        var secretKey = Guid.NewGuid();
+                        myevent.SecretKey = HamEventController.ComputeSha256Hash(secretKey);
+                        myevent.Diploma = hamevent.Diploma;
+                        myevent.Description = hamevent.Description;
+                        myevent.Name = hamevent.Name;
+                        myevent.HasTop = hamevent.HasTop;
+                        myevent.ExcludeCallsigns = hamevent.ExcludeCallsigns;
+                        myevent.StartDate = hamevent.StartDate;
+                        myevent.EndDate = hamevent.EndDate;
+                        _dbcontext.Events.Add(myevent);
+                        _dbcontext.SaveChanges();
+                        return Ok(new {hamEvent= myevent, secretKey= secretKey});
+                    
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(MyLogEvents.AddEvent, ex, "Failed adding Event {0}", hamevent);
+
+                    return NotFound();
                 }
             }
-            catch (Exception ex)
+            else
             {
-                _logger.LogError(MyLogEvents.GetEvent, ex, "Failed updating Event {0}", hamevent);
 
-                return NotFound();
+                _logger.LogInformation(MyLogEvents.UpdateEvent, "Update Event {0}", hamevent);
+
+                try
+                {
+                    var myevent = _dbcontext.Events.Where(e => e.Id == hamevent.Id && e.SecretKey == ComputeSha256Hash(new Guid(hamevent.SecretKey))).FirstOrDefault();
+                    if (myevent == null) return NotFound();
+                    else
+                    {
+                        myevent.Diploma = hamevent.Diploma;
+                        myevent.Description = hamevent.Description;
+                        myevent.Email = hamevent.Email;
+                        myevent.Name = hamevent.Name;
+                        myevent.HasTop = hamevent.HasTop;
+                        myevent.ExcludeCallsigns = hamevent.ExcludeCallsigns;
+                        myevent.StartDate = hamevent.StartDate;
+                        myevent.EndDate = hamevent.EndDate;
+                        _dbcontext.SaveChanges();
+                        return Ok(myevent);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(MyLogEvents.UpdateEvent, ex, "Failed updating Event {0}", hamevent);
+
+                    return NotFound();
+                }
             }
-
         }
 
         [HttpGet("hamevent/{hamevent}")]
@@ -332,11 +371,11 @@ namespace HamEvent.Controllers
                 if (secret.HasValue)
                 {
                     var hashedSecret = ComputeSha256Hash(secret.Value);
-                    myevent = _dbcontext.Events.Where(e => e.Id.Equals(hamevent) && e.SecretKey.Equals(hashedSecret)).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Diploma = e.Diploma, HasTop = e.HasTop, StartDate = e.StartDate, EndDate = e.EndDate, ExcludeCallsigns=e.ExcludeCallsigns }).FirstOrDefault();
+                    myevent = _dbcontext.Events.Where(e => e.Id.Equals(hamevent) && e.SecretKey.Equals(hashedSecret)).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Email = e.Email, Diploma = e.Diploma, HasTop = e.HasTop, StartDate = e.StartDate, EndDate = e.EndDate, ExcludeCallsigns=e.ExcludeCallsigns }).FirstOrDefault();
                 }
                 else
                 {
-                    myevent = _dbcontext.Events.Where(e => e.Id == hamevent).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Diploma = e.Diploma, HasTop = e.HasTop, StartDate = e.StartDate, EndDate = e.EndDate, ExcludeCallsigns = e.ExcludeCallsigns }).FirstOrDefault();
+                    myevent = _dbcontext.Events.Where(e => e.Id == hamevent).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Email = e.Email, Diploma = e.Diploma, HasTop = e.HasTop, StartDate = e.StartDate, EndDate = e.EndDate, ExcludeCallsigns = e.ExcludeCallsigns }).FirstOrDefault();
                 }
 
                 if (myevent == null) return NotFound();

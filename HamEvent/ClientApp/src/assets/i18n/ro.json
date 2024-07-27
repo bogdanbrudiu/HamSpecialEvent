@@ -17,6 +17,7 @@
   "Timestamp": "Timestamp",
   "Name": "Nume",
   "Description": "Descriere",
+  "Email": "Email",
   "Diploma": "Diplomă",
   "Prev": "Pagina anterioară",
   "Next": "Pagina următoare",
@@ -40,5 +41,6 @@
   "Start date": "Data de începere",
   "End date": "Data de încheiere",
   "Live": "Live stream",
-  "ExcludeCallsignsFromTop": "Exclude indicativele din clasament"
+  "ExcludeCallsignsFromTop": "Exclude indicativele din clasament",
+  "AddEvent": "Adaugă Eveniment"
 }

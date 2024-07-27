@@ -10,6 +10,10 @@
       <input type="text" class="form-control" id="description" [(ngModel)]="event.description" name="description">
     </div>
     <div class="mb-3">
+      <label for="description" class="form-label">{{'Email' | translate}}</label>
+      <input type="text" class="form-control" id="email" [(ngModel)]="event.email" name="email">
+    </div>
+    <div class="mb-3">
       <label for="diploma" class="form-label">{{'Diploma' | translate}}</label>
       <textarea rows="10" style="height:100%;" class="form-control" id="diploma" [(ngModel)]="event.diploma" name="diploma"></textarea>
     </div>
@@ -29,7 +33,7 @@
       <label for="endDate" class="form-label">{{'End date' | translate}}</label>
       <input type="datetime" class="form-control" id="endDate" [ngModel]="event.endDate | date:'yyyy-MM-ddTHH:mm'" (ngModelChange)="event.endDate = $event" name="endDate">
     </div>
-    <button type="submit" class="btn btn-primary" (click)="onSubmit()">{{'Update' | translate}}</button>
+    <button type="submit" class="btn btn-primary" (click)="onSubmit()">{{event.id==='00000000-0000-0000-0000-000000000000' ? 'Add' : 'Update' | translate}}</button>
     <div [innerHtml]="event.diploma | sanitizedHtml" width="842" height="595"></div>
 
   </form>

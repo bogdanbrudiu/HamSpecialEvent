@@ -17,6 +17,7 @@
   "Timestamp": "Timestamp",
   "Name": "Name",
   "Description": "Description",
+  "Email": "Email",
   "Diploma": "Diploma",
   "Prev": "Prev",
   "Next": "Next",
@@ -40,5 +41,6 @@
   "Start date": "Start date",
   "End date": "End date",
   "Live": "Live stream",
-  "ExcludeCallsignsFromTop": "Exclude callsigns from top"
+  "ExcludeCallsignsFromTop": "Exclude callsigns from top",
+  "AddEvent": "Add Event"
 }

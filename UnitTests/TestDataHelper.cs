@@ -17,6 +17,7 @@ namespace UnitTests
                     SecretKey = HamEventController.ComputeSha256Hash(Guid.NewGuid()),
                     Name = "Name"+i,
                     Description = "Description"+i,
+                    Email = "Email" + i,
                     Diploma = "Diploma"+i,
                     StartDate = DateTime.Now,
                     EndDate = DateTime.Now.AddDays(1),

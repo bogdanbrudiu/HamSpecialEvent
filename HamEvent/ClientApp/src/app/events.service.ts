@@ -26,6 +26,7 @@ export interface HamEvent {
   startDate: string;
   endDate: string;
   description: string;
+  email: string;
   hasTop: boolean;
   diploma: string;
   days: number;

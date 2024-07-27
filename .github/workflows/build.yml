@@ -30,9 +30,8 @@ jobs:
       - name: Debug
         run: |
             echo "::group::Debug"
-            echo "::${{ environment }}" 
-            echo "::${{ secrets.SERVER_COMPUTER_NAME }}" 
-            echo "::${{ secrets.WEBSITE_NAME }}"
+            echo "::ComputerName-${{ secrets.SERVER_COMPUTER_NAME }}" 
+            echo "::WebsiteName-${{ secrets.WEBSITE_NAME }}"
             echo "::endgroup:: 
       - name: Deploy
         uses: rasmusbuchholdt/simply-web-deploy@2.1.0

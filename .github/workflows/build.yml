@@ -32,7 +32,7 @@ jobs:
             echo "::group::Debug"
             echo "::ComputerName-${{ secrets.SERVER_COMPUTER_NAME }}" 
             echo "::WebsiteName-${{ secrets.WEBSITE_NAME }}"
-            echo "::endgroup:: 
+            echo "::endgroup::"
       - name: Deploy
         uses: rasmusbuchholdt/simply-web-deploy@2.1.0
         with:

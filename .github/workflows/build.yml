@@ -10,6 +10,7 @@ on:
 jobs:
   Build_Test_Deploy:
     runs-on: windows-latest
+    environment: test
     steps:
       - uses: actions/checkout@v3
         with:
@@ -26,6 +27,13 @@ jobs:
         run: dotnet test --no-build --verbosity normal
       - name: Publish
         run: dotnet publish HamEvent/HamEvent.csproj --configuration Release --framework net7.0 --output ./publish --runtime win-x64 --self-contained true -p:PublishTrimmed=false -p:PublishSingleFile=false
+      - name: Debug
+        run: |
+            echo "::group::Debug"
+            echo "::${{ environment }}" 
+            echo "::${{ secrets.SERVER_COMPUTER_NAME }}" 
+            echo "::${{ secrets.WEBSITE_NAME }}"
+            echo "::endgroup:: 
       - name: Deploy
         uses: rasmusbuchholdt/simply-web-deploy@2.1.0
         with:

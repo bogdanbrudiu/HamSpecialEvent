@@ -25,6 +25,17 @@ jobs:
         run: dotnet build --no-restore     
       - name: Test
         run: dotnet test --no-build --verbosity normal
+      - name: App Settings Variable Substitution
+        uses: microsoft/variable-substitution@v1
+        with:
+            files: 'appsettings.json'
+            env:
+                MailerSettings.From:        ${{ secrets.MAILER_SETTINGS_FROM }}
+                MailerSettings.Username:    ${{ secrets.MAILER_SETTINGS_USERNAME }}
+                MailerSettings.Password:    ${{ secrets.MAILER_SETTINGS_PASSOWRD }}
+                MailerSettings.Host:        ${{ secrets.MAILER_SETTINGS_HOST }}
+                MailerSettings.Port:        ${{ secrets.MAILER_SETTINGS_PORT }}
+                MailerSettings.EnableSSL:   ${{ secrets.MAILER_SETTINGS_ENABLESSL }}
       - name: Publish
         run: dotnet publish HamEvent/HamEvent.csproj --configuration Release --framework net7.0 --output ./publish --runtime win-x64 --self-contained true -p:PublishTrimmed=false -p:PublishSingleFile=false
       - name: Deploy

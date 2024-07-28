@@ -49,6 +49,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AdifLib\AdifLib\AdifLib.csproj" />
+    <ProjectReference Include="..\CoreMailer\CoreMailer\CoreMailer.csproj" />
   </ItemGroup>
 
   <ItemGroup>

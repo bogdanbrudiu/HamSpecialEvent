@@ -1,3 +1,6 @@
 [submodule "AdifLib"]
 	path = AdifLib
 	url = https://github.com/M0LTE/AdifLib.git
+[submodule "CoreMailer"]
+	path = CoreMailer
+	url = https://github.com/riyasat/CoreMailer.git

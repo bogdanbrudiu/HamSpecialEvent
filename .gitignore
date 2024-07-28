@@ -366,3 +366,4 @@ FodyWeavers.xsd
 /HamEvent/Database/QSOs.db-shm
 /HamEvent/Database/QSOs.db-wal
 /HamEvent/.config
+/HamEvent/appsettings.Development.json

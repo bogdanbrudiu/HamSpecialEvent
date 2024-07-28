@@ -36,7 +36,6 @@ jobs:
                 MailerSettings.Host:        ${{ secrets.MAILER_SETTINGS_HOST }}
                 MailerSettings.Port:        ${{ secrets.MAILER_SETTINGS_PORT }}
                 MailerSettings.EnableSSL:   ${{ secrets.MAILER_SETTINGS_ENABLESSL }}
-
       - name: Publish
         run: dotnet publish HamEvent/HamEvent.csproj --configuration Release --framework net7.0 --output ./publish --runtime win-x64 --self-contained true -p:PublishTrimmed=false -p:PublishSingleFile=false
       - name: Deploy

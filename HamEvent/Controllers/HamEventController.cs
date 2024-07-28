@@ -329,7 +329,7 @@ namespace HamEvent.Controllers
                         ToAddresses = new List<string>() { myevent.Email },
                         FromAddress = _mailerSettings.From,
                         IsHtml = true,
-                        ViewFile = "Mailer/AddEvent",
+                        ViewFile = "Shared/AddEvent.html",
                         Subject = "Event Added",
                         User = _mailerSettings.Username,
                         Key = _mailerSettings.Password,

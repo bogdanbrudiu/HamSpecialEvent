@@ -42,5 +42,7 @@
   "End date": "Data de încheiere",
   "Live": "Live stream",
   "ExcludeCallsignsFromTop": "Exclude indicativele din clasament",
-  "AddEvent": "Adaugă Eveniment"
+  "AddEvent": "Adaugă Eveniment",
+  "Email Validation Code": "Cod de validare a emailului",
+  "Email verification": "Verifică adresa de email"
 }

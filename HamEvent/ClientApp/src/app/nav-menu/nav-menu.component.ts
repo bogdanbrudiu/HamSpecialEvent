@@ -58,7 +58,7 @@ export class NavMenuComponent {
       filter((route: ActivatedRoute) => route.outlet === 'primary'),
     ).subscribe((route: ActivatedRoute) => {
       var id = route.snapshot.paramMap.get('id')
-      if (id != null) {
+      if (id != null && id !='00000000-0000-0000-0000-000000000000') {
         this.eventId = id;
         this.eventsService.getEvent(this.eventId).subscribe(
           (response) => {

@@ -4,6 +4,8 @@ using ElmahCore;
 using ElmahCore.Mvc;
 using HamEvent;
 using HamEvent.Data;
+using HamEvent.Services;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -19,6 +21,9 @@ builder.Services.AddScoped<ICoreMvcMailer, CoreMvcMailer>();
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+var tokenSecret = builder.Configuration["Token:Secret"] ?? throw new ArgumentNullException("Token:Secret", "Token secret is not configured.");
+
+builder.Services.AddSingleton<TokenService>(provider => new TokenService(tokenSecret));
 
 builder.Services.AddDbContext<HamEventContext>(options =>
 {

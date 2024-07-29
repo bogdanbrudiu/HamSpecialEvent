@@ -26,7 +26,7 @@ export class UploadComponent implements OnInit {
     const formData = new FormData();
     formData.append('file', fileToUpload, fileToUpload.name);
 
-    this.http.post(this.baseUrl + 'hamevent/' + encodeURIComponent(this.eventId) + '/' + encodeURIComponent(this.eventsecret) +'/upload', formData, { reportProgress: true, observe: 'events' })
+    this.http.post(this.baseUrl + 'api/hamevent/' + encodeURIComponent(this.eventId) + '/' + encodeURIComponent(this.eventsecret) +'/upload', formData, { reportProgress: true, observe: 'events' })
       .subscribe({
         next: (event) => {
           if (event.type === HttpEventType.UploadProgress && event.total)

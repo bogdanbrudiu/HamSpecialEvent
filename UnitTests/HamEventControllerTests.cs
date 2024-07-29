@@ -4,6 +4,7 @@ using CoreMailer.Interfaces;
 using HamEvent.Controllers;
 using HamEvent.Data;
 using HamEvent.Data.Model;
+using HamEvent.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -21,6 +22,7 @@ namespace UnitTests
             // Arrange
             Mock<ILogger<HamEventController>> loggerMock = new Mock<ILogger<HamEventController>>();
             Mock<IMapper> mapperMock = new Mock<IMapper>();
+            Mock<TokenService> tokenServiceMock = new Mock<TokenService>();
             Mock<ICoreMvcMailer> coreMvcMailerMock = new Mock<ICoreMvcMailer>();
             Mock<IOptions<MailerSettings>> optionsmailerSettingsMock = new Mock<IOptions<MailerSettings>>();
             var hamEventContextMock = new Mock<HamEventContext>();
@@ -28,7 +30,7 @@ namespace UnitTests
                 .ReturnsDbSet(TestDataHelper.GetFakeEventsList());
 
             //Act
-            HamEventController hamEventController = new(loggerMock.Object, mapperMock.Object, coreMvcMailerMock.Object, optionsmailerSettingsMock.Object, hamEventContextMock.Object);
+            HamEventController hamEventController = new(loggerMock.Object, mapperMock.Object, coreMvcMailerMock.Object, optionsmailerSettingsMock.Object, tokenServiceMock.Object, hamEventContextMock.Object);
             var events = hamEventController.Get(null);
 
             //Assert
@@ -44,6 +46,7 @@ namespace UnitTests
             // Arrange
             Mock<ILogger<HamEventController>> loggerMock = new Mock<ILogger<HamEventController>>();
             Mock<IMapper> mapperMock = new Mock<IMapper>();
+            Mock<TokenService> tokenServiceMock = new Mock<TokenService>();
             Mock<ICoreMvcMailer> coreMvcMailerMock = new Mock<ICoreMvcMailer>();
             Mock<IOptions<MailerSettings>> optionsmailerSettingsMock = new Mock<IOptions<MailerSettings>>();
             var hamEventContextMock = new Mock<HamEventContext>();
@@ -51,7 +54,7 @@ namespace UnitTests
                 .ReturnsDbSet(TestDataHelper.GetFakeLiveQSOsList());
 
             //Act
-            HamEventController hamEventController = new(loggerMock.Object, mapperMock.Object, coreMvcMailerMock.Object, optionsmailerSettingsMock.Object, hamEventContextMock.Object);
+            HamEventController hamEventController = new(loggerMock.Object, mapperMock.Object, coreMvcMailerMock.Object, optionsmailerSettingsMock.Object, tokenServiceMock.Object, hamEventContextMock.Object);
             var operators = hamEventController.Live(new Guid("11111111-1111-1111-1111-111111111111")).Value;
 
             //Assert
@@ -68,6 +71,7 @@ namespace UnitTests
             // Arrange
             Mock<ILogger<HamEventController>> loggerMock = new Mock<ILogger<HamEventController>>();
             Mock<IMapper> mapperMock = new Mock<IMapper>();
+            Mock<TokenService> tokenServiceMock = new Mock<TokenService>();
             Mock<ICoreMvcMailer> coreMvcMailerMock = new Mock<ICoreMvcMailer>();
             Mock<IOptions<MailerSettings>> optionsmailerSettingsMock = new Mock<IOptions<MailerSettings>>();
             var hamEventContextMock = new Mock<HamEventContext>();
@@ -75,7 +79,7 @@ namespace UnitTests
                 .ReturnsDbSet(TestDataHelper.GetFakeLiveQSOsList());
 
             //Act
-            HamEventController hamEventController = new(loggerMock.Object, mapperMock.Object, coreMvcMailerMock.Object, optionsmailerSettingsMock.Object, hamEventContextMock.Object);
+            HamEventController hamEventController = new(loggerMock.Object, mapperMock.Object, coreMvcMailerMock.Object, optionsmailerSettingsMock.Object, tokenServiceMock.Object, hamEventContextMock.Object);
             var qsos = hamEventController.Get(new Guid("11111111-1111-1111-1111-111111111111"),0);
 
             //Assert

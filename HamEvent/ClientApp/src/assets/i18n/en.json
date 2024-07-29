@@ -42,5 +42,7 @@
   "End date": "End date",
   "Live": "Live stream",
   "ExcludeCallsignsFromTop": "Exclude callsigns from top",
-  "AddEvent": "Add Event"
+  "AddEvent": "Add Event",
+  "Email Validation Code": "Email Validation Code",
+  "Email verification": "Email verification"
 }

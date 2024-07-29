@@ -16,11 +16,12 @@ using System.Net.Sockets;
 using Microsoft.Extensions.Options;
 using CoreMailer.Interfaces;
 using CoreMailer.Models;
+using HamEvent.Services;
 
 namespace HamEvent.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class HamEventController : ControllerBase
     {
         private readonly ICoreMvcMailer _mailer;
@@ -30,12 +31,13 @@ namespace HamEvent.Controllers
         private readonly HamEventContext _dbcontext;
         private readonly ILogger<HamEventController> _logger;
 
-        public HamEventController(ILogger<HamEventController> logger ,IMapper mapper, ICoreMvcMailer mailer, IOptions<MailerSettings> mailerSettings, HamEventContext dbcontext)
+        public HamEventController(ILogger<HamEventController> logger ,IMapper mapper, ICoreMvcMailer mailer, IOptions<MailerSettings> mailerSettings, TokenService tokenService, HamEventContext dbcontext)
         {
             _logger = logger;
             _mapper = mapper;
             _mailer = mailer;
             _mailerSettings = mailerSettings.Value;
+
             _dbcontext = dbcontext;
         }
 

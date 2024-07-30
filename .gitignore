@@ -367,3 +367,4 @@ FodyWeavers.xsd
 /HamEvent/Database/QSOs.db-wal
 /HamEvent/.config
 /HamEvent/appsettings.Development.json
+/HamEvent/ClientApp/.angular/cache/18.1.2

@@ -12,6 +12,6 @@ export class PdfService {
     const httpOptions = {
       responseType: 'blob' as 'json'
     };
-    return this.http.get(this.baseUrl + 'hamevent/Diploma/' + encodeURIComponent(eventId) + '/' + encodeURIComponent(callsign), httpOptions);
+    return this.http.get(this.baseUrl + 'api/hamevent/Diploma/' + encodeURIComponent(eventId) + '/' + encodeURIComponent(callsign), httpOptions);
   }
 }

@@ -1,4 +1,4 @@
-import { HttpClient, HttpEventType, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpEvent, HttpEventType } from '@angular/common/http';
 import { Component, EventEmitter, OnInit, Output, Inject, Input } from '@angular/core';
 
 @Component({
@@ -26,14 +26,14 @@ export class UploadComponent implements OnInit {
     const formData = new FormData();
     formData.append('file', fileToUpload, fileToUpload.name);
 
-    this.http.post(this.baseUrl + 'hamevent/' + encodeURIComponent(this.eventId) + '/' + encodeURIComponent(this.eventsecret) +'/upload', formData, { reportProgress: true, observe: 'events' })
+    this.http.post(this.baseUrl + 'api/hamevent/' + encodeURIComponent(this.eventId) + '/' + encodeURIComponent(this.eventsecret) +'/upload', formData, { reportProgress: true, observe: 'events' })
       .subscribe({
         next: (event) => {
-          if (event.type === HttpEventType.UploadProgress && event.total)
+          if (event.type === 1 && event.total)
             this.progress = Math.round(100 * event.loaded / event.total);
-          else if (event.type === HttpEventType.Response) {
+          else if (event.type === 3) {
             this.message = 'Upload success.';
-            this.onUploadFinished.emit(event.body);
+            this.onUploadFinished.emit(event);
           }
         },
         error: (err: HttpErrorResponse) => console.log(err)

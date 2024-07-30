@@ -7,15 +7,16 @@ namespace HamEvent.Data.Model
     public class Event
     {
         public Guid Id { get; set; }
-        public string SecretKey { get; set; }
+        public string SecretKey { get; set; } = string.Empty;
         public required string Name { get; set; }
         public required string Description { get; set; }
         public required string Diploma { get; set; }
+        public required string Email { get; set; }
         [JsonIgnore]
         public ICollection<QSO> QSOs { get; } = new List<QSO>();
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
-        public string ExcludeCallsigns { get; set; }
+        public string ExcludeCallsigns { get; set; } = string.Empty;
         public bool HasTop { get; set; }
         [NotMapped]
         public int? Days

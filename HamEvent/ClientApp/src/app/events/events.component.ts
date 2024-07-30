@@ -41,7 +41,6 @@ export class EventsComponent {
   gotoEvent(event: HamEvent) {
     this.router.navigateByUrl(event.id);
   }
-
 }
 
 

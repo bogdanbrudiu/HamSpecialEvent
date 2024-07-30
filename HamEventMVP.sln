@@ -13,7 +13,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		TODO.md = TODO.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{1A6792F1-7EF9-450C-AC1E-7FD26ACD8EAD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTests\UnitTests.csproj", "{1A6792F1-7EF9-450C-AC1E-7FD26ACD8EAD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreMailer", "CoreMailer\CoreMailer\CoreMailer.csproj", "{3458928A-E6F3-4FA6-878B-B3729C14838B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{1A6792F1-7EF9-450C-AC1E-7FD26ACD8EAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A6792F1-7EF9-450C-AC1E-7FD26ACD8EAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A6792F1-7EF9-450C-AC1E-7FD26ACD8EAD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3458928A-E6F3-4FA6-878B-B3729C14838B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3458928A-E6F3-4FA6-878B-B3729C14838B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3458928A-E6F3-4FA6-878B-B3729C14838B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3458928A-E6F3-4FA6-878B-B3729C14838B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -4,10 +4,6 @@ Project Description
 ### ToDo
 
 - [ ] As a site visitor I can view statistics per band/mode/day #feat
-- [ ] As a site visitor I can request new event creation  #feat
-- [ ] As admin I can aprove new event creation  #feat
-- [ ] As admin I receive an email with access informations for my events  #feat
-- [ ] After file upload status should be cleared #bug
 - [ ] Event Description should be multilanguage #feat
 
 ### In Progress
@@ -18,7 +14,8 @@ Project Description
 
 
 ### Done ✓
-
+- [✓] After file upload status should be cleared #bug
+- [✓] As a site visitor I can request new event creation  #feat
 - [✓] Exclude callsign from top #feat
 - [✓] Fix dashboard order #bug
 - [✓] Google analytics #feat

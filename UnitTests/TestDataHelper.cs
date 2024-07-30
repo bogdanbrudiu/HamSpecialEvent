@@ -17,6 +17,7 @@ namespace UnitTests
                     SecretKey = HamEventController.ComputeSha256Hash(Guid.NewGuid()),
                     Name = "Name"+i,
                     Description = "Description"+i,
+                    Email = "Email" + i,
                     Diploma = "Diploma"+i,
                     StartDate = DateTime.Now,
                     EndDate = DateTime.Now.AddDays(1),
@@ -40,7 +41,7 @@ namespace UnitTests
                 Band = "20M",
                 Mode = "SSB",
                 Freq = "14000",
-                Timestamp = DateTime.Now
+                Timestamp = DateTime.UtcNow
             }); ; ;
             result.Add(new QSO()
             {
@@ -50,7 +51,7 @@ namespace UnitTests
                 Band = "40M",
                 Mode = "SSB",
                 Freq = "7000",
-                Timestamp = DateTime.Now.AddMinutes(-35),
+                Timestamp = DateTime.UtcNow.AddMinutes(-35),
             });
             result.Add(new QSO()
             {
@@ -60,7 +61,7 @@ namespace UnitTests
                 Band = "80M",
                 Mode = "SSB",
                 Freq = "3500",
-                Timestamp = DateTime.Now,
+                Timestamp = DateTime.UtcNow,
             });
 
             result.Add(new QSO()
@@ -71,7 +72,7 @@ namespace UnitTests
                 Band = "20M",
                 Mode = "SSB",
                 Freq = "14000",
-                Timestamp = DateTime.Now
+                Timestamp = DateTime.UtcNow
             });
             result.Add(new QSO()
             {
@@ -81,7 +82,7 @@ namespace UnitTests
                 Band = "80M",
                 Mode = "SSB",
                 Freq = "3500",
-                Timestamp = DateTime.Now.AddMinutes(-35),
+                Timestamp = DateTime.UtcNow.AddMinutes(-35),
             });
             result.Add(new QSO()
             {
@@ -91,7 +92,7 @@ namespace UnitTests
                 Band = "80M",
                 Mode = "SSB",
                 Freq = "3500",
-                Timestamp = DateTime.Now.AddMinutes(-35),
+                Timestamp = DateTime.UtcNow.AddMinutes(-35),
             });
             return result;
 

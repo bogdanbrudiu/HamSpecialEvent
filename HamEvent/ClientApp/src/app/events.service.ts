@@ -11,13 +11,13 @@ export class EventsService {
 
   constructor(private http: HttpClient,@Inject('BASE_URL') public baseUrl: string) { }
   getAllEvents(page: number, size: number): Observable<any> {
-    return this.http.get(this.baseUrl + 'hamevent/hamevents?page='+page+'&size='+size);
+    return this.http.get(this.baseUrl + 'api/hamevent/hamevents?page='+page+'&size='+size);
   }
   getEvent(eventId:string, secret:string=""): Observable<any> {
-    return this.http.get(this.baseUrl + 'hamevent/hamevent/' + eventId + (secret ? '?secret=' + encodeURIComponent(secret):''));
+    return this.http.get(this.baseUrl + 'api/hamevent/hamevent/' + eventId + (secret ? '?secret=' + encodeURIComponent(secret):''));
   }
   updateEvent(event:any): Observable<any> {
-    return this.http.post<any>(this.baseUrl + 'hamevent/hamevent/', event);
+    return this.http.post<any>(this.baseUrl + 'api/hamevent/hamevent/', event);
   }
 }
 export interface HamEvent {
@@ -26,6 +26,7 @@ export interface HamEvent {
   startDate: string;
   endDate: string;
   description: string;
+  email: string;
   hasTop: boolean;
   diploma: string;
   days: number;

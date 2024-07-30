@@ -49,7 +49,7 @@ namespace HamEvent.Controllers
             catch(Exception ex)
             {
                 _logger.LogError(MyLogEvents.SendingEmail, ex, "Error Sending Email");
-                return StatusCode(500, $"Email send error!{ex.Message}");
+                return StatusCode(500, $"Email send error!");
             }
             return Ok();
         }

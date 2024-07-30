@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using NReco.Logging.File;
 using System.Net;
 using System.Net.Mail;
 
@@ -36,11 +37,16 @@ IPWhitelist wl = new IPWhitelist();
 builder.Configuration.GetSection("IPWhitelist").Bind(wl);
 builder.Services.AddElmah<XmlFileErrorLog>(options =>
 {
+    options.Filters.Add(new MyElmahFilter());
     options.OnPermissionCheck = context => wl.Whitelist
                 .Where(ip => IPAddress.Parse(ip)
                 .Equals(context.Connection.RemoteIpAddress))
                 .Any();
     options.LogPath = "~/log";
+});
+builder.Services.AddLogging(loggingBuilder => {
+    var loggingSection = builder.Configuration.GetSection("Logging");
+    loggingBuilder.AddFile(loggingSection);
 });
 
 var app = builder.Build();

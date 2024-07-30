@@ -22,7 +22,7 @@ namespace UnitTests
             // Arrange
             Mock<ILogger<HamEventController>> loggerMock = new Mock<ILogger<HamEventController>>();
             Mock<IMapper> mapperMock = new Mock<IMapper>();
-            Mock<TokenService> tokenServiceMock = new Mock<TokenService>();
+            Mock<TokenService> tokenServiceMock = new Mock<TokenService>("secret");
             Mock<ICoreMvcMailer> coreMvcMailerMock = new Mock<ICoreMvcMailer>();
             Mock<IOptions<MailerSettings>> optionsmailerSettingsMock = new Mock<IOptions<MailerSettings>>();
             var hamEventContextMock = new Mock<HamEventContext>();
@@ -46,7 +46,7 @@ namespace UnitTests
             // Arrange
             Mock<ILogger<HamEventController>> loggerMock = new Mock<ILogger<HamEventController>>();
             Mock<IMapper> mapperMock = new Mock<IMapper>();
-            Mock<TokenService> tokenServiceMock = new Mock<TokenService>();
+            Mock<TokenService> tokenServiceMock = new Mock<TokenService>("secret");
             Mock<ICoreMvcMailer> coreMvcMailerMock = new Mock<ICoreMvcMailer>();
             Mock<IOptions<MailerSettings>> optionsmailerSettingsMock = new Mock<IOptions<MailerSettings>>();
             var hamEventContextMock = new Mock<HamEventContext>();
@@ -71,7 +71,7 @@ namespace UnitTests
             // Arrange
             Mock<ILogger<HamEventController>> loggerMock = new Mock<ILogger<HamEventController>>();
             Mock<IMapper> mapperMock = new Mock<IMapper>();
-            Mock<TokenService> tokenServiceMock = new Mock<TokenService>();
+            Mock<TokenService> tokenServiceMock = new Mock<TokenService>("secret");
             Mock<ICoreMvcMailer> coreMvcMailerMock = new Mock<ICoreMvcMailer>();
             Mock<IOptions<MailerSettings>> optionsmailerSettingsMock = new Mock<IOptions<MailerSettings>>();
             var hamEventContextMock = new Mock<HamEventContext>();

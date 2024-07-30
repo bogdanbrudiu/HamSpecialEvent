@@ -41,7 +41,7 @@ namespace UnitTests
                 Band = "20M",
                 Mode = "SSB",
                 Freq = "14000",
-                Timestamp = DateTime.Now
+                Timestamp = DateTime.UtcNow
             }); ; ;
             result.Add(new QSO()
             {
@@ -51,7 +51,7 @@ namespace UnitTests
                 Band = "40M",
                 Mode = "SSB",
                 Freq = "7000",
-                Timestamp = DateTime.Now.AddMinutes(-35),
+                Timestamp = DateTime.UtcNow.AddMinutes(-35),
             });
             result.Add(new QSO()
             {
@@ -61,7 +61,7 @@ namespace UnitTests
                 Band = "80M",
                 Mode = "SSB",
                 Freq = "3500",
-                Timestamp = DateTime.Now,
+                Timestamp = DateTime.UtcNow,
             });
 
             result.Add(new QSO()
@@ -72,7 +72,7 @@ namespace UnitTests
                 Band = "20M",
                 Mode = "SSB",
                 Freq = "14000",
-                Timestamp = DateTime.Now
+                Timestamp = DateTime.UtcNow
             });
             result.Add(new QSO()
             {
@@ -82,7 +82,7 @@ namespace UnitTests
                 Band = "80M",
                 Mode = "SSB",
                 Freq = "3500",
-                Timestamp = DateTime.Now.AddMinutes(-35),
+                Timestamp = DateTime.UtcNow.AddMinutes(-35),
             });
             result.Add(new QSO()
             {
@@ -92,7 +92,7 @@ namespace UnitTests
                 Band = "80M",
                 Mode = "SSB",
                 Freq = "3500",
-                Timestamp = DateTime.Now.AddMinutes(-35),
+                Timestamp = DateTime.UtcNow.AddMinutes(-35),
             });
             return result;
 

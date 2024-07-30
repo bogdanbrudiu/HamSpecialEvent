@@ -4,6 +4,7 @@ using CoreMailer.Models;
 using HamEvent.Data.Model;
 using HamEvent.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace HamEvent.Controllers
@@ -45,8 +46,9 @@ namespace HamEvent.Controllers
             {
                 await _mailer.SendAsync(mdl);
             }
-            catch
+            catch(Exception ex)
             {
+                _logger.LogError(MyLogEvents.SendingEmail, ex, "Error Sending Email");
                 return StatusCode(500, $"Email send error!");
             }
             return Ok();

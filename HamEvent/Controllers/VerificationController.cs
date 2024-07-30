@@ -16,9 +16,9 @@ namespace HamEvent.Controllers
         private readonly TokenService _tokenService;
         private readonly ICoreMvcMailer _mailer;
         private readonly MailerSettings _mailerSettings;
-        private readonly ILogger<HamEventController> _logger;
+        private readonly ILogger<VerificationController> _logger;
 
-        public VerificationController(ILogger<HamEventController> logger, IMapper mapper, ICoreMvcMailer mailer, IOptions<MailerSettings> mailerSettings, TokenService tokenService)
+        public VerificationController(ILogger<VerificationController> logger, IMapper mapper, ICoreMvcMailer mailer, IOptions<MailerSettings> mailerSettings, TokenService tokenService)
         {
             _tokenService = tokenService;
             _logger = logger;
@@ -49,7 +49,7 @@ namespace HamEvent.Controllers
             catch(Exception ex)
             {
                 _logger.LogError(MyLogEvents.SendingEmail, ex, "Error Sending Email");
-                return StatusCode(500, $"Email send error!");
+                return StatusCode(500, $"Email send error!{ex.Message}");
             }
             return Ok();
         }

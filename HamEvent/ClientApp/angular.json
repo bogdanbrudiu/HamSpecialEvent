@@ -75,11 +75,11 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "HamEvent:build:production"
+              "buildTarget": "HamEvent:build:production"
             },
             "development": {
-              "browserTarget": "HamEvent:build:development",
-              "proxyConfig": "proxy.conf.js"
+              "proxyConfig": "proxy.conf.js",
+              "buildTarget": "HamEvent:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -87,7 +87,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "HamEvent:build"
+            "buildTarget": "HamEvent:build"
           }
         },
         "test": {

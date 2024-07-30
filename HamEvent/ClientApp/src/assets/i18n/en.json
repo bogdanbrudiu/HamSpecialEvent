@@ -44,5 +44,7 @@
   "ExcludeCallsignsFromTop": "Exclude callsigns from top",
   "AddEvent": "Add Event",
   "Email Validation Code": "Email Validation Code",
-  "Email verification": "Email verification"
+  "Email verification": "Email verification",
+  "Sending Email validation failed, try again later!": "Sending Email validation failed, try again later!",
+  "Email validation failed, code not valid!": "Email validation failed, code not valid!"
 }

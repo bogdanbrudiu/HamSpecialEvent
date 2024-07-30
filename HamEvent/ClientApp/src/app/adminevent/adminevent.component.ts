@@ -1,8 +1,8 @@
-import {  HttpEventType, HttpErrorResponse } from '@angular/common/http';
-import { Component,  OnInit, Inject, Input, Pipe, PipeTransform } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EventsService } from '../events.service';
 import { VerificationService } from '../verification.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'event-editor',
@@ -16,7 +16,7 @@ export class AdminEventComponent implements OnInit {
   public emailValidationCode: string = '';
   public codeGenerated: boolean = false;
 
-  constructor(private router: Router, private eventsService: EventsService, private verificationService: VerificationService, private routes: ActivatedRoute) { }
+  constructor(private router: Router, private eventsService: EventsService, private verificationService: VerificationService, private routes: ActivatedRoute, private translate: TranslateService) { }
 
   ngOnInit() {
     this.routes.paramMap.subscribe(params => {
@@ -70,45 +70,49 @@ export class AdminEventComponent implements OnInit {
             },
             error => {
               console.log(error);
+              alert(this.translate.instant('Sending Email validation failed, try again later!'));
             }
           );
           return;
         } else {
           //validate email
+
           this.verificationService.VerifyEmail(this.emailValidationCode, this.event.email).subscribe(
             (response) => {
               console.log(response);
-              if (!response) {
-                alert("Email validation failed");
-                return;
-              }
-              this.initialEmail=this.event?.email??"";
+
+              this.initialEmail = this.event?.email ?? "";
+              this.updateEvent();
             },
             error => {
               console.log(error);
-              alert("Email validation failed");
-              return;
+              alert(this.translate.instant('Email validation failed, code not valid!'));
             }
           );
         }
+      } else {
+        this.updateEvent();
       }
-      this.eventsService.updateEvent(this.event).subscribe(
-        (response) => {
-          console.log(response);
-        
-
-          if (this.event && this.event.id === "00000000-0000-0000-0000-000000000000") {
-            this.router.navigate(['/', response.hamEvent.id, response.secretKey]);
-          } else {
-            this.router.navigate(['/', this.eventId, this.eventSecret]);
-          }
-        },
-        error => {
-          console.log(error); 
-        }
-      )
     }
   }
+
+    private updateEvent() {
+        this.eventsService.updateEvent(this.event).subscribe(
+            (response) => {
+                console.log(response);
+
+
+                if (this.event && this.event.id === "00000000-0000-0000-0000-000000000000") {
+                    this.router.navigate(['/', response.hamEvent.id, response.secretKey]);
+                } else {
+                    this.router.navigate(['/', this.eventId, this.eventSecret]);
+                }
+            },
+            error => {
+                console.log(error);
+            }
+        );
+    }
 }
 interface HamEvent {
   id: string;

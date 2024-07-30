@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -6,6 +6,7 @@ import { EventsService, HamEvent } from '../events.service';
 import { QSO, QSOsService } from '../qsos.service';
 import { PdfService } from '../pdf.service';
 import { TranslateService } from '@ngx-translate/core';
+import { UploadComponent } from '../upload/upload.component';
 declare let gtag: Function;
 @Component({
   selector: 'app-adminqsos',
@@ -29,6 +30,8 @@ export class AdminQSOsComponent {
   public loaded = false;
   public blob: Blob | undefined;
   public isLive: boolean = false;
+  @ViewChild(UploadComponent) upload!: UploadComponent;
+
 
   constructor(private formBuilder: FormBuilder, private router: Router, private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService, private pdfService: PdfService, private translate: TranslateService) {
 
@@ -158,6 +161,8 @@ export class AdminQSOsComponent {
         this.QSOs = response.data;
         this.count = response.count;
         this.loaded = true;
+        this.upload.message = '';
+        this.upload.progress = 0;
         console.log(response);
       },
       (error) => {

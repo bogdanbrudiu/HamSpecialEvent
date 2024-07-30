@@ -44,5 +44,7 @@
   "ExcludeCallsignsFromTop": "Exclude indicativele din clasament",
   "AddEvent": "Adaugă Eveniment",
   "Email Validation Code": "Cod de validare a emailului",
-  "Email verification": "Verifică adresa de email"
+  "Email verification": "Verifică adresa de email",
+  "Sending Email validation failed, try again later!": "Trimiterea emailului de validare a eșuat, încearcă din nou mai târziu!",
+  "Email validation failed, code not valid!": "Validarea emailului a eșuat, codul nu este valid!"
 }

@@ -1,4 +1,4 @@
-import { HttpClient, HttpEventType, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpEventType } from '@angular/common/http';
 import { Component, EventEmitter, OnInit, Output, Inject, Input } from '@angular/core';
 
 @Component({

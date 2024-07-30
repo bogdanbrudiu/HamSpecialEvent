@@ -12,6 +12,8 @@ export class VerificationService {
     return this.http.get(this.baseUrl + 'api/verification/send-verification?email=' + encodeURIComponent(email));
   }
   VerifyEmail(token:string, email: string): Observable<any> {
-    return this.http.get(this.baseUrl + 'api/verification/verify?token=' + encodeURIComponent(token) + '&email=' + encodeURIComponent(email));
+    return this.http.get(this.baseUrl + 'api/verification/verify?token=' + encodeURIComponent(token) + '&email=' + encodeURIComponent(email), {
+      responseType: 'text',
+    });
   }
 }

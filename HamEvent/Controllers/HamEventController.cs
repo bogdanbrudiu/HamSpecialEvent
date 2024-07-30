@@ -339,8 +339,14 @@ namespace HamEvent.Controllers
                         Model = new { id = myevent.Id, secretKey = secretKey }
                     };
                     _logger.LogDebug(MyLogEvents.SendingEmail, "Sending Email");
-                    _mailer.SendAsync(mdl);
-
+                    try
+                    {
+                        _mailer.SendAsync(mdl);
+                    }
+                    catch(Exception ex)
+                    {
+                        _logger.LogError(MyLogEvents.SendingEmail, ex ,"Error Sending Email");
+                    }
 
                     
                         return Ok(new {hamEvent= myevent, secretKey= secretKey});

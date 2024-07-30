@@ -41,7 +41,14 @@ namespace HamEvent.Controllers
                 Model = new { token=  _tokenService.GenerateToken(email) }
             };
             _logger.LogDebug(MyLogEvents.SendingEmail, "Sending Email");
-            await _mailer.SendAsync(mdl);
+            try
+            {
+                await _mailer.SendAsync(mdl);
+            }
+            catch
+            {
+                return StatusCode(500, $"Email send error!");
+            }
             return Ok();
         }
 

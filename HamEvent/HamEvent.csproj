@@ -11,8 +11,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AdifLib" Version="1.6.3" />
     <PackageReference Include="AutoMapper" Version="12.0.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+    <PackageReference Include="CoreMailer" Version="3.0.0" />
     <PackageReference Include="elmahcore" Version="2.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="7.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.5" />
@@ -35,6 +37,7 @@
 
   <ItemGroup>
     <None Remove="App_Data\QSOs.db" />
+    <None Remove="ClientApp\src\app\nav-menu\nav-menu.component.spec.ts" />
     <None Remove="resources\diploma.html" />
     <None Remove="Shared\AddEvent.html" />
     <None Remove="Shared\ValidateEmail.html" />
@@ -61,11 +64,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AdifLib\AdifLib\AdifLib.csproj" />
-    <ProjectReference Include="..\CoreMailer\CoreMailer\CoreMailer.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Update="wwwroot\static\diploma-background.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -79,6 +77,10 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\log\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\app\nav-menu\nav-menu.component.spec.ts" />
   </ItemGroup>
 
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

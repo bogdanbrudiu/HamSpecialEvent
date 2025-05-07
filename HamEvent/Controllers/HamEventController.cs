@@ -335,7 +335,7 @@ namespace HamEvent.Controllers
                         Subject = "Event Added",
                         User = _mailerSettings.Username,
                         Key = _mailerSettings.Password,
-                        EnableSsl = _mailerSettings.EnableSSL,
+                        //EnableSsl = _mailerSettings.EnableSSL,
                         Model = new { id = myevent.Id, secretKey = secretKey }
                     };
                     _logger.LogDebug(MyLogEvents.SendingEmail, "Sending Email");

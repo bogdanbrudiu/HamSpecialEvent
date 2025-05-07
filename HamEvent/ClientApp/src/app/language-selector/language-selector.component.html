@@ -1,0 +1,13 @@
+<mat-form-field color="primary" class="mat-select-hide-underline" appearance="fill">
+  <mat-label>{{'Language' | translate}}</mat-label>
+  <mat-select [(value)]="selectedLanguage" (selectionChange)="onLanguageChange($event.value)">
+    <mat-option *ngFor="let lang of languages" [value]="lang">
+      <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+        <img [src]="lang.icon" class="flag" alt="{{ lang.name }} Flag"/>
+        <span>{{ lang.name }}</span>
+      </div>
+      <!--<img matOptionPrefix [src]="lang.icon">
+  {{ lang.name }}-->
+    </mat-option>
+  </mat-select>
+</mat-form-field>

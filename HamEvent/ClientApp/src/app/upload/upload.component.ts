@@ -1,10 +1,15 @@
 import { HttpClient, HttpErrorResponse, HttpEvent, HttpEventType } from '@angular/common/http';
 import { Component, EventEmitter, OnInit, Output, Inject, Input } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
+import { NgIf } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 @Component({
-  selector: 'app-upload',
-  templateUrl: './upload.component.html',
-  styleUrls: ['./upload.component.css']
+    selector: 'app-upload',
+    templateUrl: './upload.component.html',
+    styleUrls: ['./upload.component.css'],
+    standalone: true,
+    imports: [RouterLink, NgIf, TranslateModule]
 })
 export class UploadComponent implements OnInit {
   @Input() eventId: string='';

@@ -2,11 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EventsService } from '../events.service';
 import { VerificationService } from '../verification.service';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { SanitizedHtmlPipe } from '../sanitized-html.pipe';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { NgIf, DatePipe } from '@angular/common';
 
 @Component({
-  selector: 'event-editor',
-  templateUrl: './adminevent.component.html'
+    selector: 'event-editor',
+    templateUrl: './adminevent.component.html',
+    standalone: true,
+    imports: [NgIf, ReactiveFormsModule, FormsModule, DatePipe, TranslateModule, SanitizedHtmlPipe]
 })
 export class AdminEventComponent implements OnInit {
   public eventId: string = '';

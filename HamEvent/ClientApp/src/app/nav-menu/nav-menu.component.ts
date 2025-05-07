@@ -1,14 +1,21 @@
 import { Component } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute, NavigationEnd, NavigationStart, Params, Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
+import { ActivatedRoute, NavigationEnd, NavigationStart, Params, Router, RouterLink } from '@angular/router';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { filter, map } from 'rxjs';
 import { EventsService, HamEvent } from '../events.service';
 import { QSOsService } from '../qsos.service';
+import { LanguageSelectorComponent } from '../language-selector/language-selector.component';
+import { MatAnchor } from '@angular/material/button';
+import { MatToolbar } from '@angular/material/toolbar';
+import { Log } from 'oidc-client';
 
 @Component({
-  selector: 'app-nav-menu',
-  templateUrl: './nav-menu.component.html'
+    selector: 'app-nav-menu',
+    templateUrl: './nav-menu.component.html',
+    styleUrls: ['./nav-menu.component.css'],
+    standalone: true,
+    imports: [MatToolbar, MatAnchor, RouterLink, LanguageSelectorComponent, TranslateModule]
 })
 export class NavMenuComponent {
   isExpanded = false;
@@ -57,9 +64,12 @@ export class NavMenuComponent {
       map(() => this.rootRoute(this.routes)),
       filter((route: ActivatedRoute) => route.outlet === 'primary'),
     ).subscribe((route: ActivatedRoute) => {
+      console.log(route);
       var id = route.snapshot.paramMap.get('id')
+      var secret = route.snapshot.paramMap.get('secret')
       if (id != null && id !='00000000-0000-0000-0000-000000000000') {
         this.eventId = id;
+        console.log(id);
         this.eventsService.getEvent(this.eventId).subscribe(
           (response) => {
             this.event = response;

@@ -1,4 +1,4 @@
-.bi:hover {
+/*.bi:hover {
   color: red;
   cursor: pointer;
 }
@@ -29,4 +29,26 @@ body, html {
 .nav-link-white {
   font-family: sans-serif;
   color: white;
+}*/
+/*@import './theme';
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat-core();*/
+
+html, body {
+  height: 100%;
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.example-spacer {
+  flex: 1 1 auto;
 }

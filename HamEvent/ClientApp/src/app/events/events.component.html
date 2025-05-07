@@ -1,7 +1,7 @@
 
 <div class="px-4 text-center border-bottom">
   <h1 class="display-4 fw-bold text-body-emphasis">{{'HamEvents' | translate}}</h1>
-  <nav class="navbar navbar-expand navbar-light bg-light">
+  <!--<nav class="navbar navbar-expand navbar-light bg-light">
     <div class="container-fluid">
       <div class="collapse navbar-collapse" id="topnavbar">
         <ul class="navbar-nav">
@@ -13,8 +13,8 @@
       </div>
     </div>
   </nav>
-
-  <div class="col-lg-10 mx-auto">
+</div>-->
+  <!--<div class="col-lg-10 mx-auto">
     <p *ngIf="!loaded"><em>{{'Loading...' | translate}}</em></p>
 
     <p *ngIf="loaded && !Events?.length"><em>{{'No entries...' | translate}}</em></p>
@@ -59,7 +59,13 @@
                            nextLabel="Next"
                            (pageChange)="onTableDataChange($event)">
       </pagination-controls>
-    </div>
+    </div>-->
+<p *ngIf="!loaded"><em>{{'Loading...' | translate}}</em></p>
+<div class="content" fxLayout="row wrap" fxLayoutGap="16px grid">
+  <div [fxFlex]="(100/gridColumns) + '%'"
+       fxFlex.xs="100%"
+       fxFlex.sm="33%"
+       *ngFor="let event of Events">
+    <app-event-card [event]="event"></app-event-card>
   </div>
 </div>
-

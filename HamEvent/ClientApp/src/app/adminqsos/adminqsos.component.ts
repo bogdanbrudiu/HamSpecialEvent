@@ -1,16 +1,20 @@
 import { Component, Inject, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { EventsService, HamEvent } from '../events.service';
 import { QSO, QSOsService } from '../qsos.service';
 import { PdfService } from '../pdf.service';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { UploadComponent } from '../upload/upload.component';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { NgIf, NgFor } from '@angular/common';
 declare let gtag: Function;
 @Component({
-  selector: 'app-adminqsos',
-  templateUrl: './adminqsos.component.html'
+    selector: 'app-adminqsos',
+    templateUrl: './adminqsos.component.html',
+    standalone: true,
+    imports: [NgIf, UploadComponent, RouterLink, ReactiveFormsModule, NgFor, FormsModule, NgxPaginationModule, TranslateModule]
 })
 export class AdminQSOsComponent {
 

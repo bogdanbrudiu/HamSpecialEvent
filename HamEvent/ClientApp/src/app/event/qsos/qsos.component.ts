@@ -1,16 +1,41 @@
-import { Component, Inject } from '@angular/core';
+import { AfterViewInit, Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HamEvent, EventsService } from '../events.service';
-import { QSO, QSOsService } from '../qsos.service';
-import { PdfService } from '../pdf.service';
+import { HamEvent, EventsService } from '../../events.service';
+import { QSO, QSOsService } from '../../qsos.service';
+import { PdfService } from '../../pdf.service';
+import { MatTableModule, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatTableDataSource } from '@angular/material/table';
+import { TranslateModule } from '@ngx-translate/core';
+import { NgIf, DatePipe } from '@angular/common';
+import { ResponsiveToolbarComponent } from '../responsive-toolbar/responsive-toolbar.component';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+
+export interface Tile {
+  color: string;
+  cols: number;
+  rows: number;
+  text: string;
+}
+
 declare let gtag: Function;
 @Component({
-  selector: 'app-qsos',
-  templateUrl: './qsos.component.html'
+    selector: 'app-qsos',
+    templateUrl: './qsos.component.html',
+    styleUrls: ['./qsos.component.css'],
+  standalone: true,
+  imports: [MatTableModule, NgIf, ResponsiveToolbarComponent, MatGridListModule, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, DatePipe, TranslateModule, MatPaginatorModule]
 })
-export class QSOsComponent {
+export class QSOsComponent implements OnInit, AfterViewInit {
+
+  tiles: Tile[] = [
+    { text: 'One', cols: 3, rows: 1, color: 'lightblue' },
+    { text: 'Two', cols: 1, rows: 2, color: 'lightgreen' },
+    { text: 'Three', cols: 1, rows: 1, color: 'lightpink' },
+    { text: 'Four', cols: 2, rows: 1, color: '#DDBDF1' },
+  ];
+
   searchForm!: FormGroup;
   public QSOs: QSO[] = [];
   page: number = 1;
@@ -25,6 +50,10 @@ export class QSOsComponent {
   public blob: Blob | undefined;
   public isLive: boolean = false;
 
+  displayedColumns: string[] = ['callsign1', 'callsign2', 'mode', 'band', 'timestamp'];
+  @ViewChild(MatTable) table!: MatTable<HamEvent>;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  dataSource = new MatTableDataSource<HamEvent>();
   constructor(private formBuilder: FormBuilder, private router: Router, private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService, private pdfService: PdfService) {
 
     this.searchForm = this.formBuilder.group({
@@ -54,7 +83,7 @@ export class QSOsComponent {
         }
       );
 
-      //this.loadData();
+      this.loadData();
     });
   }
   searchIsValid() {
@@ -67,9 +96,11 @@ export class QSOsComponent {
     this.loadData();
     
   }
+
   top() {
     this.router.navigate([this.eventId, 'top']);
   }
+
   genPdf() {
 
     return this.pdfService.getPdf(this.eventId, this.searchInput).subscribe((data: any) => {
@@ -94,8 +125,11 @@ export class QSOsComponent {
     this.qsosService.getAllQSOs(this.eventId, this.searchInput, this.page, this.tableSize).subscribe(
       (response) => {
         this.QSOs = response.data;
+        this.dataSource = response.data;
         this.count = response.count;
         this.loaded = true;
+        this.table.renderRows();
+
         console.log(response);
       },
       (error) => {
@@ -113,6 +147,9 @@ export class QSOsComponent {
     return this.QSOs.length > 0 && this.searchInput.length > 0 && this.loaded;
   }
 
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+  }
 }
 
 

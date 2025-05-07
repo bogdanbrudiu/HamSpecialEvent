@@ -1,0 +1,29 @@
+<mat-card class="event-card">
+  <mat-card-header>
+    <div mat-card-avatar  class="example-header-image">{{event.icon}}</div>
+    <mat-card-title>{{event.name}}</mat-card-title>
+    <mat-card-subtitle>{{event.subtitle?event.subtitle:''}}</mat-card-subtitle>
+  </mat-card-header>
+  <img mat-card-image src="static/{{event.name | trim}}.jpg" alt="diploma image">
+  <mat-card-content>
+    <div class="event-description" [innerHTML]="event.description"></div>
+  </mat-card-content>
+  <mat-card-actions>
+    <!--<button mat-button>LIKE</button>-->
+    <button mat-button (click)="gotoEvent(event)">{{ 'gotoEvent' | translate }}</button>
+    <span class="material-symbols-outlined">
+    </span>
+  </mat-card-actions>
+  <mat-card-footer class="event-footer">
+    <div style="float:right;">
+      <mat-icon class="float: right;" [matTooltip]="getTooltipText()"
+        matTooltipClass="multiline-tooltip mat-tooltip"
+        [matTooltipShowDelay]="100"
+        [matTooltipHideDelay]="2000">event_available</mat-icon>
+      <!--<span class="material-icons orange600">face</span>
+      <mat-icon class="float: right;" color="primary">archive</mat-icon>
+      <mat-icon class="float: right;" color="accent">archive</mat-icon>
+      <mat-icon class="float: right;" color="warn">archive</mat-icon>-->
+    </div>
+  </mat-card-footer>
+</mat-card>

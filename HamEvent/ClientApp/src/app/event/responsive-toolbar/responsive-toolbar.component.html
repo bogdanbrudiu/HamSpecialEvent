@@ -1,0 +1,13 @@
+<mat-toolbar fxLayout="row" color="primary">
+  <span fxFlex>
+    <button mat-button [routerLink]="['/events']"><mat-icon class="mr">arrow_back</mat-icon>{{'HamEvents' | translate}}</button>
+  </span>
+  <button mat-button *ngFor="let item of menuItems" [ngClass]="{'item_disabled': item.isDisabled}" [disabled]="item.isDisabled"
+          [fxShow]="item.showOnDesktop"
+          [fxShow.xs]="item.showOnMobile"
+          [fxShow.sm]="item.showOnTablet"
+          (click)="goto(item.link)">
+    <mat-icon class="mr">{{item.icon}}</mat-icon>
+    {{item.label | translate}}
+  </button>
+</mat-toolbar>

@@ -65,8 +65,8 @@ jobs:
         run: |
           git config --global user.name "CD bot"
           git config --global user.email ""
-          copy fetched/App_Data/QSOs.db HamEvent/App_Data/QSOs_new.db
-          git add HamEvent/App_Data/QSOs_new.db
+          copy fetched/App_Data/QSOs.db HamEvent/App_Data/QSOs.db
+          git add HamEvent/App_Data/QSOs.db
           git commit -m "update db file [skip actions]"
 
       - name: Push change

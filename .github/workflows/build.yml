@@ -22,7 +22,11 @@ jobs:
           echo %date% %time% >> HamEvent/App_Data/dbtestfile.txt
           git add HamEvent/App_Data/dbtestfile.txt
           git commit -m "update db file [skip actions]"
-          git push
+      - name: Push change
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }} 
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
@@ -68,7 +72,11 @@ jobs:
           echo %date% %time% >> HamEvent/App_Data/dbtestfile_.txt
           git add HamEvent/App_Data/dbtestfile_.txt
           git commit -m "update db file [skip actions]"
-          git push
+      - name: Push change
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }} 
       - name: Deploy App Pool
         uses: bogdanbrudiu/simply-web-deploy/Deploy@main
         with:

@@ -50,7 +50,7 @@ jobs:
             MailerSettings.EnableSSL:   ${{ secrets.MAILER_SETTINGS_ENABLESSL }}
             Token.Secret:               ${{ secrets.TOKEN_SECRET }}
       - name: Publish
-        run: dotnet publish HamEvent/HamEvent.csproj --configuration Release --framework net7.0 --output ./publish --runtime win-x64 --self-contained true -p:PublishTrimmed=false -p:PublishSingleFile=false
+        run: dotnet publish HamEvent/HamEvent.csproj --configuration Release --framework net8.0 --output ./publish --runtime win-x64 --self-contained true -p:PublishTrimmed=false -p:PublishSingleFile=false
       - name: Stop App Pool
         uses: bogdanbrudiu/simply-web-deploy/Stop@main
         with:

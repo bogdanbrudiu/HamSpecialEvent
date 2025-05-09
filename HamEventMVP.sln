@@ -18,15 +18,32 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreMailer", "CoreMailer\CoreMailer\CoreMailer.csproj", "{3458928A-E6F3-4FA6-878B-B3729C14838B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "simply-web-deploy", "simply-web-deploy", "{6E07F384-23C4-43EC-BFB5-E34E871FB547}"
-	ProjectSection(SolutionItems) = preProject
-		simply-web-deploy\action.yml = simply-web-deploy\action.yml
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{667EB339-38A6-4FB9-99E3-FFA71DB0787C}"
 	ProjectSection(SolutionItems) = preProject
 		simply-web-deploy\Scripts\Deploy-ApplicationPackage.ps1 = simply-web-deploy\Scripts\Deploy-ApplicationPackage.ps1
 		simply-web-deploy\Scripts\Fetch-ApplicationPackage.ps1 = simply-web-deploy\Scripts\Fetch-ApplicationPackage.ps1
 		simply-web-deploy\Scripts\Set-ApplicationPool.ps1 = simply-web-deploy\Scripts\Set-ApplicationPool.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Stop", "Stop", "{125AB4CA-BD4C-4C8E-8F27-62CBAE73D044}"
+	ProjectSection(SolutionItems) = preProject
+		simply-web-deploy\Stop\action.yml = simply-web-deploy\Stop\action.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Start", "Start", "{60B93305-2A05-4B1D-9955-7AE4CBDD5112}"
+	ProjectSection(SolutionItems) = preProject
+		simply-web-deploy\Start\action.yml = simply-web-deploy\Start\action.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Fetch", "Fetch", "{2B2766AF-6421-432F-BD0F-6CC5E305F18C}"
+	ProjectSection(SolutionItems) = preProject
+		simply-web-deploy\Fetch\action.yml = simply-web-deploy\Fetch\action.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deploy", "Deploy", "{AB17FE00-A9F2-4882-8FD3-8A919F010F9A}"
+	ProjectSection(SolutionItems) = preProject
+		simply-web-deploy\Deploy\action.yml = simply-web-deploy\Deploy\action.yml
 	EndProjectSection
 EndProject
 Global
@@ -57,6 +74,10 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{667EB339-38A6-4FB9-99E3-FFA71DB0787C} = {6E07F384-23C4-43EC-BFB5-E34E871FB547}
+		{125AB4CA-BD4C-4C8E-8F27-62CBAE73D044} = {6E07F384-23C4-43EC-BFB5-E34E871FB547}
+		{60B93305-2A05-4B1D-9955-7AE4CBDD5112} = {6E07F384-23C4-43EC-BFB5-E34E871FB547}
+		{2B2766AF-6421-432F-BD0F-6CC5E305F18C} = {6E07F384-23C4-43EC-BFB5-E34E871FB547}
+		{AB17FE00-A9F2-4882-8FD3-8A919F010F9A} = {6E07F384-23C4-43EC-BFB5-E34E871FB547}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {172F1AC0-54ED-4655-8A36-F090D38CBA73}

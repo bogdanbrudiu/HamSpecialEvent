@@ -73,6 +73,7 @@ jobs:
           git commit -m "update db file [skip actions]"
 
       - name: Push change
+        if: ${{  github.ref!='refs/heads/main') }}
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

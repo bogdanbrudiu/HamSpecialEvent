@@ -1,2 +1,4 @@
 %date%
 %time%
+%date%
+%time%

@@ -17,6 +17,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTests\Unit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreMailer", "CoreMailer\CoreMailer\CoreMailer.csproj", "{3458928A-E6F3-4FA6-878B-B3729C14838B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "simply-web-deploy", "simply-web-deploy", "{6E07F384-23C4-43EC-BFB5-E34E871FB547}"
+	ProjectSection(SolutionItems) = preProject
+		simply-web-deploy\action.yml = simply-web-deploy\action.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{667EB339-38A6-4FB9-99E3-FFA71DB0787C}"
+	ProjectSection(SolutionItems) = preProject
+		simply-web-deploy\Scripts\Deploy-ApplicationPackage.ps1 = simply-web-deploy\Scripts\Deploy-ApplicationPackage.ps1
+		simply-web-deploy\Scripts\Fetch-ApplicationPackage.ps1 = simply-web-deploy\Scripts\Fetch-ApplicationPackage.ps1
+		simply-web-deploy\Scripts\Set-ApplicationPool.ps1 = simply-web-deploy\Scripts\Set-ApplicationPool.ps1
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,6 +54,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{667EB339-38A6-4FB9-99E3-FFA71DB0787C} = {6E07F384-23C4-43EC-BFB5-E34E871FB547}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {172F1AC0-54ED-4655-8A36-F090D38CBA73}

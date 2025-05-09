@@ -67,11 +67,6 @@ jobs:
           copy fetched/App_Data/QSOs.db HamEvent/App_Data/QSOs_new.db
           git add HamEvent/App_Data/QSOs_new.db
           git commit -m "update db file [skip actions]"
-      - name: Push change
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }} 
       - name: Deploy App Pool
         uses: bogdanbrudiu/simply-web-deploy/Deploy@main
         with:

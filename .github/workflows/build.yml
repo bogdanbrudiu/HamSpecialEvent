@@ -19,8 +19,8 @@ jobs:
         run: |
           git config --global user.name "CD bot"
           git config --global user.email ""
-          echo %date% %time% >> App_Data\dbtestfile.txt
-          git add App_Data\dbtestfile.txt
+          echo %date% %time% >> HamEvent/App_Data/dbtestfile.txt
+          git add HamEvent/App_Data/dbtestfile.txt
           git commit -m "update db file [skip actions]"
           git push
       - name: Setup .NET
@@ -65,8 +65,8 @@ jobs:
         run: |
           git config --global user.name "CD bot"
           git config --global user.email ""
-          echo %date% %time% >> App_Data\dbtestfile_.txt
-          git add App_Data\dbtestfile_.txt
+          echo %date% %time% >> HamEvent/App_Data/dbtestfile_.txt
+          git add HamEvent/App_Data/dbtestfile_.txt
           git commit -m "update db file [skip actions]"
           git push
       - name: Deploy App Pool

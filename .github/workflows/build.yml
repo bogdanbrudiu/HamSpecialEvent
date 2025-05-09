@@ -59,7 +59,7 @@ jobs:
           server-username: ${{ secrets.SERVER_USERNAME }}
           server-password: ${{ secrets.SERVER_PASSWORD }}
           target-path: '\fetched\'
-          source-path: '\wwwroot\'
+          source-path: '""'
       - name: Backup DB
         run: |
           git config --global user.name "CD bot"

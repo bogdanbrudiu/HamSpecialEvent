@@ -48,14 +48,14 @@ jobs:
       - name: Publish
         run: dotnet publish HamEvent/HamEvent.csproj --configuration Release --framework net7.0 --output ./publish --runtime win-x64 --self-contained true -p:PublishTrimmed=false -p:PublishSingleFile=false
       - name: Stop App Pool
-        uses: bogdanbrudiu/simply-web-deploy/Stop@7f9e096
+        uses: bogdanbrudiu/simply-web-deploy/Stop@main
         with:
           website-name: ${{ secrets.WEBSITE_NAME }}
           server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
           server-username: ${{ secrets.SERVER_USERNAME }}
           server-password: ${{ secrets.SERVER_PASSWORD }}
       - name: Fetch App Pool
-        uses: bogdanbrudiu/simply-web-deploy/Fetch@7f9e096
+        uses: bogdanbrudiu/simply-web-deploy/Fetch@main
         with:
           website-name: ${{ secrets.WEBSITE_NAME }}
           server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
@@ -70,14 +70,14 @@ jobs:
           git commit -m "update db file [skip actions]"
           git push
       - name: Deploy App Pool
-        uses: bogdanbrudiu/simply-web-deploy/Deploy@7f9e096
+        uses: bogdanbrudiu/simply-web-deploy/Deploy@main
         with:
           website-name: ${{ secrets.WEBSITE_NAME }}
           server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
           server-username: ${{ secrets.SERVER_USERNAME }}
           server-password: ${{ secrets.SERVER_PASSWORD }}
       - name: Start App Pool
-        uses: bogdanbrudiu/simply-web-deploy/Start@7f9e096
+        uses: bogdanbrudiu/simply-web-deploy/Start@main
         with:
           website-name: ${{ secrets.WEBSITE_NAME }}
           server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}

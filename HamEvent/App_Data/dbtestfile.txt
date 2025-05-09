@@ -6,3 +6,5 @@
 %time%
 %date%
 %time%
+%date%
+%time%

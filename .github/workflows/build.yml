@@ -16,12 +16,6 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Push change
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }} 
-
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
@@ -74,6 +68,12 @@ jobs:
           copy fetched/App_Data/QSOs.db HamEvent/App_Data/QSOs_new.db
           git add HamEvent/App_Data/QSOs_new.db
           git commit -m "update db file [skip actions]"
+
+      - name: Push change
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }} 
 
       - name: Publish
         run: dotnet publish HamEvent/HamEvent.csproj --configuration Release --framework net8.0 --output ./publish --runtime win-x64 --self-contained true -p:PublishTrimmed=false -p:PublishSingleFile=false

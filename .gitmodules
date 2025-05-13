@@ -4,3 +4,6 @@
 [submodule "CoreMailer"]
 	path = CoreMailer
 	url = https://github.com/riyasat/CoreMailer.git
+[submodule "simply-web-deploy"]
+	path = simply-web-deploy
+	url = https://github.com/bogdanbrudiu/simply-web-deploy.git

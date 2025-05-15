@@ -44,6 +44,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deploy", "Deploy", "{AB17FE
 		simply-web-deploy\Deploy\action.yml = simply-web-deploy\Deploy\action.yml
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdifLib", "AdifLib\AdifLib\AdifLib.csproj", "{94D64628-F1C7-49D3-A68E-5EB7962FA06F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +60,14 @@ Global
 		{1A6792F1-7EF9-450C-AC1E-7FD26ACD8EAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A6792F1-7EF9-450C-AC1E-7FD26ACD8EAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A6792F1-7EF9-450C-AC1E-7FD26ACD8EAD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3458928A-E6F3-4FA6-878B-B3729C14838B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3458928A-E6F3-4FA6-878B-B3729C14838B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3458928A-E6F3-4FA6-878B-B3729C14838B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3458928A-E6F3-4FA6-878B-B3729C14838B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94D64628-F1C7-49D3-A68E-5EB7962FA06F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94D64628-F1C7-49D3-A68E-5EB7962FA06F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94D64628-F1C7-49D3-A68E-5EB7962FA06F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94D64628-F1C7-49D3-A68E-5EB7962FA06F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

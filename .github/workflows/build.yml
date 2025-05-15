@@ -65,7 +65,7 @@ jobs:
         run: |
           git config --global user.name "CD bot"
           git config --global user.email ""
-          IF EXIST fetched/App_Data/QSOs.db copy fetched/App_Data/QSOs.db HamEvent/App_Data/QSOs.db
+          IF EXIST fetched/App_Data/QSOs.db (copy fetched/App_Data/QSOs.db HamEvent/App_Data/QSOs.db)
           $NOW=& Get-Date -format yyyy-MM-dd
           echo "New backup done on $NOW" >> HamEvent/App_Data/dbbackup_log
           git add HamEvent/App_Data/QSOs.db

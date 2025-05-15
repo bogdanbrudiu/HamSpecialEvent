@@ -1,11 +1,16 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { EventsService, HamEvent } from '../events.service';
-import { Operator, QSO, QSOsService } from '../qsos.service';
+import { ActivatedRoute, Router, RouterLinkActive, RouterLink } from '@angular/router';
+import { EventsService, HamEvent } from '../../events.service';
+import { Operator, QSO, QSOsService } from '../../qsos.service';
+import { TranslateModule } from '@ngx-translate/core';
+import { ExtendedModule } from '@angular/flex-layout/extended';
+import { NgIf, NgClass, NgFor } from '@angular/common';
 
 @Component({
-  selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html'
+    selector: 'app-dashboard',
+    templateUrl: './dashboard.component.html',
+    standalone: true,
+    imports: [NgIf, RouterLinkActive, RouterLink, NgClass, ExtendedModule, NgFor, TranslateModule]
 })
 export class DashboardComponent {
   public eventId: string = '';

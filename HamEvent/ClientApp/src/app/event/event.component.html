@@ -1,0 +1,103 @@
+<app-responsive-toolbar *ngIf="event" [event]="event" (setGridColumns)="toggleGridColumns()">
+</app-responsive-toolbar>
+<!--<a routerLink="top">top</a>
+<a [routerLink]="['live']">live</a>-->
+<div class="mat-elevation-z8 page-header" *ngIf="event">
+  <mat-tab-group dynamicHeight (selectedTabChange)="tabClick($event)">
+    <mat-tab label="{{event.name}}">
+      <ng-template mat-tab-label>
+        <!--<mat-icon class="example-tab-icon">thumb_up</mat-icon>-->
+        {{event.name}}
+      </ng-template>
+      <mat-divider></mat-divider>
+      <p>Start date: {{event.startDate | date:'medium'}}</p>
+      <p>End date: {{event.endDate | date:'medium'}}</p>
+
+      <mat-divider></mat-divider>
+      <!--<form role="search" (ngSubmit)="submitForm()" [formGroup]="searchForm">
+    <div class="input-group">
+      <input type="search" class="form-control" placeholder="{{'Callsign 2' | translate}}" formControlName="search">
+      <div class="input-group-append">
+        <button class="btn btn-outline-secondary" type="button" (click)="submitForm()" [attr.disabled]="searchIsValid()?null:true">{{'Search' | translate}}</button>
+      </div>
+    </div>
+  </form>-->
+      <!--<div class="card trow btn btn-outline-success" style="width: 18rem;" *ngIf='qualifiesForDiploma()' (click)="genPdf()">
+    <div class="card-body">
+      <h5 class="card-title">{{'Download Diploma' | translate}}</h5>
+      <div class="form-check">
+        <input class="form-check-input mycheckbox" type="checkbox" value="" id="flexCheckChecked" checked>
+        <label class="form-check-label" for="flexCheckChecked">
+          {{'At least 1 QSO' | translate}}
+        </label>
+      </div>
+    </div>
+  </div>-->
+      <!--<p class="page-description" [innerHTML]="sanitizedDescription"></p>-->
+      <!--<mat-date-range-input [rangePicker]="picker">
+    <input matStartDate placeholder="Start date">
+    <input matEndDate placeholder="End date">
+  </mat-date-range-input>
+  <mat-date-range-picker #picker></mat-date-range-picker>-->
+
+      <!--<mat-progress-bar mode="determinate" value="40"></mat-progress-bar>-->
+      <mat-divider></mat-divider>
+      <p class="page-description" [innerHTML]="event.description"></p>
+    </mat-tab>
+
+
+    <mat-tab label="{{ 'Rules' | translate}}">
+      <ng-template mat-tab-label><mat-icon class="example-tab-icon">rule</mat-icon>{{ 'Rules' | translate}}</ng-template>
+      Content 2
+    </mat-tab>
+    <mat-tab label="{{ 'Logs' | translate}}">
+      <ng-template mat-tab-label><mat-icon class="example-tab-icon">notes</mat-icon>{{ 'Logs' | translate}}</ng-template>
+      <table mat-table [dataSource]="logs" class="mat-elevation-z8 page-table">
+        <!-- Name Column -->
+        <!--<mat-text-column name="callsign1"></mat-text-column>-->
+
+        <ng-container matColumnDef="callsign1">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'Callsign 1' | translate}}</th>
+          <td mat-cell *matCellDef="let element">{{element.callsign1}}</td>
+        </ng-container>
+
+        <!-- Weight Column -->
+        <ng-container matColumnDef="callsign2">
+          <th mat-header-cell *matHeaderCellDef>{{'Callsign 2' | translate}}</th>
+          <td mat-cell *matCellDef="let element" [innerHTML]="element.callsign2"></td>
+        </ng-container>
+
+        <!-- Symbol Column -->
+        <ng-container matColumnDef="mode">
+          <th mat-header-cell *matHeaderCellDef>{{'Mode' | translate}}</th>
+          <td mat-cell *matCellDef="let element">{{element.mode}}</td>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="band">
+          <th mat-header-cell *matHeaderCellDef>{{'Band' | translate}}</th>
+          <td mat-cell *matCellDef="let element">{{element.band}}</td>
+        </ng-container>
+
+        <!-- Weight Column -->
+        <ng-container matColumnDef="timestamp">
+          <th mat-header-cell *matHeaderCellDef>{{'Timestamp' | translate}}</th>
+          <td mat-cell *matCellDef="let element">{{element.timestamp | date:'medium'}}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+            class="element-row"></tr>
+      </table>
+      <mat-paginator [pageSizeOptions]="[5, 10, 20]"
+                     showFirstLastButtons
+                     aria-label="Select page of periodic elements">
+      </mat-paginator>
+    </mat-tab>
+    <mat-tab label="{{ 'Rankings' | translate}}">
+      <ng-template mat-tab-label><mat-icon class="example-tab-icon">star</mat-icon>{{ 'Rankings' | translate}}</ng-template>
+      Content 3
+    </mat-tab>
+  </mat-tab-group>
+
+</div>

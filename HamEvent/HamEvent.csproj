@@ -13,10 +13,10 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="14.0.0" />
     <PackageReference Include="elmahcore" Version="2.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="9.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.4">
+    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="8.0.16" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.16" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.16" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.16">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -60,11 +60,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AdifLib\AdifLib\AdifLib.csproj" />
-    <ProjectReference Include="..\CoreMailer\CoreMailer\CoreMailer.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Update="wwwroot\static\diploma-background.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -79,6 +74,13 @@
   <ItemGroup>
     <Folder Include="wwwroot\log\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AdifLib\AdifLib\AdifLib.csproj" />
+    <ProjectReference Include="..\CoreMailer\CoreMailer\CoreMailer.csproj" />
+  </ItemGroup>
+
+
 
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->
@@ -105,4 +107,6 @@
       </ResolvedFileToPublish>
     </ItemGroup>
   </Target>
+  
+  <ProjectExtensions><VisualStudio><UserProperties clientapp_4package_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 </Project>

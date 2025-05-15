@@ -4,7 +4,7 @@
   "HamEventTitle": "HamEvent diploma.",
   "HamEventDescription": "Obtain your QSO certificate quick and fast at the touch of a button!",
   "Search QSO": "Search QSO",
-  "Copyright": "2023, all rights reserved",
+  "Copyright": "2025, QSO Banat Club, Timisoara, Romania",
   "Loading...": "Loading...",
   "No entries...": "No entries...",
   "HamEvent QSOs": "HamEvent - QSOs",
@@ -46,5 +46,17 @@
   "Email Validation Code": "Email Validation Code",
   "Email verification": "Email verification",
   "Sending Email validation failed, try again later!": "Sending Email validation failed, try again later!",
-  "Email validation failed, code not valid!": "Email validation failed, code not valid!"
+  "Email validation failed, code not valid!": "Email validation failed, code not valid!",
+  "Language": "Language",
+  "Rules": "Rules",
+  "LiveStream": "Live Stream",
+  "OnAir": "On Air",
+  "Logs": "Logs",
+  "Rankings": "Rankings",
+  "Stats": "Stats",
+  "Awards": "Awards",
+  "Settings": "Settings",
+  "Help": "Help",
+  "About": "About",
+  "gotoEvent": "Go to event"
 }

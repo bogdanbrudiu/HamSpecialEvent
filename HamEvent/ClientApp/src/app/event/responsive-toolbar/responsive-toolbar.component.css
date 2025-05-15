@@ -1,0 +1,8 @@
+.mr {
+  margin-right: 5px;
+}
+.item_disabled {
+  pointer-events: none;
+  cursor: not-allowed;
+  color: #ccc;
+}

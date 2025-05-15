@@ -1,14 +1,20 @@
 import { Component, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { HamEvent, EventsService } from '../events.service';
-import { Participant, QSO, QSOsService } from '../qsos.service';
-import { PdfService } from '../pdf.service';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLinkActive, RouterLink } from '@angular/router';
+import { HamEvent, EventsService } from '../../events.service';
+import { Participant, QSO, QSOsService } from '../../qsos.service';
+import { PdfService } from '../../pdf.service';
+import { TranslateModule } from '@ngx-translate/core';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { ExtendedModule } from '@angular/flex-layout/extended';
+import { NgIf, NgFor, NgClass } from '@angular/common';
 declare let gtag: Function;
 @Component({
-  selector: 'app-eventtop',
-  templateUrl: './eventtop.component.html'
+    selector: 'app-eventtop',
+    templateUrl: './eventtop.component.html',
+    standalone: true,
+    imports: [NgIf, RouterLinkActive, RouterLink, ReactiveFormsModule, NgFor, NgClass, ExtendedModule, NgxPaginationModule, TranslateModule]
 })
 export class EventTopComponent {
   searchForm!: FormGroup;

@@ -11,15 +11,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AdifLib" Version="1.6.3" />
-    <PackageReference Include="AutoMapper" Version="12.0.1" />
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
-    <PackageReference Include="CoreMailer" Version="3.0.0" />
+    <PackageReference Include="AutoMapper" Version="14.0.0" />
     <PackageReference Include="elmahcore" Version="2.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="9.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.4">
+    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="8.0.16" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.16" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.16" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.16">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -37,7 +34,6 @@
 
   <ItemGroup>
     <None Remove="App_Data\QSOs.db" />
-    <None Remove="ClientApp\src\app\nav-menu\nav-menu.component.spec.ts" />
     <None Remove="resources\diploma.html" />
     <None Remove="Shared\AddEvent.html" />
     <None Remove="Shared\ValidateEmail.html" />
@@ -80,8 +76,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <TypeScriptCompile Include="ClientApp\src\app\nav-menu\nav-menu.component.spec.ts" />
+    <ProjectReference Include="..\AdifLib\AdifLib\AdifLib.csproj" />
+    <ProjectReference Include="..\CoreMailer\CoreMailer\CoreMailer.csproj" />
   </ItemGroup>
+
+
 
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->
@@ -108,4 +107,6 @@
       </ResolvedFileToPublish>
     </ItemGroup>
   </Target>
+  
+  <ProjectExtensions><VisualStudio><UserProperties clientapp_4package_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 </Project>

@@ -38,7 +38,7 @@ namespace HamEvent.Controllers
                 Subject = "Confirm Email",
                 User = _mailerSettings.Username,
                 Key = _mailerSettings.Password,
-                //EnableSsl = _mailerSettings.EnableSSL,
+                EnableSsl = _mailerSettings.EnableSSL,
                 Model = new { token=  _tokenService.GenerateToken(email) }
             };
             _logger.LogDebug(MyLogEvents.SendingEmail, "Sending Email");

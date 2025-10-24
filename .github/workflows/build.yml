@@ -80,7 +80,7 @@ jobs:
           branch: ${{ github.ref }} 
 
       - name: Publish
-        run: dotnet publish HamEvent/HamEvent.csproj --configuration Release --framework net8.0 --output ./publish --runtime win-x64 --self-contained true -p:PublishTrimmed=false -p:PublishSingleFile=false
+        run: dotnet publish HamEvent/HamEvent.csproj --configuration Release --framework net9.0 --output ./publish --runtime win-x64 --self-contained true -p:PublishTrimmed=false -p:PublishSingleFile=false
 
 
       - name: Deploy App Pool

@@ -1,6 +1,6 @@
 using AutoMapper;
-using Castle.Core.Logging;
 using CoreMailer.Interfaces;
+using HamEvent;
 using HamEvent.Controllers;
 using HamEvent.Data;
 using HamEvent.Data.Model;
@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using Moq.EntityFrameworkCore;
-using System.Collections.Generic;
 
 namespace UnitTests
 {
@@ -60,8 +59,8 @@ namespace UnitTests
             //Assert
             Assert.NotNull(operators);
             Assert.Equal(2, operators.Count);
-            Assert.Equal(2, operators.Where(o => o.Callsign.Equals("Callsign1")).First().lastQSOs.Count());
-            Assert.Single(operators.Where(o => o.Callsign.Equals("Callsign11")).First().lastQSOs);
+            Assert.Equal(2, operators.First(o => o.Callsign.Equals("Callsign1")).lastQSOs.Count());
+            Assert.Single(operators.First(o => o.Callsign.Equals("Callsign11")).lastQSOs);
         }
 
         //add test for [HttpGet("QSOs/{hamevent}")]

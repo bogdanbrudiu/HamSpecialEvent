@@ -5,13 +5,10 @@ using ElmahCore.Mvc;
 using HamEvent;
 using HamEvent.Data;
 using HamEvent.Services;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using NReco.Logging.File;
+using System.Configuration;
 using System.Net;
-using System.Net.Mail;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,8 +18,8 @@ builder.Services.Configure<MailerSettings>(builder.Configuration.GetSection("Mai
 builder.Services.AddScoped<ICoreMvcMailer, CoreMvcMailer>();
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-var tokenSecret = builder.Configuration["Token:Secret"] ?? throw new ArgumentNullException("Token:Secret", "Token secret is not configured.");
+builder.Services.AddAutoMapper(cfg => { }, AppDomain.CurrentDomain.GetAssemblies());
+var tokenSecret = builder.Configuration["Token:Secret"] ?? throw new ConfigurationErrorsException("Token secret is not configured.");
 
 builder.Services.AddSingleton<TokenService>(provider => new TokenService(tokenSecret));
 
@@ -39,9 +36,8 @@ builder.Services.AddElmah<XmlFileErrorLog>(options =>
 {
     options.Filters.Add(new MyElmahFilter());
     options.OnPermissionCheck = context => wl.Whitelist
-                .Where(ip => IPAddress.Parse(ip)
-                .Equals(context.Connection.RemoteIpAddress))
-                .Any();
+                .Any(ip => IPAddress.Parse(ip)
+                .Equals(context.Connection.RemoteIpAddress));
     options.LogPath = "~/log";
 });
 builder.Services.AddLogging(loggingBuilder => {
@@ -70,14 +66,3 @@ app.MapControllerRoute(
 app.MapFallbackToFile("index.html");
 app.UseElmah();
 app.Run();
-
-
-public class MailerSettings
-{
-    public string From { get; set; } = String.Empty;
-    public string Username { get; set; } = String.Empty;
-    public string Password { get; set; } = String.Empty;
-    public string Host { get; set; } = String.Empty;
-    public short Port { get; set; } 
-    public Boolean EnableSSL { get; set; } 
-}

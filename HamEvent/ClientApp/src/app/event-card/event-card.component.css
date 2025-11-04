@@ -1,0 +1,36 @@
+.event-card {
+  max-width: 400px;
+  height: 100%;
+  min-height: 200px;
+  justify-content: space-between;
+  display: flex;
+  flex-direction: column;
+}
+
+.example-header-image {
+  background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
+  background-size: cover;
+}
+
+.event-description {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; /* Optional: Prevent line breaks within the limited space */
+  height: 48px;
+}
+
+.event-footer {
+  bottom: 0px;
+  position: absolute;
+  align-self: end;
+}
+.multiline-tooltip {
+  white-space: pre-line;
+}
+.mat-tooltip {
+  white-space: pre-line;
+}
+
+::ng-deep .mat-tooltip {
+  white-space: pre-line;
+}

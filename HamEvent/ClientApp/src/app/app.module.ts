@@ -17,6 +17,9 @@ import { EventTopComponent } from './eventtop/eventtop.component';
 import { AdminQSOsComponent } from './adminqsos/adminqsos.component';
 import { AdminEventComponent } from './adminevent/adminevent.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { EventCardComponent } from './event-card/event-card.component';
+import { FooterComponent } from './footer/footer.component'; // Import the new footer component
+
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
@@ -24,9 +27,7 @@ export function createTranslateLoader(http: HttpClient) {
 @NgModule({ declarations: [
         AppComponent,
         NavMenuComponent,
-        HomeComponent,
         QSOsComponent,
-        EventsComponent,
         EventTopComponent,
         DashboardComponent
     ],

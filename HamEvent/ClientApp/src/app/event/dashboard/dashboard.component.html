@@ -1,0 +1,93 @@
+<div class="px-4 text-center border-bottom">
+
+  <h1 class="display-4 fw-bold text-body-emphasis" *ngIf="event">{{event.name}}</h1>
+  <div class="col mx-auto">
+    <p *ngIf="event" [innerHTML]="event.description"></p>
+    <nav class="navbar navbar-expand navbar-light bg-light">
+      <div class="container-fluid">
+        <div class="collapse navbar-collapse" id="topnavbar">
+          <ul class="navbar-nav">
+            <li class="nav-item" *ngIf="event">
+              <a [routerLink]="['/',eventId]" class="nav-link" routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact:true}">{{'QSOs' | translate}}</a>
+            </li>
+            <li class="nav-item" *ngIf="event && event.hasTop">
+              <a [routerLink]="['/',eventId,'top']" class="nav-link" routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact:true}">{{'Event Top' | translate}}</a>
+            </li>
+            <li class="nav-item" *ngIf="event && isLive">
+              <a [routerLink]="['/',eventId,'live']" class="nav-link" routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact:true}">{{'Live' | translate}}</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#tableMenu" aria-controls="tableMenu" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      </div>
+    </nav>
+
+
+    <p *ngIf="!Operators?.length"><em>{{'No entries...' | translate}}</em></p>
+    <table class='table table-striped' aria-labelledby="tableLabel" *ngIf="Operators.length">
+      <thead>
+        <tr>
+          <th>{{'Callsign' | translate}}</th>
+          <th [ngClass]="{'table-success' : bandStatus('160')}">160</th>
+          <th [ngClass]="{'table-success' : bandStatus('80')}">80</th>
+          <th [ngClass]="{'table-success' : bandStatus('60')}">60</th>
+          <th [ngClass]="{'table-success' : bandStatus('40')}">40</th>
+          <th [ngClass]="{'table-success' : bandStatus('30')}">30</th>
+          <th [ngClass]="{'table-success' : bandStatus('20')}">20</th>
+          <th [ngClass]="{'table-success' : bandStatus('17')}">17</th>
+          <th [ngClass]="{'table-success' : bandStatus('15')}">15</th>
+          <th [ngClass]="{'table-success' : bandStatus('12')}">12</th>
+          <th [ngClass]="{'table-success' : bandStatus('10')}">10</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let operator of Operators">
+          <td>{{ operator.callsign }}</td>
+          <td>{{ status(operator, "160") }}</td>
+          <td>{{ status(operator, "80") }}</td>
+          <td>{{ status(operator, "60") }}</td>
+          <td>{{ status(operator, "40") }}</td>
+          <td>{{ status(operator, "30") }}</td>
+          <td>{{ status(operator, "20") }}</td>
+          <td>{{ status(operator, "17") }}</td>
+          <td>{{ status(operator, "15") }}</td>
+          <td>{{ status(operator, "12") }}</td>
+          <td>{{ status(operator, "10") }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <br />
+
+    <table class='table table-striped' aria-labelledby="tableLabel" *ngIf="QSOs.length">
+      <thead>
+        <tr>
+          <th>{{'Callsign 1' | translate}}</th>
+          <th>{{'Callsign 2' | translate}}</th>
+          <!--<th>RST1</th>
+        <th>RST2</th>-->
+          <th>{{'Mode' | translate}}</th>
+          <th>{{'Band' | translate}}</th>
+          <th>{{'Timestamp' | translate}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let QSO of QSOs">
+          <td>{{ QSO.callsign1 }}</td>
+          <td>{{ QSO.callsign2 }}</td>
+          <td>{{ QSO.mode }}</td>
+          <td>{{ QSO.band }}</td>
+          <td>{{ QSO.timestamp }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+

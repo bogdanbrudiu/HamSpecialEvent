@@ -12,7 +12,7 @@ declare let gtag: Function;
 })
 export class AppComponent {
   constructor(private router: Router, private titleService: Title,
-    @Inject(DOCUMENT) private document: Document, translate: TranslateService) {
+    @Inject(DOCUMENT) private document: Document, private translate: TranslateService) {
     // this language will be used as a fallback when a translation isn't found in the current language
     translate.setDefaultLang('en');
 
@@ -42,5 +42,8 @@ export class AppComponent {
       data.push(...this.getTitle(state, parent.firstChild));
     }
     return data;
+  }
+  onLanguageChanged(lang: string) {
+    this.translate.use(lang);
   }
 }

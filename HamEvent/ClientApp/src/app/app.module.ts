@@ -77,13 +77,17 @@ export function createTranslateLoader(http: HttpClient) {
         FormsModule,
         ReactiveFormsModule,
         RouterModule.forRoot([
-            { path: 'Home', component: HomeComponent, pathMatch: 'full' },
-            { path: '', component: EventsComponent, pathMatch: 'full' },
-            { path: 'Events', component: EventsComponent, pathMatch: 'full' },
-            { path: ':id/top', component: EventTopComponent, pathMatch: 'full' },
-            { path: ':id/live', component: DashboardComponent, pathMatch: 'full' },
-            { path: ':id/:secret/edit', component: AdminEventComponent, pathMatch: 'full' },
-            { path: ':id/:secret', component: AdminQSOsComponent, pathMatch: 'full' },
-            { path: ':id', component: QSOsComponent, pathMatch: 'full' },
+            { path: '', component: HomeComponent, pathMatch: 'full' },
+            { path: 'events', component: EventsComponent, pathMatch: 'full' },
+          {
+            path: 'event',
+            loadChildren: () => import('./event/event.module').then((m) => m.EventModule),
+          },
+        //    { path: 'Events', component: EventsComponent, pathMatch: 'full' },
+        //    { path: ':id/top', component: EventTopComponent, pathMatch: 'full' },
+        //    { path: ':id/live', component: DashboardComponent, pathMatch: 'full' },
+        //    { path: ':id/:secret/edit', component: AdminEventComponent, pathMatch: 'full' },
+        //    { path: ':id/:secret', component: AdminQSOsComponent, pathMatch: 'full' },
+        //    { path: ':id', component: QSOsComponent, pathMatch: 'full' },
         ])], providers: [ provideAnimations(), provideHttpClient(withInterceptorsFromDi())] })
 export class AppModule { }

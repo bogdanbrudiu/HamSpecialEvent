@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { FlexModule } from '@angular/flex-layout/flex';
 import { MatOption } from '@angular/material/core';
@@ -22,6 +22,11 @@ interface Language {
 })
 
 export class LanguageSelectorComponent {
+  @Output() languageChanged = new EventEmitter<string>();
+
+  changeLanguage(lang: string) {
+    this.languageChanged.emit(lang);
+  }
   languages: Language[] = [
     { code: 'en', name: 'English', icon: 'assets/icons/gb.svg' },
     { code: 'ro', name: 'Romana', icon: 'assets/icons/ro.svg' },

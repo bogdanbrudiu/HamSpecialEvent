@@ -1,0 +1,29 @@
+.home-background {
+  min-height: 85vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-container {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  padding: 2rem 3rem;
+  text-align: center;
+  max-width: 574px;
+  width: 100%;
+}
+
+.home-top-image {
+  width: 120px;
+  margin-bottom: 1.5rem;
+}
+
+.home-content h1 {
+  margin-bottom: 1rem;
+}
+
+.home-content p {
+  color: #444;
+}

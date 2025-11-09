@@ -16,6 +16,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { QSO, QSOsService } from '../qsos.service';
 import { MatTableModule, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatCardModule } from '@angular/material/card';
 
 
 @Component({
@@ -23,7 +24,7 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
     templateUrl: './event.component.html',
     styleUrls: ['./event.component.css'],
   standalone: true,
-  imports: [MatTableModule, NgIf, ResponsiveToolbarComponent, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, DatePipe, TranslateModule, MatPaginatorModule, NgIf, ResponsiveToolbarComponent, RouterLink, MatIconModule, MatDivider, DatePipe, MatTabsModule, MatProgressBarModule, MatTable, TranslateModule]
+  imports: [MatCardModule, MatTableModule, NgIf, ResponsiveToolbarComponent, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, DatePipe, TranslateModule, MatPaginatorModule, NgIf, ResponsiveToolbarComponent, RouterLink, MatIconModule, MatDivider, DatePipe, MatTabsModule, MatProgressBarModule, MatTable, TranslateModule]
 })
 export class EventComponent implements OnInit {
 
@@ -32,10 +33,12 @@ export class EventComponent implements OnInit {
   public searchInput = '';
   public loaded = true;
   public logs: QSO[] = [];
-  page: number = 1;
+  public top: QSO[] = [];
+  page: number = 0;
   count: number = 0;
-  tableSize: number = 10;
+  tableSize: number = 20;
   displayedColumns: string[] = ['callsign1', 'callsign2', 'mode', 'band', 'timestamp'];
+  displayedColumnsTop: string[] = ['callsign1', 'count', 'mode', 'band', 'points', 'rank'];
   @ViewChild(MatTable) table!: MatTable<HamEvent>;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -105,9 +108,28 @@ export class EventComponent implements OnInit {
     );
   }
 
+  loadTop() {
+    this.qsosService.getTop(this.eventId, this.searchInput, this.page, this.tableSize).subscribe(
+      (response) => {
+        this.top = response.data;
+        //this.dataSource = response.data;
+        this.count = response.count;
+        this.loaded = true;
+        this.table.renderRows();
+
+        console.log(response);
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+  }
+
   tabClick(tab: any) {
     console.log(tab);
     if (tab.index == 2)
       this.loadData();
+    if (tab.index == 3)
+      this.loadTop();
   }
 }

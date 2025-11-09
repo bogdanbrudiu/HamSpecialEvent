@@ -5,15 +5,45 @@
 <div class="mat-elevation-z8 page-header" *ngIf="event">
   <mat-tab-group dynamicHeight (selectedTabChange)="tabClick($event)">
     <mat-tab label="{{event.name}}">
-      <ng-template mat-tab-label>
-        <!--<mat-icon class="example-tab-icon">thumb_up</mat-icon>-->
-        {{event.name}}
-      </ng-template>
-      <mat-divider></mat-divider>
-      <p>Start date: {{event.startDate | date:'medium'}}</p>
-      <p>End date: {{event.endDate | date:'medium'}}</p>
 
-      <mat-divider></mat-divider>
+      <div class="tab-content-wrapper">
+        <mat-card class="event-card">
+          <mat-card-header>
+            <mat-card-title>{{ event.name }}</mat-card-title>
+            <mat-card-subtitle>Amateur Radio Event</mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <div class="details-section">
+              <!-- Date and Location side-by-side using CSS Flexbox -->
+              <div class="detail-item">
+                <mat-icon color="primary">event</mat-icon>
+                <span>
+                  **Start:** {{ event.startDate | date: 'full' }} <br>
+                  **End:** {{ event.endDate | date: 'full' }}
+                </span>
+              </div>
+
+              <div class="detail-item">
+                <mat-icon color="primary">location_on</mat-icon>
+                <span>Timisoara KQT Club</span>
+              </div>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <p class="description">
+              {{ event.description }}
+            </p>
+
+          </mat-card-content>
+
+          <mat-card-actions>
+            <button mat-raised-button color="accent">Participate Now</button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+
       <!--<form role="search" (ngSubmit)="submitForm()" [formGroup]="searchForm">
     <div class="input-group">
       <input type="search" class="form-control" placeholder="{{'Callsign 2' | translate}}" formControlName="search">
@@ -39,10 +69,7 @@
     <input matEndDate placeholder="End date">
   </mat-date-range-input>
   <mat-date-range-picker #picker></mat-date-range-picker>-->
-
       <!--<mat-progress-bar mode="determinate" value="40"></mat-progress-bar>-->
-      <mat-divider></mat-divider>
-      <p class="page-description" [innerHTML]="event.description"></p>
     </mat-tab>
 
 
@@ -52,7 +79,7 @@
     </mat-tab>
     <mat-tab label="{{ 'Logs' | translate}}">
       <ng-template mat-tab-label><mat-icon class="example-tab-icon">notes</mat-icon>{{ 'Logs' | translate}}</ng-template>
-      <table mat-table [dataSource]="logs" class="mat-elevation-z8 page-table">
+      <table id="logs" mat-table [dataSource]="logs" class="mat-elevation-z8 page-table">
         <!-- Name Column -->
         <!--<mat-text-column name="callsign1"></mat-text-column>-->
 
@@ -96,7 +123,53 @@
     </mat-tab>
     <mat-tab label="{{ 'Rankings' | translate}}">
       <ng-template mat-tab-label><mat-icon class="example-tab-icon">star</mat-icon>{{ 'Rankings' | translate}}</ng-template>
-      Content 3
+      <table id="top" mat-table [dataSource]="top" class="mat-elevation-z8 page-table">
+        <!-- Name Column -->
+        <!--<mat-text-column name="callsign1"></mat-text-column>-->
+
+        <ng-container matColumnDef="callsign1">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{'Callsign 1' | translate}}</th>
+          <td mat-cell *matCellDef="let element">{{element.callsign}}</td>
+        </ng-container>
+
+        <!-- Count Column -->
+        <ng-container matColumnDef="count">
+          <th mat-header-cell *matHeaderCellDef>{{'Count' | translate}}</th>
+          <td mat-cell *matCellDef="let element">{{element.count}}</td>
+        </ng-container>
+
+        <!-- Symbol Column -->
+        <ng-container matColumnDef="mode">
+          <th mat-header-cell *matHeaderCellDef>{{'Mode' | translate}}</th>
+          <td mat-cell *matCellDef="let element">{{element.mode}}</td>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="band">
+          <th mat-header-cell *matHeaderCellDef>{{'Band' | translate}}</th>
+          <td mat-cell *matCellDef="let element">{{element.band}}</td>
+        </ng-container>
+
+        <!-- Weight Column -->
+        <ng-container matColumnDef="points">
+          <th mat-header-cell *matHeaderCellDef>{{'Points' | translate}}</th>
+          <td mat-cell *matCellDef="let element">{{element.points}}</td>
+        </ng-container>
+
+        <!-- Weight Column -->
+        <ng-container matColumnDef="rank">
+          <th mat-header-cell *matHeaderCellDef>{{'Rank' | translate}}</th>
+          <td mat-cell *matCellDef="let element">{{element.rank}}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumnsTop"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumnsTop;"
+            class="element-row"></tr>
+      </table>
+      <mat-paginator [pageSizeOptions]="[5, 10, 20]"
+                     showFirstLastButtons
+                     aria-label="Select page of periodic elements">
+      </mat-paginator>
     </mat-tab>
   </mat-tab-group>
 

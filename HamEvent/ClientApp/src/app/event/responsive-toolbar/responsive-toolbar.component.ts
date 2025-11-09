@@ -20,9 +20,9 @@ export interface MenuItem {
 }
 
 @Component({
-    selector: "app-responsive-toolbar",
-    templateUrl: "./responsive-toolbar.component.html",
-    styleUrls: ["./responsive-toolbar.component.css"],
+  selector: "app-responsive-toolbar",
+  templateUrl: "./responsive-toolbar.component.html",
+  styleUrls: ["./responsive-toolbar.component.css"],
   standalone: true,
   imports: [MatToolbar, FlexModule, MatButton, RouterLink, MatIcon, NgFor, NgClass, ExtendedModule, NgIf, TranslateModule]
 })

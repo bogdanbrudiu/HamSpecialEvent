@@ -27,15 +27,8 @@ export function createTranslateLoader(http: HttpClient) {
 }
 
 @NgModule({
-    imports: [EventRoutingModule, RouterModule, ReactiveFormsModule, NgxPaginationModule, CommonModule,
-        TranslateModule.forRoot({
-            defaultLanguage: 'en',
-            loader: {
-                provide: TranslateLoader,
-                useFactory: (createTranslateLoader),
-                deps: [HttpClient]
-            }
-        }),
+  imports: [EventRoutingModule, RouterModule, ReactiveFormsModule, NgxPaginationModule, CommonModule,
+    TranslateModule.forChild(),
         FormsModule,
         FlexLayoutModule,
         MatTableModule,

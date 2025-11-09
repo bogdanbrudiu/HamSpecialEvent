@@ -24,29 +24,14 @@ const eventRoutes: Routes = [
     title: "routing: Top"
   },
   {
+    path: ":id/live",
+    component: DashboardComponent,
+    title: "routing: Top"
+  },  {
     path: '',
     pathMatch: 'full',
     component: EventComponent,
   },
-];
-const routes: Routes = [
-  {
-    path: '',
-    component: EventComponent,
-    children: [
-      {
-        path: '',
-        pathMatch: 'full',
-        redirectTo: 'dashboard'
-      },
-
-      {
-        path: "dashboard",
-        component: DashboardComponent,
-        title: "routing: Dashboard"
-      },
-    ]
-  }
 ];
 
 @NgModule({

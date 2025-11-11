@@ -38,3 +38,7 @@ mat-card-title {
   font-size: 1.5rem;
   font-weight: bold;
 }
+
+.page-header {
+    background-color: white;
+}

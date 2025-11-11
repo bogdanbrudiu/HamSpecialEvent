@@ -20,10 +20,10 @@
         matTooltipClass="multiline-tooltip mat-tooltip"
         [matTooltipShowDelay]="100"
         [matTooltipHideDelay]="2000">event_available</mat-icon>
-      <!--<span class="material-icons orange600">face</span>
-      <mat-icon class="float: right;" color="primary">archive</mat-icon>
-      <mat-icon class="float: right;" color="accent">archive</mat-icon>
-      <mat-icon class="float: right;" color="warn">archive</mat-icon>-->
+      <!--<span class="material-icons orange600">face</span>-->
+      <mat-icon *ngIf="event.hasTop" class="float: right;" color="primary" matTooltip="Has Ranking">analytics</mat-icon>
+      <!--<mat-icon class="float: right;" color="accent">archive</mat-icon>-->
+      <!--<mat-icon class="float: right;" color="warn">archive</mat-icon>-->
     </div>
   </mat-card-footer>
 </mat-card>

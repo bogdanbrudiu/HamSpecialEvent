@@ -21,6 +21,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -35,7 +36,8 @@ export function createTranslateLoader(http: HttpClient) {
         MatToolbarModule,
         MatIconModule,
         MatMenuModule,
-        MatButtonModule,
+    MatButtonModule,
+    MatExpansionModule,
         MatDividerModule, DashboardComponent, QSOsComponent, EventTopComponent], // ResponsiveToolbarComponent],
     exports: [],
 })

@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgIf } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { MatCard, MatCardActions, MatCardAvatar, MatCardContent, MatCardFooter, MatCardHeader, MatCardImage, MatCardTitle, MatCardSubtitle } from '@angular/material/card';
@@ -25,7 +25,7 @@ export class TrimPipe implements PipeTransform {
     templateUrl: './event-card.component.html',
     styleUrls: ['./event-card.component.css'],
   standalone: true,
-  imports: [MatCard, MatCardHeader, MatCardAvatar, MatCardTitle, MatCardSubtitle, MatCardImage, MatCardContent, MatCardActions, MatButton, MatCardFooter, MatIcon, MatTooltip, DatePipe, TranslateModule, TrimPipe]
+  imports: [NgIf, MatCard, MatCardHeader, MatCardAvatar, MatCardTitle, MatCardSubtitle, MatCardImage, MatCardContent, MatCardActions, MatButton, MatCardFooter, MatIcon, MatTooltip, DatePipe, TranslateModule, TrimPipe]
 })
 export class EventCardComponent {
   @Input() event!: HamEvent;
@@ -40,6 +40,7 @@ export class EventCardComponent {
     return `Days: ${this.event.days}
     Start: ${this.event.startDate.toLocaleString()}
     End: ${this.event.endDate.toLocaleString()}
-    Count: ${this.event.count}`;
+    Count: ${this.event.count}
+    Uniques: ${this.event.unique}`;
   }
 }

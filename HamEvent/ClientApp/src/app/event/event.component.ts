@@ -17,6 +17,7 @@ import { QSO, QSOsService } from '../qsos.service';
 import { MatTableModule, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatCardModule } from '@angular/material/card';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 
 @Component({
@@ -24,7 +25,7 @@ import { MatCardModule } from '@angular/material/card';
     templateUrl: './event.component.html',
     styleUrls: ['./event.component.css'],
   standalone: true,
-  imports: [MatCardModule, MatTableModule, NgIf, ResponsiveToolbarComponent, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, DatePipe, TranslateModule, MatPaginatorModule, NgIf, ResponsiveToolbarComponent, RouterLink, MatIconModule, MatDivider, DatePipe, MatTabsModule, MatProgressBarModule, MatTable, TranslateModule]
+  imports: [MatExpansionModule, MatCardModule, MatTableModule, NgIf, ResponsiveToolbarComponent, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, DatePipe, TranslateModule, MatPaginatorModule, NgIf, ResponsiveToolbarComponent, RouterLink, MatIconModule, MatDivider, DatePipe, MatTabsModule, MatProgressBarModule, MatTable, TranslateModule]
 })
 export class EventComponent implements OnInit {
 

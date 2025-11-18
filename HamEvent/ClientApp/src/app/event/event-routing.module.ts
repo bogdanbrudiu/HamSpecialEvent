@@ -1,12 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-
-//import { CustomerListComponent } from './customer-list/customer-list.component';
 import { EventComponent } from './event.component';
 import { QSOsComponent } from './qsos/qsos.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { EventTopComponent } from './eventtop/eventtop.component';
-//import { TestComponent } from './test/test.component';
 
 const eventRoutes: Routes = [
   {

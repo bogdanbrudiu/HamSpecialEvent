@@ -1,0 +1,39 @@
+<h2>Admin Home</h2>
+<p>Welcome to the admin area {{ 'Home' | translate}}.</p>
+
+<div class="admin-table-container">
+  <table *ngIf="loaded && events.length" class="admin-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Start Date</th>
+        <th>Description</th>
+        <th>Email</th>
+        <th>Days</th>
+        <th>QSOs Count</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let event of events"
+          (click)="gotoEvent(event)"
+          class="admin-table-row">
+        <td>{{ event.name }}</td>
+        <td>{{ event.startDate | date: 'short' }}</td>
+        <td>{{ event.description }}</td>
+        <td>{{ event.email }}</td>
+        <td>{{ event.days }}</td>
+        <td>{{ event.count }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <p *ngIf="loaded && !events.length"><em>No events found.</em></p>
+  <p *ngIf="!loaded"><em>Loading...</em></p>
+  <div class="admin-pagination" *ngIf="count > 10">
+    <button (click)="onPageChange(page - 1)" [disabled]="page === 1">&lt;</button>
+    <span>Page {{page}} of {{totalPages}}</span>
+    <button (click)="onPageChange(page + 1)" [disabled]="page === totalPages">&gt;</button>
+  </div>
+  <button mat-raised-button color="primary" class="create-event-btn" (click)="createEvent()">
+    {{ 'Create New Event' | translate }}
+  </button>
+</div>

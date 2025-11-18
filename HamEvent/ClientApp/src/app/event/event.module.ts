@@ -1,11 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { EventRoutingModule } from './event-routing.module';
-//import { CustomerListComponent } from './customer-list/customer-list.component';
-//import { AppModule } from '../app.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { QSOsComponent } from './qsos/qsos.component';
 import { EventTopComponent } from './eventtop/eventtop.component';
@@ -14,7 +12,6 @@ import { HttpClient } from '@angular/common/http';
 import { MatTableModule } from '@angular/material/table';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxPaginationModule } from 'ngx-pagination';
-//import { ResponsiveToolbarComponent } from './responsive-toolbar/responsive-toolbar.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -30,15 +27,15 @@ export function createTranslateLoader(http: HttpClient) {
 @NgModule({
   imports: [EventRoutingModule, RouterModule, ReactiveFormsModule, NgxPaginationModule, CommonModule,
     TranslateModule.forChild(),
-        FormsModule,
-        FlexLayoutModule,
-        MatTableModule,
-        MatToolbarModule,
-        MatIconModule,
-        MatMenuModule,
+    FormsModule,
+    FlexLayoutModule,
+    MatTableModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatMenuModule,
     MatButtonModule,
     MatExpansionModule,
-        MatDividerModule, DashboardComponent, QSOsComponent, EventTopComponent], // ResponsiveToolbarComponent],
+    MatDividerModule, DashboardComponent, QSOsComponent, EventTopComponent], // ResponsiveToolbarComponent],
     exports: [],
 })
 export class EventModule {

@@ -1,17 +1,30 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EventsService } from '../events.service';
-import { VerificationService } from '../verification.service';
+import { EventsService, HamEvent } from '../../events.service';
+import { VerificationService } from '../../verification.service';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
-import { SanitizedHtmlPipe } from '../sanitized-html.pipe';
+import { SanitizedHtmlPipe } from '../../sanitized-html.pipe';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { NgIf, DatePipe } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+
 
 @Component({
-    selector: 'event-editor',
-    templateUrl: './adminevent.component.html',
-    standalone: true,
-    imports: [NgIf, ReactiveFormsModule, FormsModule, DatePipe, TranslateModule, SanitizedHtmlPipe]
+  selector: 'event-editor',
+  templateUrl: './adminevent.component.html',
+  styleUrl: './adminevent.component.css',
+  standalone: true,
+  imports: [
+    NgIf, ReactiveFormsModule, FormsModule, DatePipe, TranslateModule, SanitizedHtmlPipe,
+    MatCheckboxModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatDatepickerModule, MatNativeDateModule, MatProgressBarModule
+  ]
 })
 export class AdminEventComponent implements OnInit {
   public eventId: string = '';
@@ -21,13 +34,13 @@ export class AdminEventComponent implements OnInit {
   public emailValidationCode: string = '';
   public codeGenerated: boolean = false;
 
-  constructor(private router: Router, private eventsService: EventsService, private verificationService: VerificationService, private routes: ActivatedRoute, private translate: TranslateService) { }
+  constructor(public router: Router, private eventsService: EventsService, private verificationService: VerificationService, private routes: ActivatedRoute, private translate: TranslateService) { }
 
   ngOnInit() {
     this.routes.paramMap.subscribe(params => {
       this.eventId = params.get('id')!;
       this.eventSecret = params.get('secret')!;
-      if (this.eventId === this.eventSecret && this.eventId === "00000000-0000-0000-0000-000000000000") {
+      if (this.eventId === "00000000-0000-0000-0000-000000000000") {
         var date = new Date();
         var now_utc = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(),
           date.getUTCDate(), date.getUTCHours(),
@@ -42,7 +55,15 @@ export class AdminEventComponent implements OnInit {
             endDate: new Date(now_utc).toISOString(),
             description: '',
             email: '',
-            hasTop: true,
+          hasTop: true,
+          subtitle: '',
+          days: 0,
+          first: '',
+          last: '',
+          count: 0,
+          unique: 0,
+          excludedCallsigns: [],
+          icon: '',
             diploma: '',
             excludeCallsigns: ''
         }
@@ -113,21 +134,10 @@ export class AdminEventComponent implements OnInit {
                     this.router.navigate(['/', this.eventId, this.eventSecret]);
                 }
             },
-            error => {
-                console.log(error);
+          error => {
+            alert(error);
+              console.log(error);
             }
         );
     }
-}
-interface HamEvent {
-  id: string;
-  secretKey: string;
-  name: string;
-  description: string;
-  email: string;
-  diploma: string;
-  hasTop: boolean;
-  startDate: string;
-  endDate: string;
-  excludeCallsigns: string;
 }

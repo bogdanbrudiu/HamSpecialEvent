@@ -10,13 +10,9 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
-import { QSOsComponent } from './qsos/qsos.component';
 import { EventsComponent } from './events/events.component';
 import { EventTopComponent } from './eventtop/eventtop.component';
 
-import { AdminQSOsComponent } from './adminqsos/adminqsos.component';
-import { AdminEventComponent } from './adminevent/adminevent.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
 import { LanguageSelectorComponent } from './language-selector/language-selector.component';
 import { EventCardComponent } from './event-card/event-card.component';
 import { FooterComponent } from './footer/footer.component'; // Import the new footer component
@@ -41,9 +37,7 @@ export function createTranslateLoader(http: HttpClient) {
 
 @NgModule({ declarations: [
         AppComponent,
-        QSOsComponent,
-        EventTopComponent,
-        DashboardComponent
+        EventTopComponent
     ],
     bootstrap: [AppComponent], imports: [BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
         TranslateModule.forRoot({
@@ -83,11 +77,13 @@ export function createTranslateLoader(http: HttpClient) {
             path: 'event',
             loadChildren: () => import('./event/event.module').then((m) => m.EventModule),
           },
+          {
+            path: 'admin',
+            loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule),
+          },
         //    { path: 'Events', component: EventsComponent, pathMatch: 'full' },
         //    { path: ':id/top', component: EventTopComponent, pathMatch: 'full' },
         //    { path: ':id/live', component: DashboardComponent, pathMatch: 'full' },
-        //    { path: ':id/:secret/edit', component: AdminEventComponent, pathMatch: 'full' },
-        //    { path: ':id/:secret', component: AdminQSOsComponent, pathMatch: 'full' },
         //    { path: ':id', component: QSOsComponent, pathMatch: 'full' },
         ])], providers: [ provideAnimations(), provideHttpClient(withInterceptorsFromDi())] })
 export class AppModule { }

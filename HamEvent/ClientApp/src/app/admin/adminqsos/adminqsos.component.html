@@ -1,9 +1,8 @@
 <div class="px-4 text-center border-bottom">
-  <p *ngIf="!event"><em>{{'Loading...' | translate}}</em></p>
   <h1 class="display-4 fw-bold text-body-emphasis" *ngIf="event">{{event.name}}</h1>
-  <div class="col mx-auto" *ngIf="event">
+  <!--<div class="col mx-auto" *ngIf="event">
     <p [innerHTML]="event.description"></p>
-  
+
     <nav class="navbar navbar-expand navbar-light bg-light">
       <div class="container-fluid">
         <div class="collapse navbar-collapse" id="topnavbar">
@@ -57,10 +56,10 @@
       <thead>
         <tr>
           <th>{{'Callsign 1' | translate}}</th>
-          <th>{{'Callsign 2' | translate}}</th>
-          <!--<th>RST1</th>
-        <th>RST2</th>-->
-          <th>{{'Mode' | translate}}</th>
+          <th>{{'Callsign 2' | translate}}</th>-->
+  <!--<th>RST1</th>
+  <th>RST2</th>-->
+  <!--<th>{{'Mode' | translate}}</th>
           <th>{{'Band' | translate}}</th>
           <th>{{'Timestamp' | translate}}</th>
           <th>{{'Action' | translate}}</th>
@@ -110,7 +109,81 @@
                            (pageChange)="onTableDataChange($event)">
       </pagination-controls>
     </div>
-  </div>
+  </div>-->
 
 </div>
 
+<mat-card class="admin-qsos-card">
+  <mat-card-title>{{ 'Admin QSOs' | translate }}</mat-card-title>
+  <mat-card-content>
+    <form [formGroup]="searchForm" (ngSubmit)="submitForm()" class="search-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'Search' | translate }}</mat-label>
+        <input matInput formControlName="search" placeholder="{{ 'Search QSOs' | translate }}">
+        <button mat-icon-button matSuffix type="submit">
+          <mat-icon>search</mat-icon>
+        </button>
+      </mat-form-field>
+    </form>
+
+    <div class="actions">
+      <button mat-raised-button color="primary" (click)="exportall()">{{ 'Export All' | translate }}</button>
+      <button mat-raised-button color="accent" (click)="genPdf()">{{ 'Generate PDF' | translate }}</button>
+      <button mat-raised-button color="warn" (click)="deleteall()">{{ 'Delete All' | translate }}</button>
+      <button mat-stroked-button (click)="edit()">{{ 'Edit Event' | translate }}</button>
+      <button mat-stroked-button (click)="top()">{{ 'Top' | translate }}</button>
+      <button mat-stroked-button (click)="live()">{{ 'Live' | translate }}</button>
+    </div>
+
+    <mat-progress-bar *ngIf="!loaded" mode="indeterminate"></mat-progress-bar>
+
+    <div *ngIf="loaded && QSOs.length">
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z2 admin-table">
+
+        <!-- Example columns, adjust as needed -->
+        <ng-container matColumnDef="callsign1">
+          <th mat-header-cell *matHeaderCellDef>Callsign</th>
+          <td mat-cell *matCellDef="let qso">{{ qso.callsign1 }}</td>
+        </ng-container>
+        <ng-container matColumnDef="callsign2">
+          <th mat-header-cell *matHeaderCellDef>Participant</th>
+          <td mat-cell *matCellDef="let qso">{{ qso.callsign2 }}</td>
+        </ng-container>
+        <ng-container matColumnDef="mode">
+          <th mat-header-cell *matHeaderCellDef>Mode</th>
+          <td mat-cell *matCellDef="let qso">{{ qso.mode }}</td>
+        </ng-container>
+        <ng-container matColumnDef="band">
+          <th mat-header-cell *matHeaderCellDef>Band</th>
+          <td mat-cell *matCellDef="let qso">{{ qso.band }}</td>
+        </ng-container>
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef>Timestamp</th>
+          <td mat-cell *matCellDef="let qso">{{ qso.timestamp | date:'short' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>{{ 'Actions' | translate }}</th>
+          <td mat-cell *matCellDef="let qso">
+            <button mat-icon-button color="primary" (click)="editQSO(qso)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="delete(qso)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <mat-paginator [length]="count"
+                     [pageSize]="tableSize"
+                     [pageIndex]="page - 1"
+                     [pageSizeOptions]="[10, 25, 50]"
+                     (page)="onMatPageChange($event)">
+      </mat-paginator>
+    </div>
+    <p *ngIf="loaded && !QSOs.length"><em>{{ 'No QSOs found.' | translate }}</em></p>
+  </mat-card-content>
+</mat-card>

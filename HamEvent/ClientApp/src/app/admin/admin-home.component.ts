@@ -15,6 +15,7 @@ export class AdminHomeComponent implements OnInit {
   page = 1;
   tableSize = 10;
   count = 0;
+  displayedColumns: string[] = ['name', 'startDate', 'description', 'email', 'days', 'count'];
 
   constructor(private eventsService: EventsService, private router: Router) { }
   ngOnInit() {
@@ -49,6 +50,10 @@ export class AdminHomeComponent implements OnInit {
   gotoEvent(event: HamEvent) {
     //this.router.navigate(['admin', event.id, event.secretKey, 'edit']);
     this.router.navigate(['admin', event.id, 'edit']);
+  }
+
+  gotoQSOs(event: HamEvent) {
+    this.router.navigate(['admin', event.id, 'qsos']);
   }
 
   //ngOnInit() {

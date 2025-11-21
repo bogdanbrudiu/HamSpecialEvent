@@ -8,6 +8,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { AdminEventComponent } from './adminevent/adminevent.component';
 import { AdminQSOsComponent } from './adminqsos/adminqsos.component';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTableModule } from '@angular/material/table';
 
 const routes: Routes = [
   {
@@ -33,7 +34,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [CommonModule, RouterModule.forChild(routes), TranslateModule.forChild(), MatButtonModule],
+  imports: [CommonModule, RouterModule.forChild(routes), TranslateModule.forChild(), MatButtonModule, MatTableModule],
   declarations: [AdminHomeComponent],
   providers: [AdminGuard]
 })

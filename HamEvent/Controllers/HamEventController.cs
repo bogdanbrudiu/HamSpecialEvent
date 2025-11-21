@@ -42,9 +42,10 @@ namespace HamEvent.Controllers
         }
 
         [HttpGet("QSOs/{hamevent}")]
-        public PageResult<QSO> Get(Guid hamevent, int? page, int pagesize = 10, string callsign = "")
+        public PageResult<QSO> Get(Guid hamevent, [FromQuery] int? page, [FromQuery] int? pagesize, [FromQuery] string callsign = "")
         {
-            _logger.LogInformation(MyLogEvents.GetQSOs, "Get QSOs for event {0} page {1} paginated by {2} per page, filtered by {3}",hamevent, page, pagesize, callsign);
+            int actualPageSize = pagesize ?? 10;
+            _logger.LogInformation(MyLogEvents.GetQSOs, "Get QSOs for event {0} page {1} paginated by {2} per page, filtered by {3}", hamevent, page, actualPageSize, callsign);
             IQueryable<QSO> qsos;
             try
             {
@@ -55,7 +56,7 @@ namespace HamEvent.Controllers
                 }
             }
             catch(Exception ex) {
-                _logger.LogError(MyLogEvents.GetQSOs,ex, "Failed getting QSOs for event {0} page {1} paginated by {2} per page, filtered by {3}", hamevent, page, pagesize, callsign);
+                _logger.LogError(MyLogEvents.GetQSOs,ex, "Failed getting QSOs for event {0} page {1} paginated by {2} per page, filtered by {3}", hamevent, page, actualPageSize, callsign);
 
                 return new PageResult<QSO>
                 {
@@ -68,7 +69,7 @@ namespace HamEvent.Controllers
             return new PageResult<QSO>
             {
                 Count = countDetails,
-                Data = qsos.Skip((page - 1 ?? 0) * pagesize).Take(pagesize).ToList()
+                Data = qsos.Skip((page - 1 ?? 0) * actualPageSize).Take(actualPageSize).ToList()
             };
         }
         public class Participant

@@ -3,12 +3,17 @@ Project Description
 
 ### ToDo
 
-- [ ] As a site visitor I can view statistics per band/mode/day #feat
+- [ ] Add Event Rules should be multilanguage  #feat
+- [ ] Backend for Statistics: ranking/prefix; band/mode; qsos/h; multiplay for each fox #feat
+- [ ] remove tabs/unify menus #feat
+
+
+
 - [ ] Event Description should be multilanguage #feat
 
 ### In Progress
 
-
+- [ ] I can request all admin links for my email adress #feat @bogdanbrudiu
 - [ ] Drag & Drop editor for diploma  #feat @crisanalex08
 
 

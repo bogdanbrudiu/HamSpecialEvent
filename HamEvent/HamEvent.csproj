@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="15.0.1" />
+    <PackageReference Include="AutoMapper" Version="16.0.0" />
     <PackageReference Include="elmahcore" Version="2.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="9.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.10" />
@@ -21,10 +21,10 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-    <PackageReference Include="NReco.Logging.File" Version="1.2.2" />
+    <PackageReference Include="NReco.Logging.File" Version="1.3.1" />
     <PackageReference Include="Select.HtmlToPdf.NetCore" Version="25.2.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.10" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
   </ItemGroup>
 
   <ItemGroup>

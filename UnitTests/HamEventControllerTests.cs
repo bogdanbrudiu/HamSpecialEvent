@@ -79,7 +79,7 @@ namespace UnitTests
 
             //Act
             HamEventController hamEventController = new(loggerMock.Object, mapperMock.Object, coreMvcMailerMock.Object, optionsmailerSettingsMock.Object, tokenServiceMock.Object, hamEventContextMock.Object);
-            var qsos = hamEventController.Get(new Guid("11111111-1111-1111-1111-111111111111"),0);
+            var qsos = hamEventController.Get(new Guid("11111111-1111-1111-1111-111111111111"),0,10);
 
             //Assert
             Assert.NotNull(qsos);

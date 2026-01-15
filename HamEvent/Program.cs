@@ -40,6 +40,7 @@ builder.Services.AddElmah<XmlFileErrorLog>(options =>
                 .Any(ip => IPAddress.Parse(ip)
                 .Equals(context.Connection.RemoteIpAddress));
     options.LogPath = "~/log";
+    options.Path = "/api/elmah";
 });
 builder.Services.AddLogging(loggingBuilder => {
     var loggingSection = builder.Configuration.GetSection("Logging");
@@ -59,10 +60,12 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
+app.UseElmah();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller}/{action=Index}/{id?}");
 
-app.UseElmah();
+app.MapRazorPages();
+
 app.Run();

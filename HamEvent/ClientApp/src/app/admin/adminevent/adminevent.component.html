@@ -37,6 +37,21 @@
         <textarea matInput rows="3" [(ngModel)]="event.description" name="description"></textarea>
       </mat-form-field>
 
+      <!-- Rules HTML preview -->
+      <div *ngIf="event.description" class="description-html-preview">
+        <div [innerHtml]="event.description | sanitizedHtml"></div>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'Rules' | translate }}</mat-label>
+        <textarea matInput rows="6" [(ngModel)]="event.rules" name="rules"></textarea>
+      </mat-form-field>
+
+      <!-- Rules HTML preview -->
+      <div *ngIf="event.rules" class="rules-html-preview">
+        <div [innerHtml]="event.rules | sanitizedHtml"></div>
+      </div>
+
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>{{ 'Email' | translate }}</mat-label>
         <input matInput [(ngModel)]="event.email" name="email" required type="email">

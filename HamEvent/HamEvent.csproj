@@ -79,7 +79,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ClientApp\src\app\elmah-redirect\" />
     <Folder Include="wwwroot\log\" />
   </ItemGroup>
 

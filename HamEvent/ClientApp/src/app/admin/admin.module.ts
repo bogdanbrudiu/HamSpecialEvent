@@ -22,12 +22,12 @@ const routes: Routes = [
     ]
   },
   {
-    path: ':id/edit',
+    path: ':id/:secret/edit',
     component: AdminEventComponent,
     canActivate: [AdminGuard]
   },
   {
-    path: ':id/qsos',
+    path: ':id/:secret/qsos',
     component: AdminQSOsComponent,
     canActivate: [AdminGuard]
   }

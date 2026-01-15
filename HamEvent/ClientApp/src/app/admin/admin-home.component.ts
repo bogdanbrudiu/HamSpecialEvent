@@ -48,12 +48,12 @@ export class AdminHomeComponent implements OnInit {
   }
 
   gotoEvent(event: HamEvent) {
-    //this.router.navigate(['admin', event.id, event.secretKey, 'edit']);
-    this.router.navigate(['admin', event.id, 'edit']);
+    this.router.navigate(['admin', event.id, event.secretKey, 'edit']);
+    //this.router.navigate(['admin', event.id, 'edit']);
   }
 
   gotoQSOs(event: HamEvent) {
-    this.router.navigate(['admin', event.id, 'qsos']);
+    this.router.navigate(['admin', event.id, event.secretKey, 'qsos']);
   }
 
   //ngOnInit() {

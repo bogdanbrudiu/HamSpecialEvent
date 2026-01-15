@@ -326,7 +326,7 @@ namespace HamEvent.Controllers
                     return NotFound();
                 }
 
-                var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}".TrimEnd('/');
+                var baseUrl = $"{HttpContext?.Request?.Scheme ?? "https"}://{HttpContext?.Request?.Host.Value ?? "localhost"}{HttpContext?.Request?.PathBase.Value}".TrimEnd('/');
                 var eventLinks = new List<(Event, Guid)>();
 
                 foreach (var ev in eventsForEmail)
@@ -350,6 +350,7 @@ namespace HamEvent.Controllers
                     EnableSsl = _mailerSettings.EnableSSL,
                     Model = new
                     {
+                        baseUrl,
                         events = eventLinks.Select(e => new
                         {
                             name = e.Item1.Name,
@@ -407,6 +408,7 @@ namespace HamEvent.Controllers
                         _dbcontext.SaveChanges();
 
 
+                    var baseUrl = $"{HttpContext?.Request?.Scheme ?? "https"}://{HttpContext?.Request?.Host.Value ?? "localhost"}{HttpContext?.Request?.PathBase.Value}".TrimEnd('/');
                     MailerModel mdl = new MailerModel(_mailerSettings.Host, _mailerSettings.Port)
                     {
                         ToAddresses = new List<string>() { myevent.Email },
@@ -417,7 +419,7 @@ namespace HamEvent.Controllers
                         User = _mailerSettings.Username,
                         Key = _mailerSettings.Password,
                         EnableSsl = _mailerSettings.EnableSSL,
-                        Model = new { id = myevent.Id, secretKey = secretKey }
+                        Model = new { id = myevent.Id, secretKey = secretKey, baseUrl }
                     };
                     _logger.LogDebug(MyLogEvents.SendingEmail, "Sending Email");
                     try

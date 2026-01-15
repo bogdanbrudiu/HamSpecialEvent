@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using Moq.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace UnitTests
 {
@@ -136,8 +137,10 @@ namespace UnitTests
 
             // Assert
             Assert.NotNull(result);
-            dynamic payload = result.Value;
-            Assert.Equal(2, (int)payload.count);
+            var json = JsonSerializer.Serialize(result.Value);
+            using var doc = JsonDocument.Parse(json);
+            int count = doc.RootElement.GetProperty("count").GetInt32();
+            Assert.Equal(2, count);
             var refreshed = context.Events.ToList();
             Assert.DoesNotContain(refreshed, e => e.SecretKey == "old1" || e.SecretKey == "old2");
             mailer.Verify(m => m.SendAsync(It.IsAny<MailerModel>()), Times.Once);

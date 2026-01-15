@@ -36,7 +36,7 @@ namespace HamEvent.Controllers
             _logger = logger;
             _mapper = mapper;
             _mailer = mailer;
-            _mailerSettings = mailerSettings.Value;
+            _mailerSettings = mailerSettings?.Value ?? new MailerSettings();
 
             _dbcontext = dbcontext;
         }
@@ -300,6 +300,85 @@ namespace HamEvent.Controllers
         }
 
         #region For Admin
+        public class AdminLinkRecoveryRequest
+        {
+            public string Email { get; set; } = string.Empty;
+        }
+
+        [HttpPost("hamevent/recover")]
+        public async Task<IActionResult> RecoverAdminLinks([FromBody] AdminLinkRecoveryRequest request)
+        {
+            if (request == null || string.IsNullOrWhiteSpace(request.Email))
+            {
+                return BadRequest("Email is required.");
+            }
+
+            var normalizedEmail = request.Email.Trim();
+            _logger.LogInformation(MyLogEvents.RecoverAdminLinks, "Recovering admin links for email {email}", normalizedEmail);
+
+            try
+            {
+                var eventsForEmail = _dbcontext.Events.Where(e => e.Email.ToLower() == normalizedEmail.ToLower()).ToList();
+
+                if (!eventsForEmail.Any())
+                {
+                    _logger.LogInformation(MyLogEvents.RecoverAdminLinks, "No events found for email {email}", normalizedEmail);
+                    return NotFound();
+                }
+
+                var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}".TrimEnd('/');
+                var eventLinks = new List<(Event, Guid)>();
+
+                foreach (var ev in eventsForEmail)
+                {
+                    var secretKey = Guid.NewGuid();
+                    ev.SecretKey = ComputeSha256Hash(secretKey);
+                    eventLinks.Add((ev, secretKey));
+                }
+
+                await _dbcontext.SaveChangesAsync();
+
+                MailerModel mdl = new MailerModel(_mailerSettings.Host, _mailerSettings.Port)
+                {
+                    ToAddresses = new List<string>() { normalizedEmail },
+                    FromAddress = _mailerSettings.From,
+                    IsHtml = true,
+                    ViewFile = "Shared/RecoverEvents.html",
+                    Subject = "Admin link recovery",
+                    User = _mailerSettings.Username,
+                    Key = _mailerSettings.Password,
+                    EnableSsl = _mailerSettings.EnableSSL,
+                    Model = new
+                    {
+                        events = eventLinks.Select(e => new
+                        {
+                            name = e.Item1.Name,
+                            url = $"{baseUrl}/{e.Item1.Id}/{e.Item2}"
+                        }).ToList()
+                    }
+                };
+
+                _logger.LogDebug(MyLogEvents.SendingEmail, "Sending recovery email to {email}", normalizedEmail);
+                try
+                {
+                    await _mailer.SendAsync(mdl);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(MyLogEvents.SendingEmail, ex, "Error sending recovery email to {email}", normalizedEmail);
+                    return StatusCode(500, "Error sending recovery email.");
+                }
+
+                _logger.LogInformation(MyLogEvents.RecoverAdminLinks, "Recovery email sent for {count} events", eventsForEmail.Count);
+                return Ok(new { count = eventsForEmail.Count });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(MyLogEvents.RecoverAdminLinks, ex, "Failed to recover admin links for email {email}", normalizedEmail);
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
         [HttpPost("hamevent")]
         public ActionResult Post(Event hamevent)
         {

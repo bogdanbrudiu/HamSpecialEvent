@@ -58,5 +58,14 @@
   "Settings": "Settings",
   "Help": "Help",
   "About": "About",
-  "gotoEvent": "Mergi la eveniment"
+  "gotoEvent": "Mergi la eveniment",
+  "AdminLinkRecovery": "Recuperează linkurile de administrare",
+  "RecoveryDescription": "Introduceți emailul de administrare folosit la crearea evenimentelor pentru a primi din nou linkurile de administrare.",
+  "SendRecoveryLink": "Trimite email de recuperare",
+  "RecoveryEmailRequired": "Emailul este obligatoriu",
+  "RecoveryEmailInvalid": "Introduceți un email valid",
+  "RecoverySuccess": "Emailul de recuperare a fost trimis pentru {{count}} eveniment(e).",
+  "RecoveryNotFound": "Nu am găsit evenimente pentru acest email.",
+  "RecoveryError": "A apărut o problemă la trimiterea emailului de recuperare.",
+  "Sending...": "Se trimite..."
 }

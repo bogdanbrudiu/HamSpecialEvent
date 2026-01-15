@@ -19,6 +19,9 @@ export class EventsService {
   updateEvent(event:any): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'api/hamevent/hamevent/', event);
   }
+  recoverAdminLinks(email: string): Observable<any> {
+    return this.http.post<any>(this.baseUrl + 'api/hamevent/hamevent/recover', { email });
+  }
 }
 export interface HamEvent {
   id: string;

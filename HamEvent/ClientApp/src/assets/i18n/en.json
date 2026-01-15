@@ -58,5 +58,14 @@
   "Settings": "Settings",
   "Help": "Help",
   "About": "About",
-  "gotoEvent": "Go to event"
+  "gotoEvent": "Go to event",
+  "AdminLinkRecovery": "Recover admin links",
+  "RecoveryDescription": "Enter the admin email used when creating events to regenerate and receive fresh admin URLs.",
+  "SendRecoveryLink": "Send recovery email",
+  "RecoveryEmailRequired": "Email is required",
+  "RecoveryEmailInvalid": "Enter a valid email",
+  "RecoverySuccess": "Recovery email sent for {{count}} event(s).",
+  "RecoveryNotFound": "No events found for that email.",
+  "RecoveryError": "There was a problem sending the recovery email.",
+  "Sending...": "Sending..."
 }

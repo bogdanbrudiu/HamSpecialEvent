@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Mvc;
+using CoreMailer.Models;
 using AutoMapper;
 using CoreMailer.Interfaces;
 using HamEvent;
@@ -85,6 +87,60 @@ namespace UnitTests
             Assert.NotNull(qsos);
             Assert.Equal(5, qsos.Count);
            
+        }
+
+        [Fact]
+        public async Task RecoverAdminLinks_NotFound_WhenNoEvents()
+        {
+            // Arrange
+            var options = new DbContextOptionsBuilder<HamEventContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
+            using var context = new HamEventContext(options);
+            var logger = Mock.Of<ILogger<HamEventController>>();
+            var mapper = Mock.Of<IMapper>();
+            var mailer = new Mock<ICoreMvcMailer>();
+            var mailerSettings = Options.Create(new MailerSettings());
+            var controller = new HamEventController(logger, mapper, mailer.Object, mailerSettings, new TokenService("secret"), context);
+
+            // Act
+            var result = await controller.RecoverAdminLinks(new HamEventController.AdminLinkRecoveryRequest { Email = "none@example.com" });
+
+            // Assert
+            Assert.IsType<NotFoundResult>(result);
+            mailer.Verify(m => m.SendAsync(It.IsAny<MailerModel>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task RecoverAdminLinks_RegeneratesSecretAndSendsEmail()
+        {
+            // Arrange
+            var options = new DbContextOptionsBuilder<HamEventContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
+            using var context = new HamEventContext(options);
+            var e1 = new Event { Id = Guid.NewGuid(), SecretKey = "old1", Name = "Test1", Description = "Desc", Diploma = "Dip", Email = "test@example.com" };
+            var e2 = new Event { Id = Guid.NewGuid(), SecretKey = "old2", Name = "Test2", Description = "Desc", Diploma = "Dip", Email = "test@example.com" };
+            context.Events.AddRange(e1, e2);
+            await context.SaveChangesAsync();
+
+            var logger = Mock.Of<ILogger<HamEventController>>();
+            var mapper = Mock.Of<IMapper>();
+            var mailer = new Mock<ICoreMvcMailer>();
+            mailer.Setup(m => m.SendAsync(It.IsAny<MailerModel>())).Returns(Task.CompletedTask);
+            var mailerSettings = Options.Create(new MailerSettings { Host = "localhost", Port = 25, From = "noreply@example.com", Username = "user", Password = "pass", EnableSSL = false });
+            var controller = new HamEventController(logger, mapper, mailer.Object, mailerSettings, new TokenService("secret"), context);
+
+            // Act
+            var result = await controller.RecoverAdminLinks(new HamEventController.AdminLinkRecoveryRequest { Email = "test@example.com" }) as OkObjectResult;
+
+            // Assert
+            Assert.NotNull(result);
+            dynamic payload = result.Value;
+            Assert.Equal(2, (int)payload.count);
+            var refreshed = context.Events.ToList();
+            Assert.DoesNotContain(refreshed, e => e.SecretKey == "old1" || e.SecretKey == "old2");
+            mailer.Verify(m => m.SendAsync(It.IsAny<MailerModel>()), Times.Once);
         }
 
 

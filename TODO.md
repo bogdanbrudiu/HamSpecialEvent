@@ -19,6 +19,7 @@ Project Description
 
 
 ### Done ✓
+- [✓] Fix Elmah #bug @bogdanbrudiu
 - [✓] After file upload status should be cleared #bug
 - [✓] As a site visitor I can request new event creation  #feat
 - [✓] Exclude callsign from top #feat

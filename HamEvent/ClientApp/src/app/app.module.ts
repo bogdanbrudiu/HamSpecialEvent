@@ -73,6 +73,7 @@ export function createTranslateLoader(http: HttpClient) {
         RouterModule.forRoot([
             { path: '', component: HomeComponent, pathMatch: 'full' },
             { path: 'events', component: EventsComponent, pathMatch: 'full' },
+            { path: 'recover', loadComponent: () => import('./recovery/recovery.component').then(m => m.RecoveryComponent) },
           {
             path: 'event',
             loadChildren: () => import('./event/event.module').then((m) => m.EventModule),
@@ -81,9 +82,5 @@ export function createTranslateLoader(http: HttpClient) {
             path: 'admin',
             loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule),
           },
-        //    { path: 'Events', component: EventsComponent, pathMatch: 'full' },
-        //    { path: ':id/top', component: EventTopComponent, pathMatch: 'full' },
-        //    { path: ':id/live', component: DashboardComponent, pathMatch: 'full' },
-        //    { path: ':id', component: QSOsComponent, pathMatch: 'full' },
         ])], providers: [ provideAnimations(), provideHttpClient(withInterceptorsFromDi())] })
 export class AppModule { }

@@ -1,0 +1,10 @@
+@model dynamic
+
+<p>We generated new admin links for your events.</p>
+<ul>
+@foreach (var item in Model.events)
+{
+    <li><strong>@item.name</strong>: <a href="@item.url">@item.url</a></li>
+}
+</ul>
+<p>If you did not request this recovery, you can ignore this message.</p>

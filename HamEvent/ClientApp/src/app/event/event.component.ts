@@ -48,6 +48,7 @@ export class EventComponent implements OnInit {
   searchForm!: FormGroup;
   gridColumns = 3;
   sanitizedDescription: SafeHtml | undefined;
+  sanitizedRules: SafeHtml | undefined;
 
   toggleGridColumns() {
     this.gridColumns = this.gridColumns === 3 ? 4 : 3;
@@ -68,6 +69,7 @@ export class EventComponent implements OnInit {
           this.event = response;
           console.log(response);
           this.sanitizedDescription = this.sanitizer.bypassSecurityTrustHtml(this.event.diploma);
+          this.sanitizedRules = this.sanitizer.bypassSecurityTrustHtml(this.event.rules);
         },
         (error) => {
           console.log(error);

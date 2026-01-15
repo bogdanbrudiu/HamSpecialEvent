@@ -12,6 +12,7 @@ namespace HamEvent.Data.Model
         public required string Description { get; set; }
         public required string Diploma { get; set; }
         public required string Email { get; set; }
+        public required string Rules { get; set; } = string.Empty;
         [JsonIgnore]
         public ICollection<QSO> QSOs { get; } = new List<QSO>();
         public DateTime? StartDate { get; set; }

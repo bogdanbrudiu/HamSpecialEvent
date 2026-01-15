@@ -19,6 +19,7 @@ namespace UnitTests
                     Description = "Description"+i,
                     Email = "Email" + i,
                     Diploma = "Diploma"+i,
+                    Rules = "Rules"+i,
                     StartDate = DateTime.Now,
                     EndDate = DateTime.Now.AddDays(1),
                     HasTop = false

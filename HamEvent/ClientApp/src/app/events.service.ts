@@ -30,6 +30,7 @@ export interface HamEvent {
   startDate: string;
   endDate: string;
   description: string;
+  rules: string;
   email: string;
   hasTop: boolean;
   diploma: string;

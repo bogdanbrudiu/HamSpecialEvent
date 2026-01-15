@@ -119,8 +119,8 @@ namespace UnitTests
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
             using var context = new HamEventContext(options);
-            var e1 = new Event { Id = Guid.NewGuid(), SecretKey = "old1", Name = "Test1", Description = "Desc", Diploma = "Dip", Email = "test@example.com" };
-            var e2 = new Event { Id = Guid.NewGuid(), SecretKey = "old2", Name = "Test2", Description = "Desc", Diploma = "Dip", Email = "test@example.com" };
+            var e1 = new Event { Id = Guid.NewGuid(), SecretKey = "old1", Name = "Test1", Description = "Desc", Diploma = "Dip", Email = "test@example.com", Rules = string.Empty };
+            var e2 = new Event { Id = Guid.NewGuid(), SecretKey = "old2", Name = "Test2", Description = "Desc", Diploma = "Dip", Email = "test@example.com", Rules = string.Empty };
             context.Events.AddRange(e1, e2);
             await context.SaveChangesAsync();
 
@@ -142,9 +142,5 @@ namespace UnitTests
             Assert.DoesNotContain(refreshed, e => e.SecretKey == "old1" || e.SecretKey == "old2");
             mailer.Verify(m => m.SendAsync(It.IsAny<MailerModel>()), Times.Once);
         }
-
-
-
-
     }
 }

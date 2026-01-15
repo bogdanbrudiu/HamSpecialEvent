@@ -13,6 +13,7 @@ Project Description
 
 ### In Progress
 
+- [ ] Add Event Rules should be multilanguage  #feat @ bogdanbrudiu
 - [ ] I can request all admin links for my email adress #feat @bogdanbrudiu
 - [ ] Drag & Drop editor for diploma  #feat @crisanalex08
 

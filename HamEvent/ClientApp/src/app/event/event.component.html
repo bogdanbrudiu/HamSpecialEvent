@@ -64,6 +64,7 @@
       </div>
     </div>
   </form>-->
+
       <!--<div class="card trow btn btn-outline-success" style="width: 18rem;" *ngIf='qualifiesForDiploma()' (click)="genPdf()">
     <div class="card-body">
       <h5 class="card-title">{{'Download Diploma' | translate}}</h5>
@@ -75,112 +76,27 @@
       </div>
     </div>
   </div>-->
+
       <!--<p class="page-description" [innerHTML]="sanitizedDescription"></p>-->
+
       <!--<mat-date-range-input [rangePicker]="picker">
     <input matStartDate placeholder="Start date">
     <input matEndDate placeholder="End date">
   </mat-date-range-input>
   <mat-date-range-picker #picker></mat-date-range-picker>-->
+
       <!--<mat-progress-bar mode="determinate" value="40"></mat-progress-bar>-->
     </mat-tab>
 
 
     <mat-tab label="{{ 'Rules' | translate}}">
       <ng-template mat-tab-label><mat-icon class="example-tab-icon">rule</mat-icon>{{ 'Rules' | translate}}</ng-template>
-      <mat-expansion-panel [expanded]="true">
+      <mat-expansion-panel [expanded]="true" *ngIf="event">
         <mat-expansion-panel-header>
           <mat-panel-title> Contest rules</mat-panel-title>
           <mat-panel-description> Those are the rules of the content </mat-panel-description>
         </mat-expansion-panel-header>
-        <pre>Special award for celebrating 20 years of QSO BANAT Timisoara Ham Radio Association
-
-        Organizers:
-
-        QSO BANAT Ham Radio Association Timisoara
-
-        Purpose:
-
-        For celebrating 20 years of QSO BANAT Timisoara Ham Radio Association please contact our special call YP20KQT.
-
-        Who can participate?
-
-        Each and every ham radio with a valid license, who accepts the present set of rules.
-
-        Contest days:
-
-        1st of  December 2023 - 31th of  December 2023
-
-        Frequencies:
-
-        All radio amateur bands in the segments corresponding to the working mode.
-
-        Modes:
-
-        SSB /CW /Digi modes.
-
-        Valid QSOs:
-
-        Each callsign may be worked daily once per mode per band.
-
-        Scoring:
-
-        Total Points = Total number of QSO`s  X Total number of  Modes X Total number of Band`s.
-
-        Award`s
-
-        Awards can be downloaded from: www.hamevent.eu starting with 1st of January 2024!
-
-        During month of December, you can see Event Top here: EVENT TOP
-
-        Live Stream : ClubLog  & Hamevent.eu
-
-        ****************************************************************
-
-
-
-        YP20KQT
-
-        Eveniment special cu ocazia celebrării a 20 ani de existență a Asociației QSO BANAT Timișoara
-
-
-
-        Organizator:
-
-        Asociația QSO Banat Timișoara – Radioclubul YO2KQT
-
-        Cine poate participa?
-
-        Orice radioamator cu autorizație validă, care acceptă regulile evenimentului.
-
-        Perioada de desfășurare:
-
-        1 Decembrie 2023 - 31 Decembrie 2023
-
-        Frecvențe:
-
-        Toate benzile de radioamatori în segmentele corespunzătoare modului de lucru
-
-        Mod:
-
-        SSB / CW / Digitale
-
-        QSO-uri :
-
-        Se puncteaza QSO-urile cu indicativul YP20KQT.
-
-        Se poate lucra în fiecare zi o singură dată pe fiecare combinație de bandă/mod.
-
-        Punctaj:
-
-        Scor Total = Nr total de QSO-uri X Nr total de moduri X Nr total de benzi
-
-        Diplome
-
-        Diplomele pot fi descărcate de la adresa : www.hamevent.eu începând cu data de 1 ianuarie 2024
-
-        Pe toată durata evenimentului clasamentul poate fi urmărit aici: LINK
-
-        Live Stream : ClubLog  & Hamevent.eu</pre>
+        <div class="description" [innerHTML]="sanitizedRules || event.rules"></div>
       </mat-expansion-panel>
     </mat-tab>
     <mat-tab label="{{ 'Logs' | translate}}">

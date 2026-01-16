@@ -5,7 +5,7 @@ import { MatCard, MatCardActions, MatCardAvatar, MatCardContent, MatCardFooter, 
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { HamEvent } from '../events.service';
 
 import { Pipe, PipeTransform } from '@angular/core';
@@ -29,10 +29,20 @@ export class TrimPipe implements PipeTransform {
 })
 export class EventCardComponent {
   @Input() event!: HamEvent;
-  constructor(private router: Router) { }
+  constructor(private router: Router, private translate: TranslateService) { }
+
+  private pickLocalized(value: { [lang: string]: string }): string {
+    if (!value) return '';
+    const lang = this.translate.currentLang || 'en';
+    return value[lang] || value['en'] || Object.values(value)[0] || '';
+  }
 
   gotoEvent(event: HamEvent) {
     this.router.navigateByUrl("event/" + event.id);
+  }
+
+  get description(): string {
+    return this.pickLocalized(this.event?.description as any);
   }
 
   getTooltipText() {

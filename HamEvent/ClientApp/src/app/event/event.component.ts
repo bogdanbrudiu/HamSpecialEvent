@@ -12,7 +12,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { QSO, QSOsService } from '../qsos.service';
 import { MatTableModule, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -47,29 +47,37 @@ export class EventComponent implements OnInit {
   public isLive: boolean = false;
   searchForm!: FormGroup;
   gridColumns = 3;
-  sanitizedDescription: SafeHtml | undefined;
-  sanitizedRules: SafeHtml | undefined;
+  public sanitizedDescription: SafeHtml | undefined;
+  public sanitizedRules: SafeHtml | undefined;
+  public currentLang = 'en';
 
   toggleGridColumns() {
     this.gridColumns = this.gridColumns === 3 ? 4 : 3;
   }
-  constructor(private formBuilder: FormBuilder, private router: Router, private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService, private sanitizer: DomSanitizer) {
+  private pickLocalized(value: { [lang: string]: string } | undefined): string {
+    if (!value) return '';
+    const lang = this.translate.currentLang || this.currentLang;
+    const fallback = value['en'] || Object.values(value)[0] || '';
+    return value[lang] || fallback || '';
+  }
+  constructor(private formBuilder: FormBuilder, private router: Router, private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService, private sanitizer: DomSanitizer, private translate: TranslateService) {
     this.searchForm = this.formBuilder.group({
       search: "",
     });
-  }
+    this.currentLang = this.translate.currentLang || 'en';
+   }
 
   ngOnInit() {
     console.log('EventComponent ngOnInit');
     this.routes.paramMap.subscribe(params => {
       this.eventId = params.get('id')!;
       console.log(this.eventId);
-      this.eventsService.getEvent(this.eventId).subscribe(
+      this.eventsService.getEvent(this.eventId, '', this.currentLang).subscribe(
         (response) => {
           this.event = response;
           console.log(response);
-          this.sanitizedDescription = this.sanitizer.bypassSecurityTrustHtml(this.event.diploma);
-          this.sanitizedRules = this.sanitizer.bypassSecurityTrustHtml(this.event.rules);
+          this.sanitizedDescription = this.sanitizer.bypassSecurityTrustHtml(this.pickLocalized(this.event.description));
+          this.sanitizedRules = this.sanitizer.bypassSecurityTrustHtml(this.pickLocalized(this.event.rules));
         },
         (error) => {
           console.log(error);
@@ -79,7 +87,7 @@ export class EventComponent implements OnInit {
   }
   submitForm() {
     console.log('submitForm');
-    this.eventsService.getEvent(this.searchInput).subscribe(
+    this.eventsService.getEvent(this.searchInput, '', this.currentLang).subscribe(
       (response) => {
         this.event = response;
         console.log(response);

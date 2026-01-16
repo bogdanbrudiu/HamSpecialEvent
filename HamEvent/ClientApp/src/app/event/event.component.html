@@ -32,7 +32,7 @@
 
             <mat-divider></mat-divider>
 
-            <p class="description" [innerHTML]="event.description"></p>
+            <p class="description" [innerHTML]="sanitizedDescription"></p>
 
             <mat-divider></mat-divider>
 
@@ -96,7 +96,7 @@
           <mat-panel-title> Contest rules</mat-panel-title>
           <mat-panel-description> Those are the rules of the content </mat-panel-description>
         </mat-expansion-panel-header>
-        <div class="description" [innerHTML]="sanitizedRules || event.rules"></div>
+        <div class="description" [innerHTML]="sanitizedRules"></div>
       </mat-expansion-panel>
     </mat-tab>
     <mat-tab label="{{ 'Logs' | translate}}">

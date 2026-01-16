@@ -34,23 +34,27 @@
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>{{ 'Description' | translate }}</mat-label>
-        <textarea matInput rows="3" [(ngModel)]="event.description" name="description"></textarea>
+        <mat-tab-group [selectedIndex]="selectedDescriptionIndex" (selectedIndexChange)="onDescriptionTabChange($event)">
+          <mat-tab *ngFor="let lang of languages" [label]="lang">
+            <textarea matInput rows="3" [(ngModel)]="event.description[lang]" [name]="'description_' + lang"></textarea>
+            <div *ngIf="event.description[lang]" class="description-html-preview">
+              <div [innerHtml]="event.description[lang] | sanitizedHtml"></div>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
       </mat-form-field>
-
-      <!-- Rules HTML preview -->
-      <div *ngIf="event.description" class="description-html-preview">
-        <div [innerHtml]="event.description | sanitizedHtml"></div>
-      </div>
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>{{ 'Rules' | translate }}</mat-label>
-        <textarea matInput rows="6" [(ngModel)]="event.rules" name="rules"></textarea>
+        <mat-tab-group [selectedIndex]="selectedRulesIndex" (selectedIndexChange)="onRulesTabChange($event)">
+          <mat-tab *ngFor="let lang of languages" [label]="lang">
+            <textarea matInput rows="6" [(ngModel)]="event.rules[lang]" [name]="'rules_' + lang"></textarea>
+            <div *ngIf="event.rules[lang]" class="rules-html-preview">
+              <div [innerHtml]="event.rules[lang] | sanitizedHtml"></div>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
       </mat-form-field>
-
-      <!-- Rules HTML preview -->
-      <div *ngIf="event.rules" class="rules-html-preview">
-        <div [innerHtml]="event.rules | sanitizedHtml"></div>
-      </div>
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>{{ 'Email' | translate }}</mat-label>

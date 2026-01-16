@@ -1,12 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NavMenuComponent } from './nav-menu.component';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService, TranslateLoader, TranslateFakeLoader } from '@ngx-translate/core';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { EventsService } from '../events.service';
 import { QSOsService } from '../qsos.service';
 import { Title } from '@angular/platform-browser';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { ActivatedRoute, NavigationEnd, Router, convertToParamMap } from '@angular/router';
 
 describe('NavMenuComponent', () => {
   let component: NavMenuComponent;
@@ -22,12 +24,17 @@ describe('NavMenuComponent', () => {
     imports: [
         RouterTestingModule,
         HttpClientTestingModule,
-        TranslateModule.forRoot(),
+        NoopAnimationsModule,
+        TranslateModule.forRoot({
+          loader: { provide: TranslateLoader, useClass: TranslateFakeLoader },
+          defaultLanguage: 'en'
+        }),
         NavMenuComponent
     ],
     providers: [
         { provide: EventsService, useValue: eventsServiceSpy },
         { provide: QSOsService, useValue: qsosServiceSpy },
+        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ id: '1', secret: '' }) }, outlet: 'primary', firstChild: null } },
         Title,
         TranslateService
     ]
@@ -70,11 +77,14 @@ describe('NavMenuComponent', () => {
   });
 
   it('should set title and event on navigation', () => {
+    const router = TestBed.inject(Router);
+    const routerEvents = router.events as Subject<NavigationEnd>;
     const mockEvent = { id: '1', name: 'Test Event' } as any;
     eventsService.getEvent.and.returnValue(of(mockEvent));
     qsosService.getLive.and.returnValue(of([]));
 
     component.ngOnInit();
+    routerEvents.next(new NavigationEnd(1, '/event/1', '/event/1'));
     fixture.detectChanges();
 
     expect(eventsService.getEvent).toHaveBeenCalled();

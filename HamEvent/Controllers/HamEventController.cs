@@ -197,7 +197,7 @@ namespace HamEvent.Controllers
 
 
         [HttpGet("Diploma/{hamevent}/{callsign}")]
-        public IActionResult PDF(Guid hamevent, string callsign)
+        public IActionResult PDF(Guid hamevent, string callsign, [FromQuery] string? lang = null)
         {
             _logger.LogInformation(MyLogEvents.GetDiploma, "Get Diploma for event {0} callsign {1}", hamevent, callsign);
 
@@ -223,7 +223,7 @@ namespace HamEvent.Controllers
 
                 diplomahtml = diplomahtml.Replace("--callsign2--", callsign.ToUpper());
                 diplomahtml = diplomahtml.Replace("--EventName--", myevent.Name);
-                diplomahtml = diplomahtml.Replace("--EventDescription--", myevent.Description);
+                diplomahtml = diplomahtml.Replace("--EventDescription--", myevent.GetDescription(lang));
 
 
 
@@ -392,8 +392,8 @@ namespace HamEvent.Controllers
                     var myevent = new Event()
                     {
                         Name = hamevent.Name,
-                        Description = hamevent.Description,
-                        Rules = hamevent.Rules ?? string.Empty,
+                        Description = Event.CopyLocalizedValues(hamevent.Description),
+                        Rules = Event.CopyLocalizedValues(hamevent.Rules),
                         Diploma = hamevent.Diploma,
                         Email = hamevent.Email
                     };
@@ -454,8 +454,8 @@ namespace HamEvent.Controllers
                     else
                     {
                         myevent.Diploma = hamevent.Diploma;
-                        myevent.Description = hamevent.Description;
-                        myevent.Rules = hamevent.Rules ?? string.Empty;
+                        myevent.Description = Event.CopyLocalizedValues(hamevent.Description);
+                        myevent.Rules = Event.CopyLocalizedValues(hamevent.Rules);
                         myevent.Email = hamevent.Email;
                         myevent.Name = hamevent.Name;
                         myevent.HasTop = hamevent.HasTop;
@@ -488,11 +488,11 @@ namespace HamEvent.Controllers
                 if (secret.HasValue)
                 {
                     var hashedSecret = ComputeSha256Hash(secret.Value);
-                    myevent = _dbcontext.Events.Where(e => e.Id.Equals(hamevent) && e.SecretKey.Equals(hashedSecret)).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Email = e.Email, Diploma = e.Diploma, HasTop = e.HasTop, StartDate = e.StartDate, EndDate = e.EndDate, ExcludeCallsigns=e.ExcludeCallsigns, Rules = e.Rules }).FirstOrDefault();
+                    myevent = _dbcontext.Events.Where(e => e.Id.Equals(hamevent) && e.SecretKey.Equals(hashedSecret)).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = Event.CopyLocalizedValues(e.Description), Email = e.Email, Diploma = e.Diploma, HasTop = e.HasTop, StartDate = e.StartDate, EndDate = e.EndDate, ExcludeCallsigns=e.ExcludeCallsigns, Rules = Event.CopyLocalizedValues(e.Rules) }).FirstOrDefault();
                 }
                 else
                 {
-                    myevent = _dbcontext.Events.Where(e => e.Id == hamevent).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Email = e.Email, Diploma = e.Diploma, HasTop = e.HasTop, StartDate = e.StartDate, EndDate = e.EndDate, ExcludeCallsigns = e.ExcludeCallsigns, Rules = e.Rules }).FirstOrDefault();
+                    myevent = _dbcontext.Events.Where(e => e.Id == hamevent).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = Event.CopyLocalizedValues(e.Description), Email = e.Email, Diploma = e.Diploma, HasTop = e.HasTop, StartDate = e.StartDate, EndDate = e.EndDate, ExcludeCallsigns = e.ExcludeCallsigns, Rules = e.Rules }).FirstOrDefault();
                 }
 
                 if (myevent == null) return NotFound();
@@ -570,7 +570,7 @@ namespace HamEvent.Controllers
                 AdifFile export = new AdifFile();
                 export.Header = new AdifHeaderRecord();
                 export.Header.Fields.Add("Event", myevent.Name);
-                export.Header.Fields.Add("Description", myevent.Description);
+                export.Header.Fields.Add("Description", myevent.GetDescription());
                 foreach (var qso in _dbcontext.QSOs.Where(q => q.EventId.Equals(hamevent)))
                 {
                     AdifContactRecord item = new AdifContactRecord();

@@ -5,7 +5,7 @@ import { VerificationService } from '../../verification.service';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { SanitizedHtmlPipe } from '../../sanitized-html.pipe';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { NgIf, DatePipe } from '@angular/common';
+import { NgIf, DatePipe, NgFor } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -14,6 +14,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatTabsModule } from '@angular/material/tabs';
 
 
 @Component({
@@ -22,8 +23,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
   styleUrl: './adminevent.component.css',
   standalone: true,
   imports: [
-    NgIf, ReactiveFormsModule, FormsModule, DatePipe, TranslateModule, SanitizedHtmlPipe,
-    MatCheckboxModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatDatepickerModule, MatNativeDateModule, MatProgressBarModule
+    NgIf, NgFor, ReactiveFormsModule, FormsModule, DatePipe, TranslateModule, SanitizedHtmlPipe,
+    MatCheckboxModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatDatepickerModule, MatNativeDateModule, MatProgressBarModule, MatTabsModule
   ]
 })
 export class AdminEventComponent implements OnInit {
@@ -33,6 +34,11 @@ export class AdminEventComponent implements OnInit {
   public initialEmail: string = '';
   public emailValidationCode: string = '';
   public codeGenerated: boolean = false;
+  public languages: string[] = ['en', 'ro'];
+  public selectedDescriptionLang = 'en';
+  public selectedRulesLang = 'en';
+  public selectedDescriptionIndex = 0;
+  public selectedRulesIndex = 0;
 
   constructor(public router: Router, private eventsService: EventsService, private verificationService: VerificationService, private routes: ActivatedRoute, private translate: TranslateService) { }
 
@@ -53,8 +59,8 @@ export class AdminEventComponent implements OnInit {
             name: '',
             startDate: new Date(now_utc).toISOString(),
             endDate: new Date(now_utc).toISOString(),
-            description: '',
-            rules: '',
+            description: { en: '' },
+            rules: { en: '' },
             email: '',
             hasTop: true,
             subtitle: '',
@@ -72,6 +78,7 @@ export class AdminEventComponent implements OnInit {
         this.eventsService.getEvent(this.eventId, this.eventSecret).subscribe(
           (response) => {
             this.event = response;
+            this.ensureLanguageKeys();
             this.initialEmail = response.email;
             console.log(response);
           },
@@ -87,6 +94,7 @@ export class AdminEventComponent implements OnInit {
   onSubmit() {
     if (this.event) { 
       this.event.secretKey = this.eventSecret;
+      this.ensureLanguageKeys();
       if (this.initialEmail != this.event.email) {
         if (!this.codeGenerated) {
           //send email
@@ -141,4 +149,32 @@ export class AdminEventComponent implements OnInit {
             }
         );
     }
-}
+
+    private ensureLanguageKeys() {
+      if (!this.event) return;
+      if (!this.event.description) this.event.description = {} as any;
+      if (!this.event.rules) this.event.rules = {} as any;
+      this.languages.forEach(l => {
+        if (this.event && !this.event.description[l]) this.event.description[l] = '';
+        if (this.event && !this.event.rules[l]) this.event.rules[l] = '';
+      });
+    }
+
+    onDescriptionTabChange(index: number) {
+      this.selectedDescriptionIndex = index;
+      this.selectedDescriptionLang = this.languages[index];
+    }
+
+    onRulesTabChange(index: number) {
+      this.selectedRulesIndex = index;
+      this.selectedRulesLang = this.languages[index];
+    }
+
+    getDescriptionPreview(lang: string) {
+        return this.event?.description?.[lang] || '';
+    }
+
+    getRulesPreview(lang: string) {
+        return this.event?.rules?.[lang] || '';
+    }
+ }

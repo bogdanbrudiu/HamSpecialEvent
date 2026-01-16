@@ -16,10 +16,10 @@ namespace UnitTests
                     Id = Guid.NewGuid(),
                     SecretKey = HamEventController.ComputeSha256Hash(Guid.NewGuid()),
                     Name = "Name"+i,
-                    Description = "Description"+i,
+                    Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "Description"+i } },
                     Email = "Email" + i,
                     Diploma = "Diploma"+i,
-                    Rules = "Rules"+i,
+                    Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "Rules"+i } },
                     StartDate = DateTime.Now,
                     EndDate = DateTime.Now.AddDays(1),
                     HasTop = false

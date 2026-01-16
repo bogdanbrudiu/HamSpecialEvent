@@ -121,8 +121,8 @@ namespace UnitTests
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
             using var context = new HamEventContext(options);
-            var e1 = new Event { Id = Guid.NewGuid(), SecretKey = "old1", Name = "Test1", Description = "Desc", Diploma = "Dip", Email = "test@example.com", Rules = string.Empty };
-            var e2 = new Event { Id = Guid.NewGuid(), SecretKey = "old2", Name = "Test2", Description = "Desc", Diploma = "Dip", Email = "test@example.com", Rules = string.Empty };
+            var e1 = new Event { Id = Guid.NewGuid(), SecretKey = "old1", Name = "Test1", Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "Desc" } }, Diploma = "Dip", Email = "test@example.com", Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", string.Empty } } };
+            var e2 = new Event { Id = Guid.NewGuid(), SecretKey = "old2", Name = "Test2", Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "Desc" } }, Diploma = "Dip", Email = "test@example.com", Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", string.Empty } } };
             context.Events.AddRange(e1, e2);
             await context.SaveChangesAsync();
 
@@ -156,7 +156,7 @@ namespace UnitTests
                 .Options;
             using var context = new HamEventContext(options);
             var evId = Guid.NewGuid();
-            context.Events.Add(new Event { Id = evId, Name = "E1", Description = "D", Diploma = "", Email = "e@e", ExcludeCallsigns = string.Empty, Rules = string.Empty });
+            context.Events.Add(new Event { Id = evId, Name = "E1", Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "D" } }, Diploma = "", Email = "e@e", ExcludeCallsigns = string.Empty, Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", string.Empty } } });
             context.QSOs.AddRange(TestDataHelper.GetFakeQSOsForTop(evId));
             context.SaveChanges();
 
@@ -182,7 +182,7 @@ namespace UnitTests
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
             using var context = new HamEventContext(options);
-            var ev = new Event { Id = Guid.NewGuid(), SecretKey = "sk", Name = "E", Description = "D", Diploma = "", Email = "e@e", Rules = string.Empty };
+            var ev = new Event { Id = Guid.NewGuid(), SecretKey = "sk", Name = "E", Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "D" } }, Diploma = "", Email = "e@e", Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", string.Empty } } };
             context.Events.Add(ev);
             context.SaveChanges();
 
@@ -203,7 +203,7 @@ namespace UnitTests
             var evId = Guid.NewGuid();
             var secret = Guid.NewGuid();
             var hashed = HamEventController.ComputeSha256Hash(secret);
-            context.Events.Add(new Event { Id = evId, SecretKey = hashed, Name = "E", Description = "D", Diploma = "", Email = "e@e", Rules = string.Empty });
+            context.Events.Add(new Event { Id = evId, SecretKey = hashed, Name = "E", Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "D" } }, Diploma = "", Email = "e@e", Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", string.Empty } } });
             context.SaveChanges();
 
             var controller = new HamEventController(Mock.Of<ILogger<HamEventController>>(), Mock.Of<IMapper>(), Mock.Of<ICoreMvcMailer>(), Options.Create(new MailerSettings()), new TokenService("secret"), context);
@@ -226,7 +226,7 @@ namespace UnitTests
             {
                 ControllerContext = new ControllerContext()
             };
-            var ev = new Event { Id = Guid.Empty, SecretKey = Guid.Empty.ToString(), Name = "E", Description = "D", Diploma = "", Email = "e@e", Rules = string.Empty };
+            var ev = new Event { Id = Guid.Empty, SecretKey = Guid.Empty.ToString(), Name = "E", Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "D" } }, Diploma = "", Email = "e@e", Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", string.Empty } } };
 
             var result = controller.Post(ev) as OkObjectResult;
             Assert.NotNull(result);
@@ -243,12 +243,12 @@ namespace UnitTests
             using var context = new HamEventContext(options);
             var secret = Guid.NewGuid();
             var hashed = HamEventController.ComputeSha256Hash(secret);
-            var ev = new Event { Id = Guid.NewGuid(), SecretKey = hashed, Name = "Old", Description = "D", Diploma = "", Email = "old@e", Rules = string.Empty };
+            var ev = new Event { Id = Guid.NewGuid(), SecretKey = hashed, Name = "Old", Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "D" } }, Diploma = "", Email = "old@e", Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", string.Empty } } };
             context.Events.Add(ev);
             context.SaveChanges();
 
             var controller = new HamEventController(Mock.Of<ILogger<HamEventController>>(), Mock.Of<IMapper>(), Mock.Of<ICoreMvcMailer>(), Options.Create(new MailerSettings()), new TokenService("secret"), context);
-            var updated = new Event { Id = ev.Id, SecretKey = secret.ToString(), Name = "New", Description = "ND", Diploma = "", Email = "new@e", Rules = "r" };
+            var updated = new Event { Id = ev.Id, SecretKey = secret.ToString(), Name = "New", Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "ND" } }, Diploma = "", Email = "new@e", Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "r" } } };
             var result = controller.Post(updated) as OkObjectResult;
             Assert.NotNull(result);
             var refreshed = context.Events.Find(ev.Id);
@@ -266,7 +266,7 @@ namespace UnitTests
             var evId = Guid.NewGuid();
             var secret = Guid.NewGuid();
             var hashed = HamEventController.ComputeSha256Hash(secret);
-            context.Events.Add(new Event { Id = evId, SecretKey = hashed, Name = "E", Description = "D", Diploma = "", Email = "e@e", Rules = string.Empty });
+            context.Events.Add(new Event { Id = evId, SecretKey = hashed, Name = "E", Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "D" } }, Diploma = "", Email = "e@e", Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", string.Empty } } });
             context.QSOs.Add(new QSO { EventId = evId, Callsign1 = "A", Callsign2 = "B", Band = "20m", Mode = "SSB", Timestamp = DateTime.UtcNow, Freq = "14000" });
             context.SaveChanges();
 
@@ -287,7 +287,7 @@ namespace UnitTests
             var evId = Guid.NewGuid();
             var secret = Guid.NewGuid();
             var hashed = HamEventController.ComputeSha256Hash(secret);
-            var ev = new Event { Id = evId, SecretKey = hashed, Name = "E", Description = "D", Diploma = "", Email = "e@e", Rules = string.Empty };
+            var ev = new Event { Id = evId, SecretKey = hashed, Name = "E", Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "D" } }, Diploma = "", Email = "e@e", Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", string.Empty } } };
             context.Events.Add(ev);
             var ts = DateTime.UtcNow;
             var qso = new QSO { EventId = evId, Callsign1 = "A", Callsign2 = "B", Band = "20m", Mode = "SSB", Timestamp = ts, Event = ev, Freq = "14000" };
@@ -310,7 +310,7 @@ namespace UnitTests
             var evId = Guid.NewGuid();
             var secret = Guid.NewGuid();
             var hashed = HamEventController.ComputeSha256Hash(secret);
-            var ev = new Event { Id = evId, SecretKey = hashed, Name = "E", Description = "D", Diploma = "", Email = "e@e", Rules = string.Empty };
+            var ev = new Event { Id = evId, SecretKey = hashed, Name = "E", Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "D" } }, Diploma = "", Email = "e@e", Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", string.Empty } } };
             context.Events.Add(ev);
             context.QSOs.AddRange(
                 new QSO { EventId = evId, Callsign1 = "A", Callsign2 = "B", Band = "20m", Mode = "SSB", Timestamp = DateTime.UtcNow, Event = ev, Freq = "14000" },
@@ -334,7 +334,7 @@ namespace UnitTests
             var evId = Guid.NewGuid();
             var secret = Guid.NewGuid();
             var hashed = HamEventController.ComputeSha256Hash(secret);
-            var ev = new Event { Id = evId, SecretKey = hashed, Name = "E", Description = "D", Diploma = "", Email = "e@e", Rules = string.Empty };
+            var ev = new Event { Id = evId, SecretKey = hashed, Name = "E", Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "D" } }, Diploma = "", Email = "e@e", Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", string.Empty } } };
             context.Events.Add(ev);
             var ts = DateTime.UtcNow;
             var qso = new QSO { EventId = evId, Callsign1 = "A", Callsign2 = "B", Band = "20m", Mode = "SSB", Timestamp = ts, RST1 = "59", RST2 = "59", Freq = "14000", Event = ev };
@@ -362,7 +362,7 @@ namespace UnitTests
                 .Options;
             using var context = new HamEventContext(options);
             var evId = Guid.NewGuid();
-            context.Events.Add(new Event { Id = evId, Name = "E", Description = "D", Diploma = "<html></html>", Email = "e@e", Rules = string.Empty });
+            context.Events.Add(new Event { Id = evId, Name = "E", Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "D" } }, Diploma = "<html></html>", Email = "e@e", Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", string.Empty } } });
             context.SaveChanges();
 
             var controller = new HamEventController(Mock.Of<ILogger<HamEventController>>(), Mock.Of<IMapper>(), Mock.Of<ICoreMvcMailer>(), Options.Create(new MailerSettings()), new TokenService("secret"), context)
@@ -371,6 +371,28 @@ namespace UnitTests
             };
             var result = controller.PDF(evId, "UNKNOWN");
             Assert.IsType<NoContentResult>(result);
+        }
+
+        [Fact]
+        public void LocalizedConverter_ParsesLegacyStringAsEnglish()
+        {
+            var opts = new JsonSerializerOptions();
+            opts.Converters.Add(new LocalizedDictionaryJsonConverter());
+            var dict = JsonSerializer.Deserialize<Dictionary<string, string>>("\"legacy\"", opts);
+            Assert.NotNull(dict);
+            Assert.Equal("legacy", dict!["en"]);
+        }
+
+        [Fact]
+        public void GetLocalizedValue_FallbacksToEnglish()
+        {
+            var values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "en", "English" }
+            };
+
+            Assert.Equal("English", Event.GetLocalizedValue(values, "fr"));
+            Assert.Equal("English", Event.GetLocalizedValue(values, null));
         }
     }
 }

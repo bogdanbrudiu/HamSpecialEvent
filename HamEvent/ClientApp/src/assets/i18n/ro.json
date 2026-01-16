@@ -4,7 +4,7 @@
   "HamEventTitle": "Bine ati venit la HamEvent!",
   "HamEventDescription": "Descoperiți, participați și urmăriți evenimentele preferate de radioamatorism. Obțineți rapid și ușor certificatul dumneavoastră QSO, la o simplă apăsare de buton!",
   "Search QSO": "Caută eveniment",
-  "Copyright": "2024, Clubul QSO Banat, Timisoara, Romania",
+  "Copyright": "2024-{{year}}, QSO Banat Club, Timisoara, Romania",
   "Loading...": "Se încarcă...",
   "No entries...": "Fără intrări...",
   "HamEvent QSOs": "Eveniment radioamatori - QSO-uri",

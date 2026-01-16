@@ -161,7 +161,7 @@ namespace HamEvent.Controllers
 
                 return new List<Operator>();
             }
-         
+        
             return operators.ToList();
         }
         [HttpGet("hamevents")]
@@ -175,9 +175,9 @@ namespace HamEvent.Controllers
 
                 events = _dbcontext.Events.Include(e => e.QSOs);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _logger.LogError(MyLogEvents.GetEvents,ex, "Failed getting Events page {0} paginated by {1} per page", page, pagesize);
+                _logger.LogError(MyLogEvents.GetEvents, ex, "Failed getting Events page {0} paginated by {1} per page", page, pagesize);
 
                 return new PageResult<Event>
                 {
@@ -185,7 +185,7 @@ namespace HamEvent.Controllers
                     Data = new List<Event>()
                 };
             }
-            events = events.OrderByDescending(e=>e.Name);
+            events = events.OrderByDescending(e => e.Name);
             events.ForEachAsync(e => e.SecretKey = "");
             var countDetails = events.Count();
             return new PageResult<Event>
@@ -258,7 +258,7 @@ namespace HamEvent.Controllers
                     diplomahtml = diplomahtml.Replace("--Modes--", participant.Mode.ToString());
 
                     diplomahtml = diplomahtml.Replace("--Rank--", participant.Rank.ToString());
-                    diplomahtml = diplomahtml.Replace("--Timestamp--", DateTime.UtcNow.ToString());
+                    diplomahtml = diplomahtml.Replace("--Timestamp--", DateTime.UtcNow.ToString("u"));
 
                     SelectPdf.HtmlToPdf converter = new SelectPdf.HtmlToPdf();
                     // set converter options
@@ -496,7 +496,7 @@ namespace HamEvent.Controllers
                 }
 
                 if (myevent == null) return NotFound();
-                else return Ok(myevent);
+                return Ok(myevent);
             }
             catch (Exception ex)
             {
@@ -597,12 +597,13 @@ namespace HamEvent.Controllers
         {
             var hashedSecret = ComputeSha256Hash(secret);
             _logger.LogInformation(MyLogEvents.DeleteQSO, "Delete QSO callsign1 {0}, callsign2 {1}, mode {2}, band {3}, timestamp {4} from event {5}", callsign1, callsign2, mode, band, timestamp, hamevent);
-            var myqso = _dbcontext.QSOs.Where(qso => qso.EventId == hamevent &&
+            var parsedTimestamp = DateTime.Parse(timestamp, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
+            var myqso = _dbcontext.QSOs.Include(q => q.Event).Where(qso => qso.EventId == hamevent &&
                                                        qso.Callsign1 == callsign1 &&
                                                        qso.Callsign2 == callsign2 &&
                                                        qso.Mode == mode &&
                                                        qso.Band == band &&
-                                                       qso.Timestamp == DateTime.Parse(timestamp, CultureInfo.InvariantCulture) &&
+                                                       qso.Timestamp == parsedTimestamp &&
                                                        qso.Event != null && qso.Event.SecretKey == hashedSecret).FirstOrDefault();
             if (myqso == null) return NotFound();
             _dbcontext.QSOs.Remove(myqso);
@@ -627,13 +628,14 @@ namespace HamEvent.Controllers
         public ActionResult Post(Guid hamevent, Guid secret, [FromQuery] string callsign1, [FromQuery] string callsign2, [FromQuery] string mode, [FromQuery] string band, [FromQuery] string timestamp, [FromBody] QSO updatedQSO)
         {
             var hashedSecret = ComputeSha256Hash(secret);
+            var parsedTimestamp = DateTime.Parse(timestamp, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
             _logger.LogInformation(MyLogEvents.UpdateQSO, "Update QSO callsign1 {0}, callsign2 {1}, mode {2}, band {3}, timestamp {4} from event {5} to callsign1 {6}, callsign2 {7}, mode {8}, band {9}, timestamp {10}", callsign1, callsign2, mode, band, timestamp, hamevent, updatedQSO.Callsign1, updatedQSO.Callsign2, updatedQSO.Mode, updatedQSO.Band, updatedQSO.Timestamp);
             var myqso = _dbcontext.QSOs.Where(qso => qso.EventId == hamevent &&
                                                        qso.Callsign1 == callsign1 &&
                                                        qso.Callsign2 == callsign2 &&
                                                        qso.Mode == mode &&
                                                        qso.Band == band &&
-                                                       qso.Timestamp == DateTime.Parse(timestamp, CultureInfo.InvariantCulture) &&
+                                                       qso.Timestamp == parsedTimestamp &&
                                                        qso.Event != null && qso.Event.SecretKey == hashedSecret).FirstOrDefault();
             if (myqso == null) return NotFound();
             updatedQSO.RST1 = myqso.RST1;

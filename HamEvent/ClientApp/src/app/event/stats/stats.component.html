@@ -1,0 +1,79 @@
+<div *ngIf="loading" class="stats-section loading">{{ 'Loading...' | translate }}</div>
+
+<div *ngIf="!loading && stats" class="stats-section">
+  <h3>{{ 'TotalQSOs' | translate }}: {{ stats.totalQsos }}</h3>
+
+  <section class="stat-block">
+    <h4>{{ 'QSOsPerBandMode' | translate }}</h4>
+    <table class="stat-table" *ngIf="stats.bandModeTotals?.length; else noData1">
+      <thead>
+        <tr>
+          <th>{{ 'Mode' | translate }}</th>
+          <th *ngFor="let band of bandModeBands">{{ band }}</th>
+          <th>{{ 'Total' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let mode of bandModeModes">
+          <th scope="row">{{ mode }}</th>
+          <td *ngFor="let band of bandModeBands">{{ bandModeCount(mode, band) }}</td>
+          <td>{{ bandModeRowTotal(mode) }}</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>{{ 'Total' | translate }}</th>
+          <td *ngFor="let band of bandModeBands">{{ bandModeColumnTotal(band) }}</td>
+          <td>{{ stats.totalQsos }}</td>
+        </tr>
+      </tfoot>
+    </table>
+    <ng-template #noData1><div class="empty">{{ 'No entries...' | translate }}</div></ng-template>
+  </section>
+
+  <section class="stat-block">
+    <h4>{{ 'QSOsPerFoxBand' | translate }}</h4>
+    <table class="stat-table" *ngIf="stats.foxBandTotals?.length; else noData2">
+      <thead>
+        <tr>
+          <th>{{ 'Fox' | translate }}</th>
+          <th *ngFor="let band of foxBands">{{ band }}</th>
+          <th>{{ 'Total' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let fox of foxList">
+          <th scope="row">{{ fox }}</th>
+          <td *ngFor="let band of foxBands">{{ foxBandCount(fox, band) }}</td>
+          <td>{{ foxBandTotal(fox) }}</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>{{ 'Total' | translate }}</th>
+          <td *ngFor="let band of foxBands">{{ foxBandColumnTotal(band) }}</td>
+          <td>{{ stats.totalQsos }}</td>
+        </tr>
+      </tfoot>
+    </table>
+    <ng-template #noData2><div class="empty">{{ 'No entries...' | translate }}</div></ng-template>
+  </section>
+
+  <section class="stat-block">
+    <h4>{{ 'QSOsPerFoxDay' | translate }}</h4>
+    <div *ngIf="foxDailyGroups.length; else noData3" class="fox-list">
+      <div class="fox-chart" *ngFor="let group of foxDailyGroups">
+        <div class="chart-header">{{ group.fox }}</div>
+        <svg [attr.viewBox]="'0 0 320 140'" preserveAspectRatio="none">
+          <polyline *ngIf="buildLinePoints(group.entries)" [attr.points]="buildLinePoints(group.entries)" class="line" />
+          <line x1="0" y1="140" x2="320" y2="140" class="axis" />
+          <line x1="0" y1="0" x2="0" y2="140" class="axis" />
+        </svg>
+        <div class="chart-legend">
+          <div *ngFor="let entry of group.entries">{{ entry.day }}: {{ entry.count }}</div>
+        </div>
+      </div>
+    </div>
+    <ng-template #noData3><div class="empty">{{ 'No entries...' | translate }}</div></ng-template>
+  </section>
+</div>

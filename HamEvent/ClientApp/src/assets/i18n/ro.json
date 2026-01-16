@@ -75,5 +75,11 @@
   "ContestSummary": "Acesta este un rezumat al concursului",
   "ParticipateNow": "Participă acum",
   "ContestRules": "Regulile concursului",
-  "ContestRulesDescription": "Acestea sunt regulile concursului"
+  "ContestRulesDescription": "Acestea sunt regulile concursului",
+  "TotalQSOs": "Total QSO-uri",
+  "QSOsPerBandMode": "QSO-uri pe bandă/mod",
+  "QSOsPerFoxBand": "QSO-uri per vulpe / bandă",
+  "QSOsPerFoxDay": "QSO-uri per vulpe / zi",
+  "Fox": "Vulpe",
+  "Total": "Total"
 }

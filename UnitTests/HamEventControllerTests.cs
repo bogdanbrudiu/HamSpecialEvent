@@ -394,5 +394,43 @@ namespace UnitTests
             Assert.Equal("English", Event.GetLocalizedValue(values, "fr"));
             Assert.Equal("English", Event.GetLocalizedValue(values, null));
         }
+
+        [Fact]
+        public void Stats_ReturnsAggregatedData()
+        {
+            var options = new DbContextOptionsBuilder<HamEventContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            using var context = new HamEventContext(options);
+            var evId = Guid.NewGuid();
+            context.Events.Add(new Event
+            {
+                Id = evId,
+                Name = "E",
+                Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "D" } },
+                Diploma = "",
+                Email = "e@e",
+                Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", string.Empty } }
+            });
+            var baseTime = DateTime.UtcNow.Date;
+            context.QSOs.AddRange(
+                new QSO { EventId = evId, Callsign1 = "FOX1", Callsign2 = "A", Band = "20m", Mode = "SSB", Timestamp = baseTime, Freq = "14000" },
+                new QSO { EventId = evId, Callsign1 = "FOX1", Callsign2 = "B", Band = "20m", Mode = "CW", Timestamp = baseTime, Freq = "14000" },
+                new QSO { EventId = evId, Callsign1 = "FOX1", Callsign2 = "C", Band = "40m", Mode = "SSB", Timestamp = baseTime.AddDays(1), Freq = "7000" },
+                new QSO { EventId = evId, Callsign1 = "FOX2", Callsign2 = "D", Band = "20m", Mode = "SSB", Timestamp = baseTime.AddDays(1), Freq = "14000" }
+            );
+            context.SaveChanges();
+
+            var controller = new HamEventController(Mock.Of<ILogger<HamEventController>>(), Mock.Of<IMapper>(), Mock.Of<ICoreMvcMailer>(), Options.Create(new MailerSettings()), new TokenService("secret"), context);
+
+            var actionResult = controller.Stats(evId);
+            var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
+            var stats = Assert.IsType<HamEventController.EventStatsResult>(okResult.Value);
+            Assert.Equal(4, stats.TotalQsos);
+            Assert.Contains(stats.BandModeTotals, b => b.Band == "20m" && b.Mode == "SSB" && b.Count == 2);
+            Assert.Contains(stats.FoxBandTotals, f => f.Fox == "FOX1" && f.Band == "20m" && f.Count == 2 && f.Total == 3);
+            Assert.Contains(stats.FoxDailyTotals, f => f.Fox == "FOX1" && f.Day == baseTime.ToString("yyyy-MM-dd") && f.Count == 2);
+            Assert.Contains(stats.FoxDailyTotals, f => f.Fox == "FOX1" && f.Day == baseTime.AddDays(1).ToString("yyyy-MM-dd") && f.Count == 1);
+        }
     }
 }

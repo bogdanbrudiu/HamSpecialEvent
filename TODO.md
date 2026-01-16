@@ -3,19 +3,18 @@ Project Description
 
 ### ToDo
 
-- [ ] Add Event Rules should be multilanguage  #feat
-- [ ] Backend for Statistics: ranking/prefix; band/mode; qsos/h; multiplay for each fox #feat
 - [ ] remove tabs/unify menus #feat
 
 
 
-- [ ] Event Description should be multilanguage #feat
+
 
 ### In Progress
 
+- [ ] Event Description should be multilanguage #feat @ bogdanbrudiu
 - [ ] Add Event Rules should be multilanguage  #feat @ bogdanbrudiu
 - [ ] I can request all admin links for my email adress #feat @bogdanbrudiu
-- [ ] Drag & Drop editor for diploma  #feat @crisanalex08
+- [ ] Backend for Statistics: ranking/prefix; band/mode; qsos/h; multiplay for each fox #feat @bogdanbrudiu
 
 
 

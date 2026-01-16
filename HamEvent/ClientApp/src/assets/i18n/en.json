@@ -75,5 +75,11 @@
   "ContestSummary": "This is a summary of the contest",
   "ParticipateNow": "Participate Now",
   "ContestRules": "Contest rules",
-  "ContestRulesDescription": "Those are the rules of the content"
+  "ContestRulesDescription": "Those are the rules of the content",
+  "TotalQSOs": "Total QSOs",
+  "QSOsPerBandMode": "QSOs per Band/Mode",
+  "QSOsPerFoxBand": "QSOs per Fox / Band",
+  "QSOsPerFoxDay": "QSOs per Fox / Day",
+  "Fox": "Fox",
+  "Total": "Total"
 }

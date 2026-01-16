@@ -1,3 +1,4 @@
+/// <reference types="jasmine" />
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { EventComponent } from './event.component';
@@ -17,7 +18,7 @@ describe('EventComponent', () => {
 
   beforeEach(async () => {
     const eventsServiceSpy = jasmine.createSpyObj('EventsService', ['getEvent']);
-    const qsosServiceSpy = jasmine.createSpyObj('QSOsService', ['getAllQSOs', 'getTop', 'getLive']);
+    const qsosServiceSpy = jasmine.createSpyObj('QSOsService', ['getAllQSOs', 'getTop', 'getLive', 'getStats']);
 
     eventsServiceSpy.getEvent.and.returnValue(of({
       id: 'test-id',
@@ -39,6 +40,12 @@ describe('EventComponent', () => {
       excludedCallsigns: [],
       secretKey: '',
       icon: ''
+    }));
+    qsosServiceSpy.getStats.and.returnValue(of({
+      totalQsos: 1,
+      bandModeTotals: [{ band: '20m', mode: 'SSB', count: 1 }],
+      foxBandTotals: [{ fox: 'A', band: '20m', count: 1, total: 1 }],
+      foxDailyTotals: [{ fox: 'A', day: '2024-01-01', count: 1 }]
     }));
 
     await TestBed.configureTestingModule({

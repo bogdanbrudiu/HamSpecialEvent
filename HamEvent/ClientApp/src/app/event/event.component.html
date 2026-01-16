@@ -193,6 +193,10 @@
                      aria-label="Select page of periodic elements">
       </mat-paginator>
     </mat-tab>
+    <mat-tab label="{{ 'Stats' | translate}}">
+      <ng-template mat-tab-label><mat-icon class="example-tab-icon">insights</mat-icon>{{ 'Stats' | translate}}</ng-template>
+      <app-event-stats [eventId]="eventId"></app-event-stats>
+    </mat-tab>
   </mat-tab-group>
 
 </div>

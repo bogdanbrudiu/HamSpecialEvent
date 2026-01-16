@@ -2,6 +2,32 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+export interface BandModeStat {
+  band: string;
+  mode: string;
+  count: number;
+}
+
+export interface FoxBandStat {
+  fox: string;
+  band: string;
+  count: number;
+  total: number;
+}
+
+export interface FoxDailyStat {
+  fox: string;
+  day: string;
+  count: number;
+}
+
+export interface EventStats {
+  totalQsos: number;
+  bandModeTotals: BandModeStat[];
+  foxBandTotals: FoxBandStat[];
+  foxDailyTotals: FoxDailyStat[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -48,6 +74,10 @@ export class QSOsService {
 
   getLive(eventId: string): Observable<any> {
     return this.http.get(this.baseUrl + 'api/hamevent/Live/' + encodeURIComponent(eventId));
+  }
+
+  getStats(eventId: string): Observable<EventStats> {
+    return this.http.get<EventStats>(this.baseUrl + 'api/hamevent/Stats/' + encodeURIComponent(eventId));
   }
 }
 export interface QSO {

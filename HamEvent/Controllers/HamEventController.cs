@@ -17,6 +17,7 @@ using Microsoft.Extensions.Options;
 using CoreMailer.Interfaces;
 using CoreMailer.Models;
 using HamEvent.Services;
+using System.Collections.Generic;
 
 namespace HamEvent.Controllers
 {
@@ -140,6 +141,108 @@ namespace HamEvent.Controllers
         {
             public string Callsign { get; set; } = string.Empty;
             public IEnumerable<QSO> lastQSOs { get; set; } = new List<QSO>();
+        }
+
+        public class BandModeStat
+        {
+            public string Band { get; set; } = string.Empty;
+            public string Mode { get; set; } = string.Empty;
+            public int Count { get; set; }
+        }
+
+        public class FoxBandStat
+        {
+            public string Fox { get; set; } = string.Empty;
+            public string Band { get; set; } = string.Empty;
+            public int Count { get; set; }
+            public int Total { get; set; }
+        }
+
+        public class FoxDailyStat
+        {
+            public string Fox { get; set; } = string.Empty;
+            public string Day { get; set; } = string.Empty;
+            public int Count { get; set; }
+        }
+
+        public class EventStatsResult
+        {
+            public int TotalQsos { get; set; }
+            public IEnumerable<BandModeStat> BandModeTotals { get; set; } = new List<BandModeStat>();
+            public IEnumerable<FoxBandStat> FoxBandTotals { get; set; } = new List<FoxBandStat>();
+            public IEnumerable<FoxDailyStat> FoxDailyTotals { get; set; } = new List<FoxDailyStat>();
+        }
+
+        [HttpGet("Stats/{hamevent}")]
+        public ActionResult<EventStatsResult> Stats(Guid hamevent)
+        {
+            _logger.LogInformation(MyLogEvents.GetEvents, "Get statistics for event {eventId}", hamevent);
+            try
+            {
+                var qsos = _dbcontext.QSOs.Where(q => q.EventId.Equals(hamevent)).ToList();
+                var totalQsos = qsos.Count;
+
+                var bandModeTotals = qsos
+                    .GroupBy(q => new { q.Band, q.Mode })
+                    .Select(g => new BandModeStat
+                    {
+                        Band = g.Key.Band,
+                        Mode = g.Key.Mode,
+                        Count = g.Count()
+                    })
+                    .OrderBy(b => b.Band)
+                    .ThenBy(b => b.Mode)
+                    .ToList();
+
+                var foxTotals = qsos
+                    .GroupBy(q => q.Callsign1)
+                    .Select(g => new { Fox = g.Key, Total = g.Count() })
+                    .ToDictionary(x => x.Fox, x => x.Total);
+
+                var foxBandTotals = qsos
+                    .GroupBy(q => new { q.Callsign1, q.Band })
+                    .Select(g => new FoxBandStat
+                    {
+                        Fox = g.Key.Callsign1,
+                        Band = g.Key.Band,
+                        Count = g.Count(),
+                        Total = 0
+                    })
+                    .ToList();
+
+                foreach (var stat in foxBandTotals)
+                {
+                    if (foxTotals.TryGetValue(stat.Fox, out var total))
+                    {
+                        stat.Total = total;
+                    }
+                }
+
+                var foxDailyTotals = qsos
+                    .GroupBy(q => new { q.Callsign1, Day = q.Timestamp.Date })
+                    .Select(g => new FoxDailyStat
+                    {
+                        Fox = g.Key.Callsign1,
+                        Day = g.Key.Day.ToString("yyyy-MM-dd"),
+                        Count = g.Count()
+                    })
+                    .OrderBy(g => g.Fox)
+                    .ThenBy(g => g.Day)
+                    .ToList();
+
+                return Ok(new EventStatsResult
+                {
+                    TotalQsos = totalQsos,
+                    BandModeTotals = bandModeTotals,
+                    FoxBandTotals = foxBandTotals,
+                    FoxDailyTotals = foxDailyTotals
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(MyLogEvents.GetEvents, ex, "Failed to get statistics for event {eventId}", hamevent);
+                return Ok(new EventStatsResult());
+            }
         }
 
         [HttpGet("Live/{hamevent}")]

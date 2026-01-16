@@ -10,7 +10,7 @@
         <mat-card class="event-card">
           <mat-card-header>
             <mat-card-title>{{ event.name }}</mat-card-title>
-            <mat-card-subtitle>Amateur Radio Event</mat-card-subtitle>
+            <mat-card-subtitle>{{ 'AmateurRadioEvent' | translate }}</mat-card-subtitle>
           </mat-card-header>
 
           <mat-card-content>
@@ -19,8 +19,8 @@
               <div class="detail-item">
                 <mat-icon color="primary">event</mat-icon>
                 <span>
-                  **Start:** {{ event.startDate | date: 'full' }} <br>
-                  **End:** {{ event.endDate | date: 'full' }}
+                  <strong>{{ 'Start' | translate }}:</strong> {{ event.startDate | date: 'full' }} <br>
+                  <strong>{{ 'End' | translate }}:</strong> {{ event.endDate | date: 'full' }}
                 </span>
               </div>
 
@@ -38,8 +38,8 @@
 
             <mat-expansion-panel [expanded]="true">
               <mat-expansion-panel-header>
-                <mat-panel-title> QSO Information</mat-panel-title>
-                <mat-panel-description> This is a summary of the contest </mat-panel-description>
+                <mat-panel-title>{{ 'QSOInformation' | translate }}</mat-panel-title>
+                <mat-panel-description>{{ 'ContestSummary' | translate }}</mat-panel-description>
               </mat-expansion-panel-header>
               <p class="description">
                 {{'Count' | translate}}: {{event.count}}
@@ -51,7 +51,7 @@
           </mat-card-content>
 
           <mat-card-actions>
-            <button mat-raised-button color="accent">Participate Now</button>
+            <button mat-raised-button color="accent">{{ 'ParticipateNow' | translate }}</button>
           </mat-card-actions>
         </mat-card>
       </div>
@@ -93,8 +93,8 @@
       <ng-template mat-tab-label><mat-icon class="example-tab-icon">rule</mat-icon>{{ 'Rules' | translate}}</ng-template>
       <mat-expansion-panel [expanded]="true" *ngIf="event">
         <mat-expansion-panel-header>
-          <mat-panel-title> Contest rules</mat-panel-title>
-          <mat-panel-description> Those are the rules of the content </mat-panel-description>
+          <mat-panel-title>{{ 'ContestRules' | translate }}</mat-panel-title>
+          <mat-panel-description>{{ 'ContestRulesDescription' | translate }}</mat-panel-description>
         </mat-expansion-panel-header>
         <div class="description" [innerHTML]="sanitizedRules"></div>
       </mat-expansion-panel>

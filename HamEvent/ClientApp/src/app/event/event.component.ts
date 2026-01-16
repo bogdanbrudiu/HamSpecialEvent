@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { EventsService, HamEvent } from '../events.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup } from '@angular/forms';
@@ -18,7 +18,7 @@ import { MatTableModule, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatCardModule } from '@angular/material/card';
 import { MatExpansionModule } from '@angular/material/expansion';
-
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-event',
@@ -27,7 +27,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
   standalone: true,
   imports: [MatExpansionModule, MatCardModule, MatTableModule, NgIf, ResponsiveToolbarComponent, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, DatePipe, TranslateModule, MatPaginatorModule, NgIf, ResponsiveToolbarComponent, RouterLink, MatIconModule, MatDivider, DatePipe, MatTabsModule, MatProgressBarModule, MatTable, TranslateModule]
 })
-export class EventComponent implements OnInit {
+export class EventComponent implements OnInit, OnDestroy {
 
   public eventId: string = '';
   public event!: HamEvent;
@@ -50,6 +50,7 @@ export class EventComponent implements OnInit {
   public sanitizedDescription: SafeHtml | undefined;
   public sanitizedRules: SafeHtml | undefined;
   public currentLang = 'en';
+  private langSub?: Subscription;
 
   toggleGridColumns() {
     this.gridColumns = this.gridColumns === 3 ? 4 : 3;
@@ -65,10 +66,22 @@ export class EventComponent implements OnInit {
       search: "",
     });
     this.currentLang = this.translate.currentLang || 'en';
-   }
+  }
+
+  private updateLocalizedContent() {
+    if (!this.event) {
+      return;
+    }
+    this.sanitizedDescription = this.sanitizer.bypassSecurityTrustHtml(this.pickLocalized(this.event.description));
+    this.sanitizedRules = this.sanitizer.bypassSecurityTrustHtml(this.pickLocalized(this.event.rules));
+  }
 
   ngOnInit() {
     console.log('EventComponent ngOnInit');
+    this.langSub = this.translate.onLangChange.subscribe(({ lang }) => {
+      this.currentLang = lang;
+      this.updateLocalizedContent();
+    });
     this.routes.paramMap.subscribe(params => {
       this.eventId = params.get('id')!;
       console.log(this.eventId);
@@ -76,14 +89,17 @@ export class EventComponent implements OnInit {
         (response) => {
           this.event = response;
           console.log(response);
-          this.sanitizedDescription = this.sanitizer.bypassSecurityTrustHtml(this.pickLocalized(this.event.description));
-          this.sanitizedRules = this.sanitizer.bypassSecurityTrustHtml(this.pickLocalized(this.event.rules));
+          this.updateLocalizedContent();
         },
         (error) => {
           console.log(error);
         }
       );
     });
+  }
+
+  ngOnDestroy(): void {
+    this.langSub?.unsubscribe();
   }
   submitForm() {
     console.log('submitForm');

@@ -67,5 +67,13 @@
   "RecoverySuccess": "Emailul de recuperare a fost trimis pentru {{count}} eveniment(e).",
   "RecoveryNotFound": "Nu am găsit evenimente pentru acest email.",
   "RecoveryError": "A apărut o problemă la trimiterea emailului de recuperare.",
-  "Sending...": "Se trimite..."
+  "Sending...": "Se trimite...",
+  "AmateurRadioEvent": "Eveniment de Radioamatori",
+  "Start": "Început",
+  "End": "Sfârșit",
+  "QSOInformation": "Informații QSO",
+  "ContestSummary": "Acesta este un rezumat al concursului",
+  "ParticipateNow": "Participă acum",
+  "ContestRules": "Regulile concursului",
+  "ContestRulesDescription": "Acestea sunt regulile concursului"
 }

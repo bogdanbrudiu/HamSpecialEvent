@@ -67,5 +67,13 @@
   "RecoverySuccess": "Recovery email sent for {{count}} event(s).",
   "RecoveryNotFound": "No events found for that email.",
   "RecoveryError": "There was a problem sending the recovery email.",
-  "Sending...": "Sending..."
+  "Sending...": "Sending...",
+  "AmateurRadioEvent": "Amateur Radio Event",
+  "Start": "Start",
+  "End": "End",
+  "QSOInformation": "QSO Information",
+  "ContestSummary": "This is a summary of the contest",
+  "ParticipateNow": "Participate Now",
+  "ContestRules": "Contest rules",
+  "ContestRulesDescription": "Those are the rules of the content"
 }

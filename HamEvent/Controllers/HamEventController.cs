@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using M0LTE.AdifLib;
+﻿using M0LTE.AdifLib;
 using Microsoft.AspNetCore.Mvc;
 using HamEvent.Data;
 using HamEvent.Data.Model;
@@ -28,14 +27,12 @@ namespace HamEvent.Controllers
         private readonly ICoreMvcMailer _mailer;
         private readonly MailerSettings _mailerSettings;
 
-        private readonly IMapper _mapper;
         private readonly HamEventContext _dbcontext;
         private readonly ILogger<HamEventController> _logger;
 
-        public HamEventController(ILogger<HamEventController> logger ,IMapper mapper, ICoreMvcMailer mailer, IOptions<MailerSettings> mailerSettings, TokenService tokenService, HamEventContext dbcontext)
+        public HamEventController(ILogger<HamEventController> logger, ICoreMvcMailer mailer, IOptions<MailerSettings> mailerSettings, TokenService tokenService, HamEventContext dbcontext)
         {
             _logger = logger;
-            _mapper = mapper;
             _mailer = mailer;
             _mailerSettings = mailerSettings?.Value ?? new MailerSettings();
 
@@ -627,7 +624,7 @@ namespace HamEvent.Controllers
                             var adif = reader.ReadToEnd();
                             AdifFile.TryParse(adif, out var file);
                             List<AdifContactRecord> adifQSOs = file.Records.ToList();
-                            List<QSO> QSOs = _mapper.Map<List<AdifContactRecord>, List<QSO>>(adifQSOs);
+                            List<QSO> QSOs = Mapster.TypeAdapter.Adapt<List<QSO>>(adifQSOs);
                             foreach (QSO myQSO in QSOs)
                             {
                                 myQSO.EventId = hamevent;

@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using CoreMailer.Interfaces;
+﻿using CoreMailer.Interfaces;
 using CoreMailer.Models;
 using HamEvent.Data.Model;
 using HamEvent.Services;
@@ -18,7 +17,7 @@ namespace HamEvent.Controllers
         private readonly MailerSettings _mailerSettings;
         private readonly ILogger<VerificationController> _logger;
 
-        public VerificationController(ILogger<VerificationController> logger, IMapper mapper, ICoreMvcMailer mailer, IOptions<MailerSettings> mailerSettings, TokenService tokenService)
+        public VerificationController(ILogger<VerificationController> logger, ICoreMvcMailer mailer, IOptions<MailerSettings> mailerSettings, TokenService tokenService)
         {
             _tokenService = tokenService;
             _logger = logger;

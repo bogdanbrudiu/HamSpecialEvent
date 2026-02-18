@@ -4,7 +4,9 @@ using ElmahCore;
 using ElmahCore.Mvc;
 using HamEvent;
 using HamEvent.Data;
+using HamEvent.Mapping;
 using HamEvent.Services;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
 using NReco.Logging.File;
 using System.Configuration;
@@ -19,7 +21,7 @@ builder.Services.AddScoped<ITemplateRenderer, TemplateRenderer>();
 builder.Services.AddScoped<ICoreMvcMailer, CoreMvcMailer>();
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
-builder.Services.AddAutoMapper(cfg => { }, AppDomain.CurrentDomain.GetAssemblies());
+MapsterConfig.Register(TypeAdapterConfig.GlobalSettings);
 var tokenSecret = builder.Configuration["Token:Secret"] ?? throw new ConfigurationErrorsException("Token secret is not configured.");
 
 builder.Services.AddSingleton<TokenService>(provider => new TokenService(tokenSecret));

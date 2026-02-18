@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using CoreMailer.Models;
-using AutoMapper;
 using CoreMailer.Interfaces;
 using HamEvent;
 using HamEvent.Controllers;
@@ -24,7 +23,6 @@ namespace UnitTests
         {
             // Arrange
             Mock<ILogger<HamEventController>> loggerMock = new Mock<ILogger<HamEventController>>();
-            Mock<IMapper> mapperMock = new Mock<IMapper>();
             Mock<TokenService> tokenServiceMock = new Mock<TokenService>("secret");
             Mock<ICoreMvcMailer> coreMvcMailerMock = new Mock<ICoreMvcMailer>();
             Mock<IOptions<MailerSettings>> optionsmailerSettingsMock = new Mock<IOptions<MailerSettings>>();
@@ -33,7 +31,7 @@ namespace UnitTests
                 .ReturnsDbSet(TestDataHelper.GetFakeEventsList());
 
             //Act
-            HamEventController hamEventController = new(loggerMock.Object, mapperMock.Object, coreMvcMailerMock.Object, optionsmailerSettingsMock.Object, tokenServiceMock.Object, hamEventContextMock.Object);
+            HamEventController hamEventController = new(loggerMock.Object, coreMvcMailerMock.Object, optionsmailerSettingsMock.Object, tokenServiceMock.Object, hamEventContextMock.Object);
             var events = hamEventController.Get(null);
 
             //Assert
@@ -48,7 +46,6 @@ namespace UnitTests
         {
             // Arrange
             Mock<ILogger<HamEventController>> loggerMock = new Mock<ILogger<HamEventController>>();
-            Mock<IMapper> mapperMock = new Mock<IMapper>();
             Mock<TokenService> tokenServiceMock = new Mock<TokenService>("secret");
             Mock<ICoreMvcMailer> coreMvcMailerMock = new Mock<ICoreMvcMailer>();
             Mock<IOptions<MailerSettings>> optionsmailerSettingsMock = new Mock<IOptions<MailerSettings>>();
@@ -57,7 +54,7 @@ namespace UnitTests
                 .ReturnsDbSet(TestDataHelper.GetFakeLiveQSOsList());
 
             //Act
-            HamEventController hamEventController = new(loggerMock.Object, mapperMock.Object, coreMvcMailerMock.Object, optionsmailerSettingsMock.Object, tokenServiceMock.Object, hamEventContextMock.Object);
+            HamEventController hamEventController = new(loggerMock.Object, coreMvcMailerMock.Object, optionsmailerSettingsMock.Object, tokenServiceMock.Object, hamEventContextMock.Object);
             var operators = hamEventController.Live(new Guid("11111111-1111-1111-1111-111111111111")).Value;
 
             //Assert
@@ -73,7 +70,6 @@ namespace UnitTests
         {
             // Arrange
             Mock<ILogger<HamEventController>> loggerMock = new Mock<ILogger<HamEventController>>();
-            Mock<IMapper> mapperMock = new Mock<IMapper>();
             Mock<TokenService> tokenServiceMock = new Mock<TokenService>("secret");
             Mock<ICoreMvcMailer> coreMvcMailerMock = new Mock<ICoreMvcMailer>();
             Mock<IOptions<MailerSettings>> optionsmailerSettingsMock = new Mock<IOptions<MailerSettings>>();
@@ -82,7 +78,7 @@ namespace UnitTests
                 .ReturnsDbSet(TestDataHelper.GetFakeLiveQSOsList());
 
             //Act
-            HamEventController hamEventController = new(loggerMock.Object, mapperMock.Object, coreMvcMailerMock.Object, optionsmailerSettingsMock.Object, tokenServiceMock.Object, hamEventContextMock.Object);
+            HamEventController hamEventController = new(loggerMock.Object, coreMvcMailerMock.Object, optionsmailerSettingsMock.Object, tokenServiceMock.Object, hamEventContextMock.Object);
             var qsos = hamEventController.Get(new Guid("11111111-1111-1111-1111-111111111111"),1,10);
 
             //Assert
@@ -100,10 +96,9 @@ namespace UnitTests
                 .Options;
             using var context = new HamEventContext(options);
             var logger = Mock.Of<ILogger<HamEventController>>();
-            var mapper = Mock.Of<IMapper>();
             var mailer = new Mock<ICoreMvcMailer>();
             var mailerSettings = Options.Create(new MailerSettings());
-            var controller = new HamEventController(logger, mapper, mailer.Object, mailerSettings, new TokenService("secret"), context);
+            var controller = new HamEventController(logger, mailer.Object, mailerSettings, new TokenService("secret"), context);
 
             // Act
             var result = await controller.RecoverAdminLinks(new HamEventController.AdminLinkRecoveryRequest { Email = "none@example.com" });
@@ -127,11 +122,10 @@ namespace UnitTests
             await context.SaveChangesAsync();
 
             var logger = Mock.Of<ILogger<HamEventController>>();
-            var mapper = Mock.Of<IMapper>();
             var mailer = new Mock<ICoreMvcMailer>();
             mailer.Setup(m => m.SendAsync(It.IsAny<MailerModel>())).Returns(Task.CompletedTask);
             var mailerSettings = Options.Create(new MailerSettings { Host = "localhost", Port = 25, From = "noreply@example.com", Username = "user", Password = "pass", EnableSSL = false });
-            var controller = new HamEventController(logger, mapper, mailer.Object, mailerSettings, new TokenService("secret"), context);
+            var controller = new HamEventController(logger, mailer.Object, mailerSettings, new TokenService("secret"), context);
 
             // Act
             var result = await controller.RecoverAdminLinks(new HamEventController.AdminLinkRecoveryRequest { Email = "test@example.com" }) as OkObjectResult;
@@ -161,10 +155,9 @@ namespace UnitTests
             context.SaveChanges();
 
             var logger = Mock.Of<ILogger<HamEventController>>();
-            var mapper = Mock.Of<IMapper>();
             var mailer = Mock.Of<ICoreMvcMailer>();
             var mailerSettings = Options.Create(new MailerSettings());
-            var controller = new HamEventController(logger, mapper, mailer, mailerSettings, new TokenService("secret"), context);
+            var controller = new HamEventController(logger, mailer, mailerSettings, new TokenService("secret"), context);
 
             // Act
             var result = controller.Top(evId, 1, 10, "");
@@ -186,7 +179,7 @@ namespace UnitTests
             context.Events.Add(ev);
             context.SaveChanges();
 
-            var controller = new HamEventController(Mock.Of<ILogger<HamEventController>>(), Mock.Of<IMapper>(), Mock.Of<ICoreMvcMailer>(), Options.Create(new MailerSettings()), new TokenService("secret"), context);
+            var controller = new HamEventController(Mock.Of<ILogger<HamEventController>>(), Mock.Of<ICoreMvcMailer>(), Options.Create(new MailerSettings()), new TokenService("secret"), context);
             var action = controller.Get(ev.Id, null);
             var okResult = Assert.IsType<OkObjectResult>(action.Result);
             var returnedEvent = Assert.IsType<Event>(okResult.Value);
@@ -206,7 +199,7 @@ namespace UnitTests
             context.Events.Add(new Event { Id = evId, SecretKey = hashed, Name = "E", Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "D" } }, Diploma = "", Email = "e@e", Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", string.Empty } } });
             context.SaveChanges();
 
-            var controller = new HamEventController(Mock.Of<ILogger<HamEventController>>(), Mock.Of<IMapper>(), Mock.Of<ICoreMvcMailer>(), Options.Create(new MailerSettings()), new TokenService("secret"), context);
+            var controller = new HamEventController(Mock.Of<ILogger<HamEventController>>(), Mock.Of<ICoreMvcMailer>(), Options.Create(new MailerSettings()), new TokenService("secret"), context);
             var action = controller.Get(evId, secret);
             var okResult = Assert.IsType<OkObjectResult>(action.Result);
             var returnedEvent = Assert.IsType<Event>(okResult.Value);
@@ -222,7 +215,7 @@ namespace UnitTests
             using var context = new HamEventContext(options);
             var mailer = new Mock<ICoreMvcMailer>();
             mailer.Setup(m => m.SendAsync(It.IsAny<MailerModel>())).Returns(Task.CompletedTask);
-            var controller = new HamEventController(Mock.Of<ILogger<HamEventController>>(), Mock.Of<IMapper>(), mailer.Object, Options.Create(new MailerSettings()), new TokenService("secret"), context)
+            var controller = new HamEventController(Mock.Of<ILogger<HamEventController>>(), mailer.Object, Options.Create(new MailerSettings()), new TokenService("secret"), context)
             {
                 ControllerContext = new ControllerContext()
             };
@@ -247,7 +240,7 @@ namespace UnitTests
             context.Events.Add(ev);
             context.SaveChanges();
 
-            var controller = new HamEventController(Mock.Of<ILogger<HamEventController>>(), Mock.Of<IMapper>(), Mock.Of<ICoreMvcMailer>(), Options.Create(new MailerSettings()), new TokenService("secret"), context);
+            var controller = new HamEventController(Mock.Of<ILogger<HamEventController>>(), Mock.Of<ICoreMvcMailer>(), Options.Create(new MailerSettings()), new TokenService("secret"), context);
             var updated = new Event { Id = ev.Id, SecretKey = secret.ToString(), Name = "New", Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "ND" } }, Diploma = "", Email = "new@e", Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "r" } } };
             var result = controller.Post(updated) as OkObjectResult;
             Assert.NotNull(result);
@@ -270,7 +263,7 @@ namespace UnitTests
             context.QSOs.Add(new QSO { EventId = evId, Callsign1 = "A", Callsign2 = "B", Band = "20m", Mode = "SSB", Timestamp = DateTime.UtcNow, Freq = "14000" });
             context.SaveChanges();
 
-            var controller = new HamEventController(Mock.Of<ILogger<HamEventController>>(), Mock.Of<IMapper>(), Mock.Of<ICoreMvcMailer>(), Options.Create(new MailerSettings()), new TokenService("secret"), context);
+            var controller = new HamEventController(Mock.Of<ILogger<HamEventController>>(), Mock.Of<ICoreMvcMailer>(), Options.Create(new MailerSettings()), new TokenService("secret"), context);
             var action = controller.ExportAll(evId, secret) as FileContentResult;
             Assert.NotNull(action);
             Assert.Equal("text/xml", action!.ContentType);
@@ -294,7 +287,7 @@ namespace UnitTests
             context.QSOs.Add(qso);
             context.SaveChanges();
 
-            var controller = new HamEventController(Mock.Of<ILogger<HamEventController>>(), Mock.Of<IMapper>(), Mock.Of<ICoreMvcMailer>(), Options.Create(new MailerSettings()), new TokenService("secret"), context);
+            var controller = new HamEventController(Mock.Of<ILogger<HamEventController>>(), Mock.Of<ICoreMvcMailer>(), Options.Create(new MailerSettings()), new TokenService("secret"), context);
             var result = controller.Delete(evId, secret, "A", "B", "SSB", "20m", ts.ToString("O")) as OkResult;
             Assert.NotNull(result);
             Assert.Empty(context.QSOs.ToList());
@@ -318,7 +311,7 @@ namespace UnitTests
             );
             context.SaveChanges();
 
-            var controller = new HamEventController(Mock.Of<ILogger<HamEventController>>(), Mock.Of<IMapper>(), Mock.Of<ICoreMvcMailer>(), Options.Create(new MailerSettings()), new TokenService("secret"), context);
+            var controller = new HamEventController(Mock.Of<ILogger<HamEventController>>(), Mock.Of<ICoreMvcMailer>(), Options.Create(new MailerSettings()), new TokenService("secret"), context);
             var result = controller.DeleteAll(evId, secret) as OkResult;
             Assert.NotNull(result);
             Assert.Empty(context.QSOs.ToList());
@@ -341,7 +334,7 @@ namespace UnitTests
             context.QSOs.Add(qso);
             context.SaveChanges();
 
-            var controller = new HamEventController(Mock.Of<ILogger<HamEventController>>(), Mock.Of<IMapper>(), Mock.Of<ICoreMvcMailer>(), Options.Create(new MailerSettings()), new TokenService("secret"), context);
+            var controller = new HamEventController(Mock.Of<ILogger<HamEventController>>(), Mock.Of<ICoreMvcMailer>(), Options.Create(new MailerSettings()), new TokenService("secret"), context);
             var updated = new QSO { Callsign1 = "A", Callsign2 = "B", Band = "40m", Mode = "CW", Timestamp = ts.AddMinutes(1), Freq = "7000" };
             var result = controller.Post(evId, secret, "A", "B", "SSB", "20m", ts.ToString("O"), updated) as OkResult;
             Assert.NotNull(result);
@@ -365,7 +358,7 @@ namespace UnitTests
             context.Events.Add(new Event { Id = evId, Name = "E", Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "D" } }, Diploma = "<html></html>", Email = "e@e", Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", string.Empty } } });
             context.SaveChanges();
 
-            var controller = new HamEventController(Mock.Of<ILogger<HamEventController>>(), Mock.Of<IMapper>(), Mock.Of<ICoreMvcMailer>(), Options.Create(new MailerSettings()), new TokenService("secret"), context)
+            var controller = new HamEventController(Mock.Of<ILogger<HamEventController>>(), Mock.Of<ICoreMvcMailer>(), Options.Create(new MailerSettings()), new TokenService("secret"), context)
             {
                 ControllerContext = new ControllerContext()
             };
@@ -421,7 +414,7 @@ namespace UnitTests
             );
             context.SaveChanges();
 
-            var controller = new HamEventController(Mock.Of<ILogger<HamEventController>>(), Mock.Of<IMapper>(), Mock.Of<ICoreMvcMailer>(), Options.Create(new MailerSettings()), new TokenService("secret"), context);
+            var controller = new HamEventController(Mock.Of<ILogger<HamEventController>>(), Mock.Of<ICoreMvcMailer>(), Options.Create(new MailerSettings()), new TokenService("secret"), context);
 
             var actionResult = controller.Stats(evId);
             var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);

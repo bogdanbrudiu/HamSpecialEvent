@@ -443,7 +443,7 @@ namespace HamEvent.Controllers
                     ToAddresses = new List<string>() { normalizedEmail },
                     FromAddress = _mailerSettings.From,
                     IsHtml = true,
-                    ViewFile = "Shared/RecoverEvents.html",
+                    ViewFile = "RecoverEvents",
                     Subject = "Admin link recovery",
                     User = _mailerSettings.Username,
                     Key = _mailerSettings.Password,

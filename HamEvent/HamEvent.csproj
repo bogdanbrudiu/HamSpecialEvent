@@ -37,27 +37,11 @@
   <ItemGroup>
     <None Remove="App_Data\QSOs.db" />
     <None Remove="resources\diploma.html" />
-    <None Remove="Shared\AddEvent.html" />
-    <None Remove="Shared\RecoverEvents.html" />
-    <None Remove="Shared\ValidateEmail.html" />
-    <None Remove="Shared\_EmailLayout.html" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="App_Data\QSOs.db">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Shared\AddEvent.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Shared\RecoverEvents.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Shared\ValidateEmail.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Shared\_EmailLayout.html">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
@@ -72,6 +56,15 @@
 
 
   <ItemGroup>
+    <Content Update="Views\Shared\AddEvent.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Views\Shared\RecoverEvents.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Views\Shared\ValidateEmail.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Update="wwwroot\static\diploma-background.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -84,6 +77,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Infrastructure\Razor\" />
     <Folder Include="MappingProfiles\" />
     <Folder Include="wwwroot\log\" />
   </ItemGroup>

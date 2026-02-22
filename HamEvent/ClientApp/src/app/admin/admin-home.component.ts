@@ -1,7 +1,8 @@
 // src/app/admin/admin-home.component.ts
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EventsService, HamEvent } from '../events.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-admin-home',
@@ -11,15 +12,30 @@ import { EventsService, HamEvent } from '../events.service';
 export class AdminHomeComponent implements OnInit {
 
   events: HamEvent[] = [];
+  public adminSecret: string = '';
+
   loaded = false;
   page = 1;
   tableSize = 10;
   count = 0;
   displayedColumns: string[] = ['name', 'startDate', 'description', 'email', 'days', 'count'];
 
-  constructor(private eventsService: EventsService, private router: Router) { }
+  constructor(private eventsService: EventsService, private router: Router, private routes: ActivatedRoute, private translate: TranslateService) { }
+
+  private pickLocalized(value: { [lang: string]: string } | any): string {
+    if (!value) return '';
+    const lang = this.translate.currentLang || 'en';
+    return value[lang] || value['en'] || Object.values(value)[0] || '';
+  }
+
+  getDescription(event: HamEvent) {
+    return this.pickLocalized((event as any).description);
+  }
   ngOnInit() {
     this.loadEvents();
+    this.routes.paramMap.subscribe(params => {
+      this.adminSecret = params.get('secret')!;
+    });
   }
 
   get totalPages(): number {
@@ -48,12 +64,12 @@ export class AdminHomeComponent implements OnInit {
   }
 
   gotoEvent(event: HamEvent) {
-    this.router.navigate(['admin', event.id, event.secretKey, 'edit']);
+    this.router.navigate(['admin', event.id, this.adminSecret, 'edit']);
     //this.router.navigate(['admin', event.id, 'edit']);
   }
 
   gotoQSOs(event: HamEvent) {
-    this.router.navigate(['admin', event.id, event.secretKey, 'qsos']);
+    this.router.navigate(['admin', event.id, this.adminSecret, 'qsos']);
   }
 
   //ngOnInit() {

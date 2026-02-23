@@ -14,7 +14,7 @@ namespace UnitTests
                 new Event
                 {
                     Id = Guid.NewGuid(),
-                    SecretKey = HamEventController.ComputeSha256Hash(Guid.NewGuid()),
+                    SecretKey = HamEventController.ComputeSha256Hash(Guid.NewGuid().ToString()),
                     Name = "Name"+i,
                     Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "Description"+i } },
                     Email = "Email" + i,

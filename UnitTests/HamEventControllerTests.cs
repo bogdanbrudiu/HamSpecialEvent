@@ -63,7 +63,7 @@ namespace UnitTests
                 .Options;
             using var context = new HamEventContext(options);
             var evId = Guid.NewGuid();
-            var secret = Guid.NewGuid();
+            var secret = Guid.NewGuid().ToString();
             var hashed = HamEventController.ComputeSha256Hash(secret);
             context.Events.Add(new Event { Id = evId, SecretKey = hashed, Name = "E", Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "D" } }, Diploma = "", Email = "e@e", Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", string.Empty } } });
             context.SaveChanges();
@@ -71,7 +71,7 @@ namespace UnitTests
             var controller = new HamEventController(Mock.Of<ILogger<HamEventController>>(), Mock.Of<ICoreMvcMailer>(), Options.Create(new MailerSettings()), new TokenService("secret"), context);
 
             // no secret - should be NotFound (unauthorized)
-            var noSecretResult = controller.Upload(evId, Guid.Empty);
+            var noSecretResult = controller.Upload(evId, Guid.Empty.ToString());
             Assert.Equal(404, GetStatusCode(noSecretResult));
 
             // with event secret should work but body is empty -> BadRequest
@@ -100,7 +100,7 @@ namespace UnitTests
             httpContext2.Request.QueryString = new QueryString($"?adminkey={adminPlain}");
             httpContext2.Features.Set<Microsoft.AspNetCore.Http.Features.IFormFeature>(new Microsoft.AspNetCore.Http.Features.FormFeature(emptyForm));
             controller2.ControllerContext = new ControllerContext() { HttpContext = httpContext2 };
-            var withAdmin = controller2.Upload(evId, Guid.Empty);
+            var withAdmin = controller2.Upload(evId, String.Empty);
             Assert.True(GetStatusCode(withAdmin) == 400 || GetStatusCode(withAdmin) == 500);
         }
 
@@ -112,7 +112,7 @@ namespace UnitTests
                 .Options;
             using var context = new HamEventContext(options);
             var evId = Guid.NewGuid();
-            var secret = Guid.NewGuid();
+            var secret = Guid.NewGuid().ToString();
             var hashed = HamEventController.ComputeSha256Hash(secret);
             context.Events.Add(new Event { Id = evId, SecretKey = hashed, Name = "E", Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "D" } }, Diploma = "", Email = "e@e", Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", string.Empty } } });
             context.SaveChanges();
@@ -150,7 +150,7 @@ namespace UnitTests
                 .Options;
             using var context = new HamEventContext(options);
             var evId = Guid.NewGuid();
-            var secret = Guid.NewGuid();
+            var secret = Guid.NewGuid().ToString();
             var hashed = HamEventController.ComputeSha256Hash(secret);
             var ev = new Event { Id = evId, SecretKey = hashed, Name = "E", Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "D" } }, Diploma = "", Email = "e@e", Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", string.Empty } } };
             context.Events.Add(ev);
@@ -162,11 +162,11 @@ namespace UnitTests
             var controller = new HamEventController(Mock.Of<ILogger<HamEventController>>(), Mock.Of<ICoreMvcMailer>(), Options.Create(new MailerSettings()), new TokenService("secret"), context);
 
             // without secret should be NotFound
-            var delNo = controller.Delete(evId, Guid.Empty, "A", "B", "SSB", "20m", ts.ToString("O")) as NotFoundResult;
+            var delNo = controller.Delete(evId, String.Empty, "A", "B", "SSB", "20m", ts.ToString("O")) as NotFoundResult;
             Assert.NotNull(delNo);
 
             // with secret should delete
-            var delOk = controller.Delete(evId, secret, "A", "B", "SSB", "20m", ts.ToString("O")) as OkResult;
+            var delOk = controller.Delete(evId, secret.ToString(), "A", "B", "SSB", "20m", ts.ToString("O")) as OkResult;
             Assert.NotNull(delOk);
 
             // re-add QSO for update test
@@ -175,20 +175,20 @@ namespace UnitTests
 
             // update without secret blocked
             var updated = new QSO { Callsign1 = "A", Callsign2 = "B", Band = "40m", Mode = "CW", Timestamp = ts.AddMinutes(1), Freq = "7000" };
-            var upNo = controller.Post(evId, Guid.Empty, "A", "B", "SSB", "20m", ts.ToString("O"), updated) as NotFoundResult;
+            var upNo = controller.Post(evId, Guid.Empty.ToString(), "A", "B", "SSB", "20m", ts.ToString("O"), updated) as NotFoundResult;
             Assert.NotNull(upNo);
 
             // with secret allowed
-            var upOk = controller.Post(evId, secret, "A", "B", "SSB", "20m", ts.ToString("O"), updated) as OkResult;
+            var upOk = controller.Post(evId, secret.ToString(), "A", "B", "SSB", "20m", ts.ToString("O"), updated) as OkResult;
             Assert.NotNull(upOk);
 
             // deleteAll tests: without secret should throw
             context.QSOs.Add(new QSO { EventId = evId, Callsign1 = "C", Callsign2 = "D", Band = "40m", Mode = "CW", Timestamp = DateTime.UtcNow, Event = ev, Freq = "7000" });
             context.SaveChanges();
-            Assert.Throws<Exception>(() => controller.DeleteAll(evId, Guid.Empty));
+            Assert.Throws<Exception>(() => controller.DeleteAll(evId, Guid.Empty.ToString()));
 
             // with secret allowed
-            var delAllOk = controller.DeleteAll(evId, secret) as OkResult;
+            var delAllOk = controller.DeleteAll(evId, secret.ToString()) as OkResult;
             Assert.NotNull(delAllOk);
         }
 
@@ -201,7 +201,7 @@ namespace UnitTests
             using var context = new HamEventContext(options);
             var evId = Guid.NewGuid();
             // event secret is different
-            var eventSecret = Guid.NewGuid();
+            var eventSecret = Guid.NewGuid().ToString();
             var hashedEventSecret = HamEventController.ComputeSha256Hash(eventSecret);
             context.Events.Add(new Event { Id = evId, SecretKey = hashedEventSecret, Name = "E", Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "D" } }, Diploma = "", Email = "e@e", Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", string.Empty } } });
             context.SaveChanges();
@@ -226,8 +226,8 @@ namespace UnitTests
             controller.ControllerContext = new ControllerContext() { HttpContext = httpContext };
 
             // pass a non-matching secret GUID
-            var action = controller.Get(evId, Guid.NewGuid());
-            var okResult = Assert.IsType<OkObjectResult>(action.Result);
+            var getAction = controller.Get(evId, Guid.NewGuid().ToString());
+            var okResult = Assert.IsType<OkObjectResult>(getAction.Result);
             var returnedEvent = Assert.IsType<Event>(okResult.Value);
             Assert.Equal(evId, returnedEvent.Id);
         }
@@ -240,7 +240,7 @@ namespace UnitTests
                 .Options;
             using var context = new HamEventContext(options);
             var evId = Guid.NewGuid();
-            var secret = Guid.NewGuid();
+            var secret = Guid.NewGuid().ToString();
             var hashed = HamEventController.ComputeSha256Hash(secret);
             context.Events.Add(new Event { Id = evId, SecretKey = hashed, Name = "E", Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "D" } }, Diploma = "", Email = "e@e", Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", string.Empty } } });
             context.QSOs.Add(new QSO { EventId = evId, Callsign1 = "A", Callsign2 = "B", Band = "20m", Mode = "SSB", Timestamp = DateTime.UtcNow, Freq = "14000" });
@@ -261,7 +261,7 @@ namespace UnitTests
             controller.ControllerContext = new ControllerContext() { HttpContext = httpContext };
 
             // pass a non-matching secret GUID - adminkey should authorize
-            var action = controller.ExportAll(evId, Guid.NewGuid()) as FileContentResult;
+            var action = controller.ExportAll(evId, Guid.NewGuid().ToString()) as FileContentResult;
             Assert.NotNull(action);
             Assert.Equal("text/xml", action!.ContentType);
             Assert.Contains("<eoh>", Encoding.UTF8.GetString(action.FileContents));
@@ -406,7 +406,7 @@ namespace UnitTests
             context.SaveChanges();
 
             var controller = new HamEventController(Mock.Of<ILogger<HamEventController>>(), Mock.Of<ICoreMvcMailer>(), Options.Create(new MailerSettings()), new TokenService("secret"), context);
-            var action = controller.Get(ev.Id, null);
+            var action = controller.Get(ev.Id, (string?)null);
             var okResult = Assert.IsType<OkObjectResult>(action.Result);
             var returnedEvent = Assert.IsType<Event>(okResult.Value);
             Assert.Equal(ev.Id, returnedEvent.Id);
@@ -420,13 +420,13 @@ namespace UnitTests
                 .Options;
             using var context = new HamEventContext(options);
             var evId = Guid.NewGuid();
-            var secret = Guid.NewGuid();
+            var secret = Guid.NewGuid().ToString();
             var hashed = HamEventController.ComputeSha256Hash(secret);
             context.Events.Add(new Event { Id = evId, SecretKey = hashed, Name = "E", Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "D" } }, Diploma = "", Email = "e@e", Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", string.Empty } } });
             context.SaveChanges();
 
             var controller = new HamEventController(Mock.Of<ILogger<HamEventController>>(), Mock.Of<ICoreMvcMailer>(), Options.Create(new MailerSettings()), new TokenService("secret"), context);
-            var action = controller.Get(evId, secret);
+            var action = controller.Get(evId, secret.ToString());
             var okResult = Assert.IsType<OkObjectResult>(action.Result);
             var returnedEvent = Assert.IsType<Event>(okResult.Value);
             Assert.Equal(evId, returnedEvent.Id);
@@ -460,7 +460,7 @@ namespace UnitTests
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
                 .Options;
             using var context = new HamEventContext(options);
-            var secret = Guid.NewGuid();
+            var secret = Guid.NewGuid().ToString();
             var hashed = HamEventController.ComputeSha256Hash(secret);
             var ev = new Event { Id = Guid.NewGuid(), SecretKey = hashed, Name = "Old", Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "D" } }, Diploma = "", Email = "old@e", Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", string.Empty } } };
             context.Events.Add(ev);
@@ -483,14 +483,14 @@ namespace UnitTests
                 .Options;
             using var context = new HamEventContext(options);
             var evId = Guid.NewGuid();
-            var secret = Guid.NewGuid();
+            var secret = Guid.NewGuid().ToString();
             var hashed = HamEventController.ComputeSha256Hash(secret);
             context.Events.Add(new Event { Id = evId, SecretKey = hashed, Name = "E", Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "D" } }, Diploma = "", Email = "e@e", Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", string.Empty } } });
             context.QSOs.Add(new QSO { EventId = evId, Callsign1 = "A", Callsign2 = "B", Band = "20m", Mode = "SSB", Timestamp = DateTime.UtcNow, Freq = "14000" });
             context.SaveChanges();
 
             var controller = new HamEventController(Mock.Of<ILogger<HamEventController>>(), Mock.Of<ICoreMvcMailer>(), Options.Create(new MailerSettings()), new TokenService("secret"), context);
-            var action = controller.ExportAll(evId, secret) as FileContentResult;
+            var action = controller.ExportAll(evId, secret.ToString()) as FileContentResult;
             Assert.NotNull(action);
             Assert.Equal("text/xml", action!.ContentType);
             Assert.Contains("<eoh>",Encoding.UTF8.GetString(action.FileContents));
@@ -504,7 +504,7 @@ namespace UnitTests
                 .Options;
             using var context = new HamEventContext(options);
             var evId = Guid.NewGuid();
-            var secret = Guid.NewGuid();
+            var secret = Guid.NewGuid().ToString();
             var hashed = HamEventController.ComputeSha256Hash(secret);
             var ev = new Event { Id = evId, SecretKey = hashed, Name = "E", Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "D" } }, Diploma = "", Email = "e@e", Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", string.Empty } } };
             context.Events.Add(ev);
@@ -514,7 +514,7 @@ namespace UnitTests
             context.SaveChanges();
 
             var controller = new HamEventController(Mock.Of<ILogger<HamEventController>>(), Mock.Of<ICoreMvcMailer>(), Options.Create(new MailerSettings()), new TokenService("secret"), context);
-            var result = controller.Delete(evId, secret, "A", "B", "SSB", "20m", ts.ToString("O")) as OkResult;
+            var result = controller.Delete(evId, secret.ToString(), "A", "B", "SSB", "20m", ts.ToString("O")) as OkResult;
             Assert.NotNull(result);
             Assert.Empty(context.QSOs.ToList());
         }
@@ -527,7 +527,7 @@ namespace UnitTests
                 .Options;
             using var context = new HamEventContext(options);
             var evId = Guid.NewGuid();
-            var secret = Guid.NewGuid();
+            var secret = Guid.NewGuid().ToString();
             var hashed = HamEventController.ComputeSha256Hash(secret);
             var ev = new Event { Id = evId, SecretKey = hashed, Name = "E", Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "D" } }, Diploma = "", Email = "e@e", Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", string.Empty } } };
             context.Events.Add(ev);
@@ -551,7 +551,7 @@ namespace UnitTests
                 .Options;
             using var context = new HamEventContext(options);
             var evId = Guid.NewGuid();
-            var secret = Guid.NewGuid();
+            var secret = Guid.NewGuid().ToString();
             var hashed = HamEventController.ComputeSha256Hash(secret);
             var ev = new Event { Id = evId, SecretKey = hashed, Name = "E", Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "D" } }, Diploma = "", Email = "e@e", Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", string.Empty } } };
             context.Events.Add(ev);
@@ -660,7 +660,7 @@ namespace UnitTests
                 .Options;
             using var context = new HamEventContext(options);
             var evId = Guid.NewGuid();
-            var secret = Guid.NewGuid();
+            var secret = Guid.NewGuid().ToString();
             var hashed = HamEventController.ComputeSha256Hash(secret);
             context.Events.Add(new Event { Id = evId, SecretKey = hashed, Name = "E", Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "D" } }, Diploma = "", Email = "e@e", Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", string.Empty } } });
             context.QSOs.Add(new QSO { EventId = evId, Callsign1 = "A", Callsign2 = "B", Band = "20m", Mode = "SSB", Timestamp = DateTime.UtcNow, Freq = "14000" });
@@ -684,19 +684,19 @@ namespace UnitTests
             controller.ControllerContext = new ControllerContext() { HttpContext = httpContext };
 
             // Get with non-matching secret and wrong adminkey -> NotFound
-            var getResult = controller.Get(evId, Guid.NewGuid());
+            var getResult = controller.Get(evId, Guid.NewGuid().ToString());
             Assert.IsType<NotFoundResult>(getResult.Result);
 
             // ExportAll should be NotFound
-            var exportResult = controller.ExportAll(evId, Guid.NewGuid()) as NotFoundResult;
+            var exportResult = controller.ExportAll(evId, Guid.NewGuid().ToString()) as NotFoundResult;
             Assert.NotNull(exportResult);
 
             // Upload should be NotFound (will check authorization before file)
-            var uploadResult = controller.Upload(evId, Guid.NewGuid()) as NotFoundResult;
+            var uploadResult = controller.Upload(evId, Guid.NewGuid().ToString()) as NotFoundResult;
             Assert.NotNull(uploadResult);
 
             // Delete QSO should be NotFound
-            var delResult = controller.Delete(evId, Guid.NewGuid(), "A", "B", "SSB", "20m", DateTime.UtcNow.ToString("O")) as NotFoundResult;
+            var delResult = controller.Delete(evId, Guid.NewGuid().ToString(), "A", "B", "SSB", "20m", DateTime.UtcNow.ToString("O")) as NotFoundResult;
             Assert.NotNull(delResult);
         }
     }

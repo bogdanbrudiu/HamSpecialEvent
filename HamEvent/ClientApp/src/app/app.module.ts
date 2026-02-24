@@ -1,10 +1,11 @@
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { HttpClient, HttpClientModule, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { NgxPaginationModule } from 'ngx-pagination';
 
 import { AppComponent } from './app.component';
@@ -35,10 +36,8 @@ export function createTranslateLoader(http: HttpClient) {
 }
 
 @NgModule({ declarations: [
-        AppComponent,
-        EventTopComponent
     ],
-    bootstrap: [AppComponent], imports: [BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
+    bootstrap: [AppComponent], imports: [BrowserModule,
         TranslateModule.forRoot({
             defaultLanguage: 'en',
             loader: {
@@ -47,7 +46,6 @@ export function createTranslateLoader(http: HttpClient) {
                 deps: [HttpClient]
             }
         }),
-      NgxPaginationModule,
       NavMenuComponent,
       FooterComponent,
       EventCardComponent,
@@ -65,6 +63,7 @@ export function createTranslateLoader(http: HttpClient) {
       MatGridListModule,
       MatTooltipModule,
       HttpClientModule,
+      BrowserAnimationsModule,
         FormsModule,
         ReactiveFormsModule,
         RouterModule.forRoot([
@@ -79,5 +78,5 @@ export function createTranslateLoader(http: HttpClient) {
             path: 'admin',
             loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule),
           },
-        ])], providers: [ provideAnimations(), provideHttpClient(withInterceptorsFromDi())] })
+        ])], providers: [] })
 export class AppModule { }

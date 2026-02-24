@@ -40,8 +40,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [CommonModule, RouterModule.forChild(routes), TranslateModule.forChild(), MatButtonModule, MatTableModule, FormsModule],
-  declarations: [AdminHomeComponent, AdminLoginComponent],
+  imports: [CommonModule, RouterModule.forChild(routes), TranslateModule.forChild(), MatButtonModule, MatTableModule, FormsModule, AdminHomeComponent, AdminLoginComponent],
   providers: [AdminGuard]
 })
 export class AdminModule { }

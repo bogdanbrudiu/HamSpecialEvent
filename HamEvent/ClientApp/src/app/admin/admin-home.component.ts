@@ -2,12 +2,18 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EventsService, HamEvent } from '../events.service';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTableModule } from '@angular/material/table';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-admin-home',
   templateUrl: './admin-home.component.html',
   styleUrl: './admin-home.component.css',
+  standalone: true,
+  imports: [CommonModule, TranslateModule, MatButtonModule, MatTableModule, FormsModule]
 })
 export class AdminHomeComponent implements OnInit {
 

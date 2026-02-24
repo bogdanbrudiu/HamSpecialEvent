@@ -1,4 +1,9 @@
 import { Component, Inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
+import { NgxPaginationModule } from 'ngx-pagination';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -9,7 +14,16 @@ import { TranslateService } from '@ngx-translate/core';
 declare let gtag: Function;
 @Component({
   selector: 'app-eventtop',
-  templateUrl: './eventtop.component.html'
+  templateUrl: './eventtop.component.html',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    RouterModule,
+    TranslateModule,
+    NgxPaginationModule,
+  ]
 })
 export class EventTopComponent {
   searchForm!: FormGroup;

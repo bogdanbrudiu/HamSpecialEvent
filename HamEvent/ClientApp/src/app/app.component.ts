@@ -1,12 +1,18 @@
-import { DOCUMENT } from '@angular/common';
+import { DOCUMENT, CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router, RouterState } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { NavMenuComponent } from './nav-menu/nav-menu.component';
+import { FooterComponent } from './footer/footer.component';
+import { RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 
 declare let gtag: Function;
 @Component({
   selector: 'app-root',
+  standalone: true,
+  imports: [CommonModule, RouterModule, NavMenuComponent, FooterComponent, TranslateModule],
   templateUrl: './app.component.html'
 })
 export class AppComponent {

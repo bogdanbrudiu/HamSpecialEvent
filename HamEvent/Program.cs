@@ -37,9 +37,15 @@ builder.Configuration.GetSection("IPWhitelist").Bind(wl);
 builder.Services.AddElmah<XmlFileErrorLog>(options =>
 {
     options.Filters.Add(new MyElmahFilter());
-    options.OnPermissionCheck = context => wl.Whitelist
-                .Any(ip => IPAddress.Parse(ip)
-                .Equals(context.Connection.RemoteIpAddress));
+    options.OnPermissionCheck = context => {
+                try {
+                    var remote = context.Connection.RemoteIpAddress;
+                    if (remote != null && IPAddress.IsLoopback(remote)) return true;
+                    return wl.Whitelist.Any(ip => IPAddress.Parse(ip).Equals(remote));
+                } catch {
+                    return false;
+                }
+            };
     options.LogPath = "~/log";
     options.Path = "/api/elmah";
 });
@@ -71,3 +77,6 @@ app.MapControllerRoute(
 app.MapRazorPages();
 
 app.Run();
+
+// Expose Program class for WebApplicationFactory in integration tests
+public partial class Program { }

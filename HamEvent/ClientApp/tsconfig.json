@@ -11,7 +11,7 @@
     "declaration": false,
     "downlevelIteration": true,
     "experimentalDecorators": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "ES2022",
     "module": "es2020",
@@ -20,7 +20,9 @@
       "dom"
     ],
     "useDefineForClassFields": false,
-    "types": [ "@types/gtag.js" ],
+    "types": [
+      "@types/gtag.js"
+    ],
     "skipLibCheck": true
   },
   "angularCompilerOptions": {

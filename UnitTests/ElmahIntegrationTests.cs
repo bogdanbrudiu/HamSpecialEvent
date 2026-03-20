@@ -19,6 +19,7 @@ namespace UnitTests
         {
             _factory = factory.WithWebHostBuilder(builder =>
             {
+                builder.UseSetting("Logging:File:Path", $"elmah-integration-{Guid.NewGuid():N}.log");
                 builder.UseSetting("IPWhitelist:Whitelist:0", "127.0.0.1");
                 builder.ConfigureServices(services =>
                 {
@@ -31,8 +32,8 @@ namespace UnitTests
 
         private class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
         {
-            public TestAuthHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
-                : base(options, logger, encoder, clock) { }
+            public TestAuthHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder)
+                : base(options, logger, encoder) { }
 
             protected override Task<AuthenticateResult> HandleAuthenticateAsync()
             {

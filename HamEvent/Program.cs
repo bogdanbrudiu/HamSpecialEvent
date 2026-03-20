@@ -1,5 +1,3 @@
-using CoreMailer.Implementation;
-using CoreMailer.Interfaces;
 using ElmahCore;
 using ElmahCore.Mvc;
 using HamEvent;
@@ -17,7 +15,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.Configure<MailerSettings>(builder.Configuration.GetSection("MailerSettings"));
-builder.Services.AddScoped<ICoreMvcMailer, CoreMvcMailer>();
+builder.Services.AddScoped<IEmailTemplateRenderer, RazorEmailTemplateRenderer>();
+builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
 MapsterConfig.Register(TypeAdapterConfig.GlobalSettings);

@@ -1,9 +1,6 @@
 [submodule "AdifLib"]
 	path = AdifLib
 	url = https://github.com/bogdanbrudiu/AdifLib.git
-[submodule "CoreMailer"]
-	path = CoreMailer
-	url = https://github.com/bogdanbrudiu/CoreMailer.git
 [submodule "simply-web-deploy"]
 	path = simply-web-deploy
 	url = https://github.com/bogdanbrudiu/simply-web-deploy.git

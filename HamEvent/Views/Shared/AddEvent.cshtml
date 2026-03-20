@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@{
+    Layout = null;
+}
+@model dynamic
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -7,7 +11,7 @@
 </head>
 <body>
     <h1>New Event created</h1>
-    <p><a href="{{baseUrl}}/{{id}}/{{secretKey}}">Admin URL</a></p>
+    <p><a href="@Model.baseUrl/@Model.id/@Model.secretKey">Admin URL</a></p>
 </body>
 </html>
 

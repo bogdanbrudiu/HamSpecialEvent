@@ -19,6 +19,8 @@ Project Description
 
 
 ### Done ✓
+- [✓] Remove CoreMailer submodule and switch app email delivery to MailKit #techdebt @bogdanbrudiu
+- [✓] Replace CoreMailer dependency with local MailKit-based email service #techdebt @bogdanbrudiu
 - [✓] Fix Elmah #bug @bogdanbrudiu
 - [✓] After file upload status should be cleared #bug
 - [✓] As a site visitor I can request new event creation  #feat

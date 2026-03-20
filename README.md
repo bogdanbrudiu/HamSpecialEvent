@@ -39,3 +39,39 @@ YO2KQT (Ham radio club from Timisoara) has a special event in 2023 celebrating 2
 
 # Extra
 On request print QSLs/diplomas and ship them. 
+
+# Email Delivery
+
+The application sends transactional emails for:
+- event creation confirmation
+- admin link recovery
+- email verification
+
+Email delivery is implemented directly in the HamEvent application using MailKit and Razor-based email templates.
+
+Relevant files:
+- `HamEvent/Services/SmtpEmailService.cs`
+- `HamEvent/Services/RazorEmailTemplateRenderer.cs`
+- `HamEvent/Views/Shared/AddEvent.cshtml`
+- `HamEvent/Views/Shared/RecoverEvents.cshtml`
+- `HamEvent/Views/Shared/ValidateEmail.cshtml`
+
+# Mail Configuration
+
+Configure SMTP in `HamEvent/appsettings.json` or environment-specific settings:
+
+```json
+"MailerSettings": {
+	"From": "from@email.address",
+	"Username": "smtpusername",
+	"Password": "smtppassword",
+	"Host": "smtphost",
+	"Port": 587,
+	"EnableSSL": true
+}
+```
+
+Notes:
+- `EnableSSL` enables TLS negotiation for MailKit SMTP connections.
+- If your SMTP server does not require authentication, leave `Username` empty.
+- Email templates are rendered from Razor views under `HamEvent/Views/Shared`.

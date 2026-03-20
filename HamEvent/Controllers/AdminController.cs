@@ -16,7 +16,7 @@ namespace HamEvent.Controllers
             _config = config;
         }
 
-        public class ValidateRequest { public string Key { get; set; } }
+        public class ValidateRequest { public string Key { get; set; } = string.Empty; }
 
         [HttpPost("validate")]
         public IActionResult Validate([FromBody] ValidateRequest req)

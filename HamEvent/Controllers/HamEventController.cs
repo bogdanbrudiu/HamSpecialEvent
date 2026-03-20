@@ -14,8 +14,6 @@ using Microsoft.AspNetCore.DataProtection;
 using System.Net.Sockets;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Configuration;
-using CoreMailer.Interfaces;
-using CoreMailer.Models;
 using HamEvent.Services;
 using System.Collections.Generic;
 
@@ -25,17 +23,17 @@ namespace HamEvent.Controllers
     [Route("api/[controller]")]
     public class HamEventController : ControllerBase
     {
-        private readonly ICoreMvcMailer _mailer;
+        private readonly IEmailService _emailService;
         private readonly MailerSettings _mailerSettings;
 
         private readonly HamEventContext _dbcontext;
         private readonly ILogger<HamEventController> _logger;
         private readonly IConfiguration? _config;
 
-        public HamEventController(ILogger<HamEventController> logger, ICoreMvcMailer mailer, IOptions<MailerSettings> mailerSettings, TokenService tokenService, HamEventContext dbcontext, IConfiguration? config = null)
+        public HamEventController(ILogger<HamEventController> logger, IEmailService emailService, IOptions<MailerSettings> mailerSettings, TokenService tokenService, HamEventContext dbcontext, IConfiguration? config = null)
         {
             _logger = logger;
-            _mailer = mailer;
+            _emailService = emailService;
             _mailerSettings = mailerSettings?.Value ?? new MailerSettings();
 
             _dbcontext = dbcontext;
@@ -467,16 +465,12 @@ namespace HamEvent.Controllers
 
                 await _dbcontext.SaveChangesAsync();
 
-                MailerModel mdl = new MailerModel(_mailerSettings.Host, _mailerSettings.Port)
+                EmailMessage message = new EmailMessage
                 {
                     ToAddresses = new List<string>() { normalizedEmail },
-                    FromAddress = _mailerSettings.From,
                     IsHtml = true,
-                    ViewFile = "RecoverEvents",
+                    TemplateName = "Shared/RecoverEvents",
                     Subject = "Admin link recovery",
-                    User = _mailerSettings.Username,
-                    Key = _mailerSettings.Password,
-                    EnableSsl = _mailerSettings.EnableSSL,
                     Model = new
                     {
                         baseUrl,
@@ -491,7 +485,7 @@ namespace HamEvent.Controllers
                 _logger.LogDebug(MyLogEvents.SendingEmail, "Sending recovery email to {email}", normalizedEmail);
                 try
                 {
-                    await _mailer.SendAsync(mdl);
+                    await _emailService.SendAsync(message);
                 }
                 catch (Exception ex)
                 {
@@ -510,7 +504,7 @@ namespace HamEvent.Controllers
         }
 
         [HttpPost("hamevent")]
-        public ActionResult Post(Event hamevent)
+        public async Task<ActionResult> Post(Event hamevent)
         {
             if (hamevent.Id.ToString().Equals(hamevent.SecretKey) && hamevent.Id.Equals(Guid.Empty))
             {
@@ -538,22 +532,18 @@ namespace HamEvent.Controllers
 
 
                     var baseUrl = $"{HttpContext?.Request?.Scheme ?? "https"}://{HttpContext?.Request?.Host.Value ?? "localhost"}{HttpContext?.Request?.PathBase.Value}".TrimEnd('/');
-                    MailerModel mdl = new MailerModel(_mailerSettings.Host, _mailerSettings.Port)
+                    EmailMessage message = new EmailMessage
                     {
                         ToAddresses = new List<string>() { myevent.Email },
-                        FromAddress = _mailerSettings.From,
                         IsHtml = true,
-                        ViewFile = "Shared/AddEvent.html",
+                        TemplateName = "Shared/AddEvent",
                         Subject = "Event Added",
-                        User = _mailerSettings.Username,
-                        Key = _mailerSettings.Password,
-                        EnableSsl = _mailerSettings.EnableSSL,
                         Model = new { id = myevent.Id, secretKey = secretKey, baseUrl }
                     };
                     _logger.LogDebug(MyLogEvents.SendingEmail, "Sending Email");
                     try
                     {
-                        _mailer.SendAsync(mdl);
+                        await _emailService.SendAsync(message, HttpContext?.RequestAborted ?? CancellationToken.None);
                     }
                     catch(Exception ex)
                     {

@@ -94,6 +94,98 @@
         <mat-hint>{{ 'Comma separated' | translate }}</mat-hint>
       </mat-form-field>
 
+      <section class="api-upload-instructions" aria-label="Logging software API upload instructions">
+        <h3>Logging software ADIF upload</h3>
+        <p>
+          Configure your logger to export ADIF and send it to this API endpoint (same pattern as ClubLog-style ADIF upload):
+        </p>
+        <pre class="api-code">POST /api/hamevent/{{ event.id }}/{{ eventSecret }}/upload</pre>
+        <ul>
+          <li>Method: <strong>POST</strong></li>
+          <li>Body type: <strong>multipart/form-data</strong></li>
+          <li>File field name: <strong>file</strong></li>
+          <li>File format: <strong>ADIF</strong> (.adi)</li>
+        </ul>
+        <p>
+          Use the Event ID and Secret from this admin URL. Keep the secret private.
+        </p>
+        <p>Example:</p>
+        <pre class="api-code">curl -X POST "https://your-host/api/hamevent/{{ event.id }}/{{ eventSecret }}/upload" -F "file=@log.adi"</pre>
+
+        <h4>Recommended setup presets (common logging software)</h4>
+        <div class="software-grid">
+          <article class="software-card">
+            <h5>N1MM Logger+</h5>
+            <ol>
+              <li>Configure ADIF export for each operator station (or periodic export).</li>
+              <li>Use a post-export script to call the upload endpoint.</li>
+              <li>Send exported .adi as multipart field <strong>file</strong>.</li>
+            </ol>
+          </article>
+
+          <article class="software-card">
+            <h5>Log4OM</h5>
+            <ol>
+              <li>Enable ADIF auto-export profile.</li>
+              <li>Trigger external command after export (or via scheduled task).</li>
+              <li>Upload generated ADIF to this event endpoint.</li>
+            </ol>
+          </article>
+
+          <article class="software-card">
+            <h5>DXKeeper / DXLab</h5>
+            <ol>
+              <li>Create ADIF export definition for event QSOs.</li>
+              <li>Use launcher automation to run upload command after export.</li>
+              <li>Keep event secret in a local env var, not in plain profile notes.</li>
+            </ol>
+          </article>
+
+          <article class="software-card">
+            <h5>Win-Test</h5>
+            <ol>
+              <li>Export ADIF at intervals or at operator handover.</li>
+              <li>Run a helper script to POST ADIF file to API.</li>
+              <li>Retry upload on temporary network errors.</li>
+            </ol>
+          </article>
+
+          <article class="software-card">
+            <h5>N3FJP / ACLog</h5>
+            <ol>
+              <li>Export ADIF from contest log module.</li>
+              <li>Attach a script or scheduled uploader for near-live sync.</li>
+              <li>Use one endpoint per event to avoid cross-event uploads.</li>
+            </ol>
+          </article>
+
+          <article class="software-card">
+            <h5>Ham Radio Deluxe</h5>
+            <ol>
+              <li>Export selected QSOs to ADIF.</li>
+              <li>Call upload API from PowerShell/batch helper.</li>
+              <li>Validate successful response before deleting local export file.</li>
+            </ol>
+          </article>
+        </div>
+
+        <h4>Generic uploader scripts (works with any logger)</h4>
+        <p>PowerShell:</p>
+        <pre class="api-code">$eventId = "{{ event.id }}"
+$secret = "{{ eventSecret }}"
+$url = "https://your-host/api/hamevent/$eventId/$secret/upload"
+      Invoke-RestMethod -Method Post -Uri $url -Form @&#123; file = Get-Item "C:\logs\event.adi" &#125;</pre>
+
+        <p>Linux/macOS shell:</p>
+        <pre class="api-code">EVENT_ID="{{ event.id }}"
+SECRET="{{ eventSecret }}"
+curl -X POST "https://your-host/api/hamevent/$EVENT_ID/$SECRET/upload" -F "file=@/var/log/event.adi"</pre>
+
+        <p>
+          Tip: if your logger has direct ClubLog upload only, keep that for ClubLog and add this script as an additional export target for HamEvent.
+        </p>
+      </section>
+
       <div class="actions">
         <button mat-raised-button color="primary" type="submit">{{ 'Save' | translate }}</button>
         <button mat-button color="warn" type="button" (click)="router.navigate(['/admin'])">{{ 'Cancel' | translate }}</button>

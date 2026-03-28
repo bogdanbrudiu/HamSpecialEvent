@@ -54,3 +54,65 @@
   display: block;
   margin: 0 auto;
 }
+
+.api-upload-instructions {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border: 1px solid #d9dbe3;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.api-upload-instructions h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+}
+
+.api-upload-instructions h4 {
+  margin: 1rem 0 0.5rem 0;
+  font-size: 0.95rem;
+}
+
+.api-upload-instructions h5 {
+  margin: 0 0 0.4rem 0;
+  font-size: 0.9rem;
+}
+
+.api-upload-instructions p {
+  margin: 0.5rem 0;
+}
+
+.api-upload-instructions ul {
+  margin: 0.5rem 0 0.75rem 1.2rem;
+}
+
+.api-upload-instructions ol {
+  margin: 0.35rem 0 0.6rem 1.2rem;
+  padding: 0;
+}
+
+.software-grid {
+  display: grid;
+  gap: 0.65rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  margin: 0.4rem 0 0.9rem 0;
+}
+
+.software-card {
+  background: #ffffff;
+  border: 1px solid #e6e8ef;
+  border-radius: 6px;
+  padding: 0.6rem 0.7rem;
+}
+
+.api-code {
+  margin: 0.5rem 0;
+  padding: 0.6rem 0.75rem;
+  border-radius: 6px;
+  background: #111827;
+  color: #f9fafb;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}

@@ -2,7 +2,6 @@ import { Component, Output, EventEmitter } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { FlexModule } from '@angular/flex-layout/flex';
 import { MatOption } from '@angular/material/core';
-import { NgFor } from '@angular/common';
 import { MatSelect } from '@angular/material/select';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { TranslateModule } from '@ngx-translate/core';
@@ -13,12 +12,23 @@ interface Language {
   icon: string; // Path to the icon in the assets folder
 }
 
+import { CommonModule, NgFor } from '@angular/common';
+
 @Component({
     selector: 'app-language-selector',
     templateUrl: './language-selector.component.html',
     styleUrls: ['./language-selector.component.css'],
-  standalone: true,
-  imports: [MatFormField, MatSelect, MatLabel, NgFor, MatOption, FlexModule, TranslateModule]
+    standalone: true,
+    imports: [
+      CommonModule,
+      MatFormField,
+      MatSelect,
+      MatLabel,
+      NgFor,
+      MatOption,
+      FlexModule,
+      TranslateModule
+    ]
 })
 
 export class LanguageSelectorComponent {

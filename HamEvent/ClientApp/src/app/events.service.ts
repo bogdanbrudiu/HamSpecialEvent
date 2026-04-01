@@ -13,15 +13,17 @@ export class EventsService {
   getAllEvents(page: number, size: number): Observable<any> {
     return this.http.get(this.baseUrl + 'api/hamevent/hamevents?page='+page+'&size='+size);
   }
-  getEvent(eventId:string, secret:string="", lang:string=""): Observable<any> {
+  getEvent(eventId:string, secret:string="", lang:string="", adminKey:string=""): Observable<any> {
     const secretPart = secret ? `secret=${encodeURIComponent(secret)}` : '';
     const langPart = lang ? `lang=${encodeURIComponent(lang)}` : '';
-    const query = [secretPart, langPart].filter(q => q).join('&');
+    const adminKeyPart = adminKey ? `adminkey=${encodeURIComponent(adminKey)}` : '';
+    const query = [secretPart, langPart, adminKeyPart].filter(q => q).join('&');
     const suffix = query ? `?${query}` : '';
     return this.http.get(this.baseUrl + 'api/hamevent/hamevent/' + eventId + suffix);
   }
-  updateEvent(event:any): Observable<any> {
-    return this.http.post<any>(this.baseUrl + 'api/hamevent/hamevent/', event);
+  updateEvent(event:any, adminKey:string=""): Observable<any> {
+    const adminKeyPart = adminKey ? `?adminkey=${encodeURIComponent(adminKey)}` : '';
+    return this.http.post<any>(this.baseUrl + 'api/hamevent/hamevent/' + adminKeyPart, event);
   }
   recoverAdminLinks(email: string): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'api/hamevent/hamevent/recover', { email });

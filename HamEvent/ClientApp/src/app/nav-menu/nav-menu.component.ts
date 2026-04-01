@@ -8,14 +8,13 @@ import { QSOsService } from '../qsos.service';
 import { LanguageSelectorComponent } from '../language-selector/language-selector.component';
 import { MatAnchor } from '@angular/material/button';
 import { MatToolbar } from '@angular/material/toolbar';
-import { MatIcon } from '@angular/material/icon';
 
 @Component({
     selector: 'app-nav-menu',
+    standalone: true,
+    imports: [MatToolbar, MatAnchor, RouterLink, LanguageSelectorComponent, TranslateModule],
     templateUrl: './nav-menu.component.html',
-    styleUrls: ['./nav-menu.component.css'],
-  standalone: true,
-  imports: [MatIcon, MatToolbar, MatAnchor, RouterLink, LanguageSelectorComponent, TranslateModule]
+    styleUrls: ['./nav-menu.component.css']
 })
 export class NavMenuComponent {
   isExpanded = false;
@@ -58,32 +57,23 @@ export class NavMenuComponent {
       map(() => this.rootRoute(this.routes)),
       filter((route: ActivatedRoute) => route.outlet === 'primary'),
     ).subscribe((route: ActivatedRoute) => {
-      console.log(route);
       var id = route.snapshot.paramMap.get('id')
-      var secret = route.snapshot.paramMap.get('secret')
       if (id != null && id !='00000000-0000-0000-0000-000000000000') {
         this.eventId = id;
-        console.log(id);
         this.eventsService.getEvent(this.eventId).subscribe(
           (response) => {
             this.event = response;
             if (this.event){ 
               this.titleService.setTitle(this.event.name);
             }
-            console.log(response);
           },
-          (error) => {
-            console.log(error);
-          }
+          () => {}
         );
         this.qsosService.getLive(this.eventId).subscribe(
           (response) => {
             this.isLive = response != null && (<Array<any>>response).length>0;
-            console.log(response);
           },
-          (error) => {
-            console.log(error);
-          }
+          () => {}
         );
       } else {
         this.titleService.setTitle(this.translate.instant("HamEvents"));

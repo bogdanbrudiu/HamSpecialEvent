@@ -1,5 +1,7 @@
 <div class="row" style="margin-bottom:15px;">
   <p *ngIf="!event"><em>{{'Loading...' | translate}}</em></p>
+  <p *ngIf="!event && loadFailed"><em>Unable to load this event. Verify the link key or use the admin master key.</em></p>
+  <p *ngIf="saveError"><em>{{ saveError }}</em></p>
   <form *ngIf="event">
     <div class="mb-3" *ngIf="event.email!=initialEmail && codeGenerated">
       <label for="emailValidationCode" class="form-label">{{'Email Validation Code' | translate}}</label>
@@ -188,7 +190,7 @@ curl -X POST "https://your-host/api/hamevent/$EVENT_ID/$SECRET/upload" -F "file=
 
       <div class="actions">
         <button mat-raised-button color="primary" type="submit">{{ 'Save' | translate }}</button>
-        <button mat-button color="warn" type="button" (click)="router.navigate(['/admin'])">{{ 'Cancel' | translate }}</button>
+        <button mat-button color="warn" type="button" (click)="cancelEdit()">{{ 'Cancel' | translate }}</button>
       </div>
     </form>
     <mat-progress-bar *ngIf="!event" mode="indeterminate"></mat-progress-bar>

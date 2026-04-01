@@ -41,9 +41,9 @@ function buildAdif(stationCallsign: string, participantCallsign: string): string
   ].join('');
 }
 
-async function createEventViaApi(request: APIRequestContext) {
+async function createEventViaApi(request: APIRequestContext, namePrefix = 'E2E Event') {
   const unique = Date.now();
-  const eventName = `E2E Event ${unique}`;
+  const eventName = `${namePrefix} ${unique}`;
   const startDate = new Date(Date.now() - 5 * 60 * 1000).toISOString();
   const endDate = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
@@ -194,6 +194,42 @@ test.describe('Useful E2E scenarios @useful', () => {
     await expect(page.getByRole('button', { name: 'Search' })).toBeVisible();
   });
 
+  test('event details page displays loaded event content', async ({ page, request }) => {
+    const { eventId, eventName } = await createEventViaApi(request);
+    await waitUntilEventIsReachable(request, eventId);
+
+    await page.goto(`/event/${eventId}`);
+    await expect(page.getByText(eventName).first()).toBeVisible({ timeout: 15_000 });
+    await expect(page.locator('mat-tab-group')).toBeVisible({ timeout: 15_000 });
+  });
+
+  test('event edit secret URL opens admin edit page', async ({ page, request }) => {
+    const { eventId, secretKey } = await createEventViaApi(request);
+    expect(secretKey).toBeTruthy();
+    await waitUntilEventIsReachable(request, eventId);
+
+    const privateEventResponse = await request.get(`/api/hamevent/hamevent/${eventId}?secret=${encodeURIComponent(secretKey)}`);
+    expect(privateEventResponse.ok()).toBeTruthy();
+
+    await page.goto(`/event/${eventId}/${secretKey}`);
+    await expect(page).toHaveURL(new RegExp(`/admin/${eventId}/${secretKey}/edit$`), { timeout: 15_000 });
+    await expect(page.getByRole('textbox', { name: 'Name' })).toBeVisible({ timeout: 15_000 });
+  });
+
+  test('events listing page shows cards and navigates to event', async ({ page, request }) => {
+    const { eventId, eventName } = await createEventViaApi(request, 'ZZZ E2E Event');
+    await waitUntilEventIsReachable(request, eventId);
+
+    await page.goto('/events');
+    await expect(page.getByRole('heading', { name: 'Ham Events' })).toBeVisible({ timeout: 15_000 });
+
+    const card = page.locator('app-event-card').filter({ hasText: eventName }).first();
+    await expect(card).toBeVisible({ timeout: 15_000 });
+
+    await card.getByRole('button', { name: 'Go to event' }).click();
+    await expect(page).toHaveURL(new RegExp(`/event/${eventId}$`), { timeout: 15_000 });
+  });
+
   test('upload logs and verify participant appears in ranking page', async ({ page, request }) => {
     const { eventId, secretKey } = await createEventViaApi(request);
     await waitUntilEventIsReachable(request, eventId);
@@ -296,5 +332,85 @@ test.describe('Useful E2E scenarios @useful', () => {
 
     await expect(page.getByRole('button', { name: /Add|Email verification/i })).toBeVisible();
     await expect(page.getByRole('textbox', { name: 'Name' })).toHaveValue(eventName);
+  });
+
+  test('direct admin secret URL opens admin home', async ({ page }) => {
+    test.skip(!ADMIN_E2E_KEY, 'ADMIN_E2E_KEY is required for admin direct URL tests.');
+
+    await page.goto(`/admin/${ADMIN_E2E_KEY}`);
+    await expect(page).toHaveURL(new RegExp(`/admin/${ADMIN_E2E_KEY}$`), { timeout: 15_000 });
+    await expect(page.getByRole('heading', { name: 'Admin Events' })).toBeVisible({ timeout: 15_000 });
+  });
+
+  test('admin can save event changes from edit page', async ({ page, request }) => {
+    test.skip(!ADMIN_E2E_KEY, 'ADMIN_E2E_KEY is required for admin save tests.');
+
+    const { eventId } = await createEventViaApi(request);
+    await waitUntilEventIsReachable(request, eventId);
+
+    const updatedName = `Updated ${Date.now()}`;
+
+    await page.goto(`/admin/${eventId}/${ADMIN_E2E_KEY}/edit`);
+    await expect(page.getByRole('textbox', { name: 'Name' })).toBeVisible({ timeout: 15_000 });
+    await page.getByRole('textbox', { name: 'Name' }).fill(updatedName);
+    await page.getByRole('button', { name: 'Save' }).click();
+
+    await expect(page).toHaveURL(new RegExp(`/admin/${eventId}/${ADMIN_E2E_KEY}/edit$`), { timeout: 15_000 });
+    await expect(page.getByRole('textbox', { name: 'Name' })).toHaveValue(updatedName);
+
+    const verify = await request.get(`/api/hamevent/hamevent/${eventId}?adminkey=${encodeURIComponent(ADMIN_E2E_KEY!)}`);
+    expect(verify.ok()).toBeTruthy();
+    const body = await verify.json();
+    expect(body?.name).toBe(updatedName);
+  });
+
+  test('event secret can save event changes from edit page', async ({ page, request }) => {
+    const { eventId, secretKey } = await createEventViaApi(request);
+    await waitUntilEventIsReachable(request, eventId);
+
+    const updatedName = `Secret Updated ${Date.now()}`;
+
+    await page.goto(`/admin/${eventId}/${secretKey}/edit`);
+    await expect(page.getByRole('textbox', { name: 'Name' })).toBeVisible({ timeout: 15_000 });
+    await page.getByRole('textbox', { name: 'Name' }).fill(updatedName);
+    await page.getByRole('button', { name: 'Save' }).click();
+
+    await expect(page).toHaveURL(new RegExp(`/admin/${eventId}/${secretKey}/edit$`), { timeout: 15_000 });
+    await expect(page.getByRole('textbox', { name: 'Name' })).toHaveValue(updatedName);
+
+    const verify = await request.get(`/api/hamevent/hamevent/${eventId}?secret=${encodeURIComponent(secretKey)}`);
+    expect(verify.ok()).toBeTruthy();
+    const body = await verify.json();
+    expect(body?.name).toBe(updatedName);
+  });
+
+  test('event secret link can open editor and save changes', async ({ page, request }) => {
+    const { eventId, secretKey } = await createEventViaApi(request);
+    await waitUntilEventIsReachable(request, eventId);
+
+    const updatedName = `Redirect Save ${Date.now()}`;
+
+    await page.goto(`/event/${eventId}/${secretKey}`);
+    await expect(page).toHaveURL(new RegExp(`/admin/${eventId}/${secretKey}/edit$`), { timeout: 15_000 });
+    await expect(page.getByRole('textbox', { name: 'Name' })).toBeVisible({ timeout: 15_000 });
+    await page.getByRole('textbox', { name: 'Name' }).fill(updatedName);
+    await page.getByRole('button', { name: 'Save' }).click();
+
+    await expect(page).toHaveURL(new RegExp(`/admin/${eventId}/${secretKey}/edit$`), { timeout: 15_000 });
+    await expect(page.getByRole('textbox', { name: 'Name' })).toHaveValue(updatedName);
+
+    const verify = await request.get(`/api/hamevent/hamevent/${eventId}?secret=${encodeURIComponent(secretKey)}`);
+    expect(verify.ok()).toBeTruthy();
+    const body = await verify.json();
+    expect(body?.name).toBe(updatedName);
+  });
+
+  test('legacy admin URL without edit redirects to editor', async ({ page, request }) => {
+    const { eventId, secretKey } = await createEventViaApi(request);
+    await waitUntilEventIsReachable(request, eventId);
+
+    await page.goto(`/admin/${eventId}/${secretKey}`);
+    await expect(page).toHaveURL(new RegExp(`/admin/${eventId}/${secretKey}/edit$`), { timeout: 15_000 });
+    await expect(page.getByRole('textbox', { name: 'Name' })).toBeVisible({ timeout: 15_000 });
   });
 });

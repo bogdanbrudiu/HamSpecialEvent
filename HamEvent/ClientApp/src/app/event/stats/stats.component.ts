@@ -30,7 +30,7 @@ export class StatsComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['eventId'] && changes['eventId'].currentValue) {
+    if (changes['eventId'] && !changes['eventId'].firstChange && changes['eventId'].currentValue) {
       this.loadStats();
     }
   }

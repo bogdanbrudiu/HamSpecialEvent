@@ -7,6 +7,11 @@ import { EventTopComponent } from './eventtop/eventtop.component';
 
 const eventRoutes: Routes = [
   {
+    path: ':id/:secret',
+    redirectTo: '/admin/:id/:secret/edit',
+    pathMatch: 'full'
+  },
+  {
     path: ':id',
     component: EventComponent,
   },

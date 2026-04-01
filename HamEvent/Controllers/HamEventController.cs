@@ -47,8 +47,30 @@ namespace HamEvent.Controllers
             // if a secret string is provided, try to parse as Guid and validate against stored secret hash
             if (!string.IsNullOrEmpty(secret))
             {
-                    var hashed = ComputeSha256Hash(secret);
-                    if (ev.SecretKey.Equals(hashed, StringComparison.OrdinalIgnoreCase)) return true;
+                    var normalized = secret.Trim();
+
+                    // Accept both plain secret and pre-hashed secret values.
+                    if (ev.SecretKey.Equals(normalized, StringComparison.OrdinalIgnoreCase)) return true;
+                    if (ev.SecretKey.Equals(ComputeSha256Hash(normalized), StringComparison.OrdinalIgnoreCase)) return true;
+
+                    // Legacy compatibility: some historical links may have used different Guid string formats
+                    // before hashing (with/without hyphens). Accept all canonical Guid variants.
+                    if (Guid.TryParse(normalized, out var parsedGuid))
+                    {
+                        var candidates = new[]
+                        {
+                            parsedGuid.ToString("D").ToLowerInvariant(),
+                            parsedGuid.ToString("N").ToLowerInvariant(),
+                            parsedGuid.ToString("B").ToLowerInvariant(),
+                            parsedGuid.ToString("P").ToLowerInvariant()
+                        };
+
+                        foreach (var candidate in candidates)
+                        {
+                            if (ev.SecretKey.Equals(candidate, StringComparison.OrdinalIgnoreCase)) return true;
+                            if (ev.SecretKey.Equals(ComputeSha256Hash(candidate), StringComparison.OrdinalIgnoreCase)) return true;
+                        }
+                    }
             }
 
             // allow admin key via query param 'adminkey'
@@ -568,8 +590,9 @@ namespace HamEvent.Controllers
 
                 try
                 {
-                    var myevent = _dbcontext.Events.Where(e => e.Id == hamevent.Id && e.SecretKey == ComputeSha256Hash(hamevent.SecretKey)).FirstOrDefault();
+                    var myevent = _dbcontext.Events.Where(e => e.Id == hamevent.Id).FirstOrDefault();
                     if (myevent == null) return NotFound();
+                    if (!IsAuthorizedForEvent(myevent, hamevent.SecretKey)) return NotFound();
                     else
                     {
                         myevent.Diploma = hamevent.Diploma;

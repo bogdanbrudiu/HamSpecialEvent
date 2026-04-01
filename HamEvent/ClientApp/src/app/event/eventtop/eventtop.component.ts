@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -5,16 +6,16 @@ import { ActivatedRoute, Router, RouterLinkActive, RouterLink } from '@angular/r
 import { HamEvent, EventsService } from '../../events.service';
 import { Participant, QSO, QSOsService } from '../../qsos.service';
 import { PdfService } from '../../pdf.service';
-import { TranslateModule } from '@ngx-translate/core';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { ExtendedModule } from '@angular/flex-layout/extended';
-import { NgIf, NgFor, NgClass } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 declare let gtag: Function;
+
 @Component({
-    selector: 'app-eventtop',
-    templateUrl: './eventtop.component.html',
-    standalone: true,
-    imports: [NgIf, RouterLinkActive, RouterLink, ReactiveFormsModule, NgFor, NgClass, ExtendedModule, NgxPaginationModule, TranslateModule]
+  selector: 'app-eventtop',
+  templateUrl: './eventtop.component.html',
+  standalone: true,
+  imports: [CommonModule, RouterLink, RouterLinkActive, TranslateModule, ReactiveFormsModule, NgxPaginationModule]
 })
 export class EventTopComponent {
   searchForm!: FormGroup;
@@ -43,20 +44,14 @@ export class EventTopComponent {
       this.eventsService.getEvent(this.eventId).subscribe(
         (response) => {
           this.event = response;
-          console.log(response);
         },
-        (error) => {
-          console.log(error);
-        }
+        () => {}
       );
       this.qsosService.getLive(this.eventId).subscribe(
         (response) => {
           this.isLive = response != null && (<Array<any>>response).length > 0;
-          console.log(response);
         },
-        (error) => {
-          console.log(error);
-        }
+        () => {}
       );
       this.loadData();
     });
@@ -77,11 +72,8 @@ export class EventTopComponent {
         this.Top = response.data;
         this.count = response.count;
         this.loaded = true;
-        console.log(response);
       },
-      (error) => {
-        console.log(error);
-      }
+      () => {}
     );
   }
 

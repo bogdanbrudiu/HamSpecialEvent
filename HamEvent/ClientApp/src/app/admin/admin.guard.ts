@@ -9,11 +9,18 @@ export class AdminGuard implements CanActivate {
 
   async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
     const routeSecret = route.paramMap ? route.paramMap.get('secret') : null;
+    const eventId = route.paramMap ? route.paramMap.get('id') : null;
+
+    // For event-scoped routes we let the page load and rely on API authorization
+    // in the editor component, to avoid false redirects with valid event secrets.
+    if (routeSecret && eventId) {
+      return true;
+    }
 
     // If a secret is provided in the URL, validate it with the server
     if (routeSecret) {
       try {
-        const ok = await this.validateOnServer(routeSecret);
+        const ok = await this.validateAdminSecret(routeSecret);
         if (ok) return true;
       } catch (e) {
         // ignore and redirect to login below
@@ -28,7 +35,7 @@ export class AdminGuard implements CanActivate {
     return false;
   }
 
-  private async validateOnServer(value: string): Promise<boolean> {
+  private async validateAdminSecret(value: string): Promise<boolean> {
     const resp = await fetch('/api/admin/validate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

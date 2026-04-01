@@ -18,6 +18,11 @@ const routes: Routes = [
     component: AdminLoginComponent
   },
   {
+    path: ':id/:secret',
+    redirectTo: ':id/:secret/edit',
+    pathMatch: 'full'
+  },
+  {
     path: ':secret',
     component: AdminHomeComponent,
     canActivate: [AdminGuard]

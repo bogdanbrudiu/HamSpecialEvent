@@ -7,7 +7,8 @@ import { QSO, QSOsService } from '../../qsos.service';
 import { PdfService } from '../../pdf.service';
 import { MatTableModule, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatTableDataSource } from '@angular/material/table';
 import { TranslateModule } from '@ngx-translate/core';
-import { NgIf, DatePipe } from '@angular/common';
+import { NgIf, DatePipe, CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ResponsiveToolbarComponent } from '../responsive-toolbar/responsive-toolbar.component';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
@@ -21,11 +22,22 @@ export interface Tile {
 
 declare let gtag: Function;
 @Component({
-    selector: 'app-qsos',
-    templateUrl: './qsos.component.html',
-    styleUrls: ['./qsos.component.css'],
+  selector: 'app-qsos',
+  templateUrl: './qsos.component.html',
+  styleUrls: ['./qsos.component.css'],
   standalone: true,
-  imports: [MatTableModule, NgIf, ResponsiveToolbarComponent, MatGridListModule, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, DatePipe, TranslateModule, MatPaginatorModule]
+  imports: [
+    MatTableModule,
+    MatPaginatorModule,
+    MatGridListModule,
+    NgIf,
+    DatePipe,
+    TranslateModule,
+    FormsModule,
+    ReactiveFormsModule,
+    CommonModule,
+    ResponsiveToolbarComponent
+  ]
 })
 export class QSOsComponent implements OnInit, AfterViewInit {
 

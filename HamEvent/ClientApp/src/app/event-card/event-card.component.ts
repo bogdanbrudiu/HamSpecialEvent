@@ -1,4 +1,4 @@
-import { DatePipe, NgIf } from '@angular/common';
+import { NgIf } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { MatCard, MatCardActions, MatCardAvatar, MatCardContent, MatCardFooter, MatCardHeader, MatCardImage, MatCardTitle, MatCardSubtitle } from '@angular/material/card';
@@ -24,8 +24,23 @@ export class TrimPipe implements PipeTransform {
     selector: 'app-event-card',
     templateUrl: './event-card.component.html',
     styleUrls: ['./event-card.component.css'],
-  standalone: true,
-  imports: [NgIf, MatCard, MatCardHeader, MatCardAvatar, MatCardTitle, MatCardSubtitle, MatCardImage, MatCardContent, MatCardActions, MatButton, MatCardFooter, MatIcon, MatTooltip, DatePipe, TranslateModule, TrimPipe]
+    standalone: true,
+    imports: [
+      NgIf,
+      MatCard,
+      MatCardHeader,
+      MatCardTitle,
+      MatCardSubtitle,
+      MatCardImage,
+      MatCardContent,
+      MatCardActions,
+      MatButton,
+      MatCardFooter,
+      MatIcon,
+      MatTooltip,
+      TranslateModule,
+      TrimPipe
+    ]
 })
 export class EventCardComponent {
   @Input() event!: HamEvent;

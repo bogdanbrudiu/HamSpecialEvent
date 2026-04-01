@@ -5,7 +5,7 @@
 
   <section class="stat-block">
     <h4>{{ 'QSOsPerBandMode' | translate }}</h4>
-    <table class="stat-table" *ngIf="stats.bandModeTotals?.length; else noData1">
+    <table class="stat-table" *ngIf="stats.bandModeTotals.length; else noData1">
       <thead>
         <tr>
           <th>{{ 'Mode' | translate }}</th>
@@ -33,7 +33,7 @@
 
   <section class="stat-block">
     <h4>{{ 'QSOsPerFoxBand' | translate }}</h4>
-    <table class="stat-table" *ngIf="stats.foxBandTotals?.length; else noData2">
+    <table class="stat-table" *ngIf="stats.foxBandTotals.length; else noData2">
       <thead>
         <tr>
           <th>{{ 'Fox' | translate }}</th>

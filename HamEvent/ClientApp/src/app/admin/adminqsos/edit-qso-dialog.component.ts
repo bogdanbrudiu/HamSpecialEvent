@@ -4,14 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { NgIf } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-edit-qso-dialog',
   templateUrl: './edit-qso-dialog.component.html',
   standalone: true,
-  imports: [MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule, FormsModule, NgIf, TranslateModule]
+  imports: [MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule, FormsModule, TranslateModule]
 })
 export class EditQsoDialogComponent {
   qso: any;

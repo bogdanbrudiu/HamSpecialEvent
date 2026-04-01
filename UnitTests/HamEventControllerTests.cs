@@ -231,6 +231,146 @@ namespace UnitTests
         }
 
         [Fact]
+        public void GetEvent_WithGuidSecret_DMatchesLegacyNHash_AllowsAccess()
+        {
+            var options = new DbContextOptionsBuilder<HamEventContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            using var context = new HamEventContext(options);
+
+            var evId = Guid.NewGuid();
+            var guidSecret = Guid.NewGuid();
+            var hashedLegacyN = HamEventController.ComputeSha256Hash(guidSecret.ToString("N").ToLowerInvariant());
+            context.Events.Add(new Event
+            {
+                Id = evId,
+                SecretKey = hashedLegacyN,
+                Name = "Legacy Event",
+                Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "D" } },
+                Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", string.Empty } },
+                Diploma = "",
+                Email = "e@e"
+            });
+            context.SaveChanges();
+
+            var controller = new HamEventController(
+                Mock.Of<ILogger<HamEventController>>(),
+                Mock.Of<IEmailService>(),
+                Options.Create(new MailerSettings()),
+                new TokenService("secret"),
+                context);
+
+            // Client-provided secret is in default D format (with hyphens).
+            var action = controller.Get(evId, guidSecret.ToString("D"));
+            var ok = Assert.IsType<OkObjectResult>(action.Result);
+            var returned = Assert.IsType<Event>(ok.Value);
+            Assert.Equal(evId, returned.Id);
+        }
+
+        [Fact]
+        public async Task UpdateEvent_WithAdminKey_AllowsSave()
+        {
+            var options = new DbContextOptionsBuilder<HamEventContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            using var context = new HamEventContext(options);
+
+            var evId = Guid.NewGuid();
+            var eventSecret = Guid.NewGuid().ToString();
+            var hashedEventSecret = HamEventController.ComputeSha256Hash(eventSecret);
+            context.Events.Add(new Event
+            {
+                Id = evId,
+                SecretKey = hashedEventSecret,
+                Name = "Original",
+                Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "D" } },
+                Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "R" } },
+                Diploma = "",
+                Email = "e@e"
+            });
+            context.SaveChanges();
+
+            var adminPlain = "masterkey";
+            string adminHash;
+            using (var sha = SHA256.Create())
+            {
+                var bytes = Encoding.UTF8.GetBytes(adminPlain);
+                adminHash = BitConverter.ToString(sha.ComputeHash(bytes)).Replace("-", "").ToLowerInvariant();
+            }
+
+            IConfiguration config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?> { { "AdminSecret", adminHash } }).Build();
+            var controller = new HamEventController(Mock.Of<ILogger<HamEventController>>(), Mock.Of<IEmailService>(), Options.Create(new MailerSettings()), new TokenService("secret"), context, config);
+            var httpContext = new DefaultHttpContext();
+            httpContext.Request.QueryString = new QueryString($"?adminkey={adminPlain}");
+            controller.ControllerContext = new ControllerContext() { HttpContext = httpContext };
+
+            var update = new Event
+            {
+                Id = evId,
+                SecretKey = adminPlain,
+                Name = "Updated With Admin Key",
+                Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "D2" } },
+                Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "R2" } },
+                Diploma = "X",
+                Email = "new@e"
+            };
+
+            var result = await controller.Post(update);
+            var ok = Assert.IsType<OkObjectResult>(result);
+            var updated = Assert.IsType<Event>(ok.Value);
+            Assert.Equal("Updated With Admin Key", updated.Name);
+            Assert.Equal("Updated With Admin Key", context.Events.First(e => e.Id == evId).Name);
+        }
+
+        [Fact]
+        public async Task UpdateEvent_WithEventSecret_AllowsSave()
+        {
+            var options = new DbContextOptionsBuilder<HamEventContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+            using var context = new HamEventContext(options);
+
+            var evId = Guid.NewGuid();
+            var eventSecret = Guid.NewGuid().ToString();
+            var hashedEventSecret = HamEventController.ComputeSha256Hash(eventSecret);
+            context.Events.Add(new Event
+            {
+                Id = evId,
+                SecretKey = hashedEventSecret,
+                Name = "Original",
+                Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "D" } },
+                Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "R" } },
+                Diploma = "",
+                Email = "e@e"
+            });
+            context.SaveChanges();
+
+            var controller = new HamEventController(
+                Mock.Of<ILogger<HamEventController>>(),
+                Mock.Of<IEmailService>(),
+                Options.Create(new MailerSettings()),
+                new TokenService("secret"),
+                context);
+
+            var update = new Event
+            {
+                Id = evId,
+                SecretKey = eventSecret,
+                Name = "Updated With Event Secret",
+                Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "D2" } },
+                Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "R2" } },
+                Diploma = "X",
+                Email = "new@e"
+            };
+
+            var result = await controller.Post(update);
+            var ok = Assert.IsType<OkObjectResult>(result);
+            var updated = Assert.IsType<Event>(ok.Value);
+            Assert.Equal("Updated With Event Secret", updated.Name);
+            Assert.Equal("Updated With Event Secret", context.Events.First(e => e.Id == evId).Name);
+        }
+
+        [Fact]
         public void ExportAll_WithAdminKey_ReturnsAdiFile()
         {
             var options = new DbContextOptionsBuilder<HamEventContext>()

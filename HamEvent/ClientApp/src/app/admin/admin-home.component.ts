@@ -1,5 +1,5 @@
 // src/app/admin/admin-home.component.ts
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EventsService, HamEvent } from '../events.service';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
@@ -26,7 +26,17 @@ export class AdminHomeComponent implements OnInit {
   count = 0;
   displayedColumns: string[] = ['name', 'startDate', 'description', 'email', 'days', 'count'];
 
-  constructor(private eventsService: EventsService, private router: Router, private routes: ActivatedRoute, private translate: TranslateService) { }
+  constructor(private eventsService: EventsService, private router: Router, private routes: ActivatedRoute, private translate: TranslateService, private cdr: ChangeDetectorRef) { }
+
+  private requestViewRefresh() {
+    queueMicrotask(() => {
+      try {
+        this.cdr.detectChanges();
+      } catch {
+        // Ignore teardown timing issues.
+      }
+    });
+  }
 
   private pickLocalized(value: { [lang: string]: string } | any): string {
     if (!value) return '';
@@ -52,12 +62,18 @@ export class AdminHomeComponent implements OnInit {
     this.loaded = false;
     this.eventsService.getAllEvents(this.page, this.tableSize).subscribe(
       (response) => {
-        this.events = response.data;
-        this.count = response.count;
+        const data = response?.data ?? response?.Data ?? [];
+        this.events = Array.isArray(data) ? data : [];
+
+        const total = response?.count ?? response?.Count;
+        this.count = typeof total === 'number' ? total : this.events.length;
         this.loaded = true;
+        this.requestViewRefresh();
       },
       (error) => {
+        this.events = [];
         this.loaded = true;
+        this.requestViewRefresh();
         console.log(error);
       }
     );
@@ -96,6 +112,6 @@ export class AdminHomeComponent implements OnInit {
   //}
 
   createEvent() {
-    this.router.navigate(['admin', '00000000-0000-0000-0000-000000000000', 'edit']);
+    this.router.navigate(['admin', '00000000-0000-0000-0000-000000000000', this.adminSecret, 'edit']);
   }
 }

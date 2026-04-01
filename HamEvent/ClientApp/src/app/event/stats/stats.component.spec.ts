@@ -1,5 +1,6 @@
 /// <reference types="jasmine" />
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { fakeAsync, tick } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { TranslateFakeLoader, TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { StatsComponent } from './stats.component';
@@ -40,10 +41,12 @@ describe('StatsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render stats data', () => {
+  it('should render stats data', fakeAsync(() => {
+    tick(0);
+    fixture.detectChanges();
     const text = fixture.nativeElement.textContent as string;
     expect(text).toContain('TotalQSOs');
     expect(text).toContain('5');
     expect(qsosServiceSpy.getStats).toHaveBeenCalledWith('event-1');
-  });
+  }));
 });

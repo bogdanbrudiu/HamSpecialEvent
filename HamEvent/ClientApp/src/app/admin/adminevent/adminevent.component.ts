@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EventsService, HamEvent } from '../../events.service';
 import { VerificationService } from '../../verification.service';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { SanitizedHtmlPipe } from '../../sanitized-html.pipe';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { NgIf, DatePipe, NgFor } from '@angular/common';
+import { NgIf, NgFor } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -23,7 +23,7 @@ import { MatTabsModule } from '@angular/material/tabs';
   styleUrl: './adminevent.component.css',
   standalone: true,
   imports: [
-    NgIf, NgFor, ReactiveFormsModule, FormsModule, DatePipe, TranslateModule, SanitizedHtmlPipe,
+    NgIf, NgFor, ReactiveFormsModule, FormsModule, TranslateModule, SanitizedHtmlPipe,
     MatCheckboxModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatDatepickerModule, MatNativeDateModule, MatProgressBarModule, MatTabsModule
   ]
 })
@@ -39,11 +39,46 @@ export class AdminEventComponent implements OnInit {
   public selectedRulesLang = 'en';
   public selectedDescriptionIndex = 0;
   public selectedRulesIndex = 0;
+  public loadFailed = false;
+  public saveError = '';
 
-  constructor(public router: Router, private eventsService: EventsService, private verificationService: VerificationService, private routes: ActivatedRoute, private translate: TranslateService) { }
+  constructor(public router: Router, private eventsService: EventsService, private verificationService: VerificationService, private routes: ActivatedRoute, private translate: TranslateService, private cdr: ChangeDetectorRef) { }
+
+  private buildEditorRoute(eventId: string, secret: string) {
+    return ['/admin', eventId, secret, 'edit'];
+  }
+
+  public cancelEdit() {
+    if (this.eventSecret) {
+      this.router.navigate(['/admin', this.eventSecret]);
+      return;
+    }
+
+    this.router.navigate(['/admin']);
+  }
+
+  private requestViewRefresh() {
+    queueMicrotask(() => {
+      try {
+        this.cdr.detectChanges();
+      } catch {
+        // Ignore teardown timing issues.
+      }
+    });
+  }
+
+  private isGuidLike(value: string): boolean {
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+  }
+
+  private isSha256Like(value: string): boolean {
+    return /^[0-9a-f]{64}$/i.test(value);
+  }
 
   ngOnInit() {
     this.routes.paramMap.subscribe(params => {
+      this.loadFailed = false;
+      this.saveError = '';
       this.eventId = params.get('id')!;
       this.eventSecret = params.get('secret')!;
       if (this.eventId === "00000000-0000-0000-0000-000000000000") {
@@ -74,37 +109,53 @@ export class AdminEventComponent implements OnInit {
             diploma: '',
             excludeCallsigns: ''
         }
+        this.requestViewRefresh();
       } else {
-        this.eventsService.getEvent(this.eventId, this.eventSecret).subscribe(
-          (response) => {
-            this.event = response;
-            this.ensureLanguageKeys();
-            this.initialEmail = response.email;
-            console.log(response);
-          },
-          (error) => {
-            console.log(error);
-          }
-        );
+        this.loadEventForEditor();
       }
     });
 
   
   }
+
+  private loadEventForEditor() {
+    const looksLikeEventSecret = this.isGuidLike(this.eventSecret) || this.isSha256Like(this.eventSecret);
+    const secretKey = looksLikeEventSecret ? this.eventSecret : '';
+    const adminKey = looksLikeEventSecret ? '' : this.eventSecret;
+
+    this.eventsService.getEvent(this.eventId, secretKey, '', adminKey).subscribe(
+      (response) => {
+        this.applyLoadedEvent(response);
+      },
+      (error) => {
+        this.event = undefined;
+        this.loadFailed = true;
+        this.requestViewRefresh();
+      }
+    );
+  }
+
+  private applyLoadedEvent(response: any) {
+    this.event = response;
+    this.loadFailed = false;
+    this.saveError = '';
+    this.ensureLanguageKeys();
+    this.initialEmail = response.email;
+    this.requestViewRefresh();
+  }
   onSubmit() {
     if (this.event) { 
+      this.saveError = '';
       this.event.secretKey = this.eventSecret;
       this.ensureLanguageKeys();
       if (this.initialEmail != this.event.email) {
         if (!this.codeGenerated) {
           //send email
           this.verificationService.SendVerificationEmail(this.event.email).subscribe(
-            (response) => {
-              console.log(response);
+            () => {
               this.codeGenerated = true;
             },
-            error => {
-              console.log(error);
+            () => {
               alert(this.translate.instant('Sending Email validation failed, try again later!'));
             }
           );
@@ -113,14 +164,11 @@ export class AdminEventComponent implements OnInit {
           //validate email
 
           this.verificationService.VerifyEmail(this.emailValidationCode, this.event.email).subscribe(
-            (response) => {
-              console.log(response);
-
+            () => {
               this.initialEmail = this.event?.email ?? "";
               this.updateEvent();
             },
-            error => {
-              console.log(error);
+            () => {
               alert(this.translate.instant('Email validation failed, code not valid!'));
             }
           );
@@ -132,22 +180,31 @@ export class AdminEventComponent implements OnInit {
   }
 
     private updateEvent() {
-        this.eventsService.updateEvent(this.event).subscribe(
+      this.eventsService.updateEvent(this.event, this.eventSecret).subscribe(
             (response) => {
-                console.log(response);
+                this.saveError = '';
 
 
                 if (this.event && this.event.id === "00000000-0000-0000-0000-000000000000") {
-                    this.router.navigate(['/', response.hamEvent.id, response.secretKey]);
+            this.router.navigate(this.buildEditorRoute(response.hamEvent.id, response.secretKey));
                 } else {
-                    this.router.navigate(['/', this.eventId, this.eventSecret]);
+            this.router.navigate(this.buildEditorRoute(this.eventId, this.eventSecret));
                 }
             },
           error => {
-            alert(error);
-              console.log(error);
+            this.saveError = this.extractHttpError(error, this.translate.instant('Saving event failed.'));
+            this.requestViewRefresh();
             }
         );
+    }
+
+    private extractHttpError(error: any, fallback: string) {
+      if (!error) return fallback;
+      if (typeof error === 'string') return error;
+      if (typeof error?.error === 'string' && error.error.trim()) return error.error;
+      if (typeof error?.message === 'string' && error.message.trim()) return error.message;
+      if (error?.status) return `${fallback} (${error.status})`;
+      return fallback;
     }
 
     private ensureLanguageKeys() {

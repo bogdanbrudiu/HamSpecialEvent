@@ -1,14 +1,13 @@
 import { AfterViewInit, Component, Inject, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EventsService, HamEvent } from '../../events.service';
 import { QSO, QSOsService } from '../../qsos.service';
 import { PdfService } from '../../pdf.service';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
-import { UploadComponent } from '../upload/upload.component';
 import { NgxPaginationModule } from 'ngx-pagination';
-import { NgIf, NgFor, DatePipe } from '@angular/common';
+import { NgIf, DatePipe } from '@angular/common';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -28,6 +27,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { EditQsoDialogComponent } from './edit-qso-dialog.component';
 import { ConfirmDialogComponent } from './confirm-dialog.component';
+import { UploadComponent } from '../upload/upload.component';
 
 
 declare let gtag: Function;
@@ -36,7 +36,7 @@ declare let gtag: Function;
   templateUrl: './adminqsos.component.html',
   styleUrl: './adminqsos.component.css',
   standalone: true,
-  imports: [NgIf, UploadComponent, RouterLink, ReactiveFormsModule, NgFor, DatePipe, FormsModule, NgxPaginationModule, TranslateModule,
+  imports: [NgIf, DatePipe, ReactiveFormsModule, FormsModule, NgxPaginationModule, TranslateModule,
     MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatTableModule, MatPaginatorModule, MatProgressBarModule, MatDialogModule, MatSortModule, MatSnackBarModule
   ]
 })
@@ -141,7 +141,7 @@ export class AdminQSOsComponent implements AfterViewInit {
       }
   }
   edit() {
-    this.router.navigate([this.eventId, this.eventSecret,'edit']);
+    this.router.navigate(['admin', this.eventId, this.eventSecret, 'edit']);
   }
   top() {
     this.router.navigate([this.eventId, 'top']);

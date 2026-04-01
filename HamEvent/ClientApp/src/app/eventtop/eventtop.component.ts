@@ -22,7 +22,7 @@ declare let gtag: Function;
     ReactiveFormsModule,
     RouterModule,
     TranslateModule,
-    NgxPaginationModule,
+    NgxPaginationModule
   ]
 })
 export class EventTopComponent {

@@ -1,0 +1,27 @@
+<div class="recovery-container">
+  <h1>{{ 'AdminLinkRecovery' | translate }}</h1>
+  <p>{{ 'RecoveryDescription' | translate }}</p>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="recovery-form">
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>{{ 'Email' | translate }}</mat-label>
+      <input matInput type="email" formControlName="email" />
+      <mat-error *ngIf="form.controls.email.hasError('required')">
+        {{ 'RecoveryEmailRequired' | translate }}
+      </mat-error>
+      <mat-error *ngIf="form.controls.email.hasError('email')">
+        {{ 'RecoveryEmailInvalid' | translate }}
+      </mat-error>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit" [disabled]="sending">
+      {{ sending ? ('Sending...' | translate) : ('SendRecoveryLink' | translate) }}
+    </button>
+  </form>
+
+  <div class="status" *ngIf="status !== 'idle'">
+    <div *ngIf="status === 'success'" class="success">{{ 'RecoverySuccess' | translate:{count: message} }}</div>
+    <div *ngIf="status === 'notfound'" class="info">{{ 'RecoveryNotFound' | translate }}</div>
+    <div *ngIf="status === 'error'" class="error">{{ 'RecoveryError' | translate }}</div>
+  </div>
+</div>

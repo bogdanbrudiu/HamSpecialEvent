@@ -15,6 +15,7 @@
         public const int GetLive = 1010;
         public const int AddEvent = 1011;
         public const int SendingEmail = 1012;
+        public const int RecoverAdminLinks = 1013;
         
     }
 }

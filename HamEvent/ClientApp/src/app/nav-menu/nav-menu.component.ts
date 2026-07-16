@@ -1,38 +1,39 @@
 import { Component } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute, NavigationEnd, NavigationStart, Params, Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
+import { ActivatedRoute, NavigationEnd, Router, RouterLink } from '@angular/router';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { filter, map } from 'rxjs';
 import { EventsService, HamEvent } from '../events.service';
 import { QSOsService } from '../qsos.service';
+import { LanguageSelectorComponent } from '../language-selector/language-selector.component';
+import { MatAnchor } from '@angular/material/button';
+import { MatToolbar } from '@angular/material/toolbar';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
-  selector: 'app-nav-menu',
-  templateUrl: './nav-menu.component.html'
+    selector: 'app-nav-menu',
+    templateUrl: './nav-menu.component.html',
+    styleUrls: ['./nav-menu.component.css'],
+  standalone: true,
+  imports: [MatIcon, MatToolbar, MatAnchor, RouterLink, LanguageSelectorComponent, TranslateModule]
 })
 export class NavMenuComponent {
   isExpanded = false;
 
   siteLanguage = 'English';
-  languageList = [
-    { code: 'en', label: 'English' },
-    { code: 'ro', label: 'Română' },
-  ];
   public eventId: string = '';
   public event: HamEvent | undefined;
   public isLive: boolean = false;
 
   constructor(private translate: TranslateService, private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService, private router: Router, private titleService: Title) { }
   changeSiteLanguage(localeCode: string): void {
-    const selectedLanguage = this.languageList
-      .find((language) => language.code === localeCode)
-      ?.label.toString();
-    if (selectedLanguage) {
-      this.siteLanguage = selectedLanguage;
-      this.translate.use(localeCode);
+    this.siteLanguage = localeCode;
+    this.translate.use(localeCode);
+    if (this.event?.name) {
+      this.titleService.setTitle(this.event.name);
+    } else {
+      this.titleService.setTitle(this.translate.instant("HamEvents"));
     }
-    const currentLanguage = this.translate.currentLang;
-    console.log('currentLanguage', currentLanguage);
   }
 
   collapse() {
@@ -57,9 +58,12 @@ export class NavMenuComponent {
       map(() => this.rootRoute(this.routes)),
       filter((route: ActivatedRoute) => route.outlet === 'primary'),
     ).subscribe((route: ActivatedRoute) => {
+      console.log(route);
       var id = route.snapshot.paramMap.get('id')
+      var secret = route.snapshot.paramMap.get('secret')
       if (id != null && id !='00000000-0000-0000-0000-000000000000') {
         this.eventId = id;
+        console.log(id);
         this.eventsService.getEvent(this.eventId).subscribe(
           (response) => {
             this.event = response;

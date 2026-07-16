@@ -4,14 +4,13 @@ using ElmahCore;
 using ElmahCore.Mvc;
 using HamEvent;
 using HamEvent.Data;
+using HamEvent.Mapping;
 using HamEvent.Services;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using NReco.Logging.File;
+using System.Configuration;
 using System.Net;
-using System.Net.Mail;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,8 +20,8 @@ builder.Services.Configure<MailerSettings>(builder.Configuration.GetSection("Mai
 builder.Services.AddScoped<ICoreMvcMailer, CoreMvcMailer>();
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-var tokenSecret = builder.Configuration["Token:Secret"] ?? throw new ArgumentNullException("Token:Secret", "Token secret is not configured.");
+MapsterConfig.Register(TypeAdapterConfig.GlobalSettings);
+var tokenSecret = builder.Configuration["Token:Secret"] ?? throw new ConfigurationErrorsException("Token secret is not configured.");
 
 builder.Services.AddSingleton<TokenService>(provider => new TokenService(tokenSecret));
 
@@ -39,10 +38,10 @@ builder.Services.AddElmah<XmlFileErrorLog>(options =>
 {
     options.Filters.Add(new MyElmahFilter());
     options.OnPermissionCheck = context => wl.Whitelist
-                .Where(ip => IPAddress.Parse(ip)
-                .Equals(context.Connection.RemoteIpAddress))
-                .Any();
+                .Any(ip => IPAddress.Parse(ip)
+                .Equals(context.Connection.RemoteIpAddress));
     options.LogPath = "~/log";
+    options.Path = "/api/elmah";
 });
 builder.Services.AddLogging(loggingBuilder => {
     var loggingSection = builder.Configuration.GetSection("Logging");
@@ -59,25 +58,16 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseRouting();
 
+app.UseElmah();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller}/{action=Index}/{id?}");
 
-app.MapFallbackToFile("index.html");
-app.UseElmah();
+app.MapRazorPages();
+
 app.Run();
-
-
-public class MailerSettings
-{
-    public string From { get; set; } = String.Empty;
-    public string Username { get; set; } = String.Empty;
-    public string Password { get; set; } = String.Empty;
-    public string Host { get; set; } = String.Empty;
-    public short Port { get; set; } 
-    public Boolean EnableSSL { get; set; } 
-}

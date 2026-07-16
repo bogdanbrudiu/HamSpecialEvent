@@ -1,0 +1,104 @@
+<div class="row" style="margin-bottom:15px;">
+  <p *ngIf="!event"><em>{{'Loading...' | translate}}</em></p>
+  <form *ngIf="event">
+    <div class="mb-3" *ngIf="event.email!=initialEmail && codeGenerated">
+      <label for="emailValidationCode" class="form-label">{{'Email Validation Code' | translate}}</label>
+      <input type="text" class="form-control" id="emailValidationCode" [(ngModel)]="emailValidationCode" name="emailValidationCode">
+    </div>
+    <button type="submit" class="btn btn-primary" (click)="onSubmit()">{{(event.email!=initialEmail && !codeGenerated) ? 'Email verification':(event.id==='00000000-0000-0000-0000-000000000000' ? 'Add' : 'Update') | translate}}</button>
+  </form>
+</div>
+
+<mat-card class="admin-event-card">
+  <mat-card-title>{{ event?.id === '00000000-0000-0000-0000-000000000000' ? ('Create Event' | translate) : ('Edit Event' | translate) }}</mat-card-title>
+  <mat-card-content>
+    <form (ngSubmit)="onSubmit()" *ngIf="event">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'Name' | translate }}</mat-label>
+        <input matInput [(ngModel)]="event.name" name="name" required>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'Start Date' | translate }}</mat-label>
+        <input matInput [matDatepicker]="startPicker" [(ngModel)]="event.startDate" name="startDate" required>
+        <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+        <mat-datepicker #startPicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'End Date' | translate }}</mat-label>
+        <input matInput [matDatepicker]="endPicker" [(ngModel)]="event.endDate" name="endDate" required>
+        <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+        <mat-datepicker #endPicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'Description' | translate }}</mat-label>
+        <mat-tab-group [selectedIndex]="selectedDescriptionIndex" (selectedIndexChange)="onDescriptionTabChange($event)">
+          <mat-tab *ngFor="let lang of languages" [label]="lang">
+            <textarea matInput rows="3" [(ngModel)]="event.description[lang]" [name]="'description_' + lang"></textarea>
+            <div *ngIf="event.description[lang]" class="description-html-preview">
+              <div [innerHtml]="event.description[lang] | sanitizedHtml"></div>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'Rules' | translate }}</mat-label>
+        <mat-tab-group [selectedIndex]="selectedRulesIndex" (selectedIndexChange)="onRulesTabChange($event)">
+          <mat-tab *ngFor="let lang of languages" [label]="lang">
+            <textarea matInput rows="6" [(ngModel)]="event.rules[lang]" [name]="'rules_' + lang"></textarea>
+            <div *ngIf="event.rules[lang]" class="rules-html-preview">
+              <div [innerHtml]="event.rules[lang] | sanitizedHtml"></div>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'Email' | translate }}</mat-label>
+        <input matInput [(ngModel)]="event.email" name="email" required type="email">
+      </mat-form-field>
+
+      <div *ngIf="initialEmail !== event.email">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'Email Validation Code' | translate }}</mat-label>
+          <input matInput [(ngModel)]="emailValidationCode" name="emailValidationCode">
+        </mat-form-field>
+        <button mat-stroked-button color="primary" type="button" (click)="onSubmit()">
+          {{ codeGenerated ? ('Validate Email' | translate) : ('Send Validation Code' | translate) }}
+        </button>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'Diploma' | translate }}</mat-label>
+        <input matInput [(ngModel)]="event.diploma" name="diploma">
+      </mat-form-field>
+
+      <!-- Diploma image preview -->
+      <div *ngIf="event.diploma" class="diploma-image-preview diploma-html-preview">
+        <!--<img [src]="event.diploma" alt="Diploma" style="max-width:100%;max-height:200px;margin-bottom:1rem;">-->
+        <div [innerHtml]="event.diploma | sanitizedHtml" style="margin-left: 338px;"></div>
+      </div>
+
+      <!-- hasTop checkbox -->
+      <mat-checkbox [(ngModel)]="event.hasTop" name="hasTop" [ngModelOptions]="{standalone: true}">
+        {{ 'Has Top' | translate }}
+      </mat-checkbox>
+
+      <!-- Excluded signs list -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'Excluded Callsigns' | translate }}</mat-label>
+        <textarea matInput rows="2" [(ngModel)]="event.excludeCallsigns" name="excludeCallsigns"></textarea>
+        <mat-hint>{{ 'Comma separated' | translate }}</mat-hint>
+      </mat-form-field>
+
+      <div class="actions">
+        <button mat-raised-button color="primary" type="submit">{{ 'Save' | translate }}</button>
+        <button mat-button color="warn" type="button" (click)="router.navigate(['/admin'])">{{ 'Cancel' | translate }}</button>
+      </div>
+    </form>
+    <mat-progress-bar *ngIf="!event" mode="indeterminate"></mat-progress-bar>
+  </mat-card-content>
+</mat-card>

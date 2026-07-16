@@ -1,11 +1,19 @@
-import { Component, Inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLinkActive, RouterLink } from '@angular/router';
 import { HamEvent, EventsService } from '../events.service';
+import { TranslateModule } from '@ngx-translate/core';
+import { EventCardComponent } from '../event-card/event-card.component';
+import { FlexModule } from '@angular/flex-layout/flex';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { NgIf, NgFor, DatePipe } from '@angular/common';
 
 @Component({
-  selector: 'app-events',
-  templateUrl: './events.component.html'
+    selector: 'app-events',
+    templateUrl: './events.component.html',
+    styleUrls: ['./events.component.css'],
+    standalone: true,
+    imports: [RouterLinkActive, RouterLink, NgIf, NgFor, NgxPaginationModule, FlexModule, EventCardComponent, DatePipe, TranslateModule]
 })
 export class EventsComponent {
   searchForm!: FormGroup;
@@ -15,10 +23,10 @@ export class EventsComponent {
   tableSize: number = 10;
   public loaded = false;
 
+  gridColumns = 3;
 
   constructor(private router: Router, private eventsService: EventsService) {
     this.loadData()
-   
   }
 
   loadData() {

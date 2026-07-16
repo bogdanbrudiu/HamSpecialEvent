@@ -1,0 +1,19 @@
+<app-responsive-toolbar *ngIf="event"
+                        [event]="event"
+                        [enableTabSelection]="true"
+                        [selectedTab]="selectedTab"
+                        (tabChanged)="onTabChanged($event)">
+</app-responsive-toolbar>
+
+<div class="mat-elevation-z8 page-header" *ngIf="event">
+  <ng-container [ngSwitch]="selectedTab">
+    <app-event-overview-tab *ngSwitchCase="'overview'" [event]="event"></app-event-overview-tab>
+    <app-event-rules-tab *ngSwitchCase="'rules'"></app-event-rules-tab>
+    <app-event-logs-tab *ngSwitchCase="'logs'"
+                        [logs]="logs"
+                        [displayedColumns]="displayedColumns"></app-event-logs-tab>
+    <app-event-rankings-tab *ngSwitchCase="'rankings'"
+                            [top]="top"
+                            [displayedColumnsTop]="displayedColumnsTop"></app-event-rankings-tab>
+  </ng-container>
+</div>

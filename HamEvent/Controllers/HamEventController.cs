@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using M0LTE.AdifLib;
+﻿using M0LTE.AdifLib;
 using Microsoft.AspNetCore.Mvc;
 using HamEvent.Data;
 using HamEvent.Data.Model;
@@ -17,6 +16,7 @@ using Microsoft.Extensions.Options;
 using CoreMailer.Interfaces;
 using CoreMailer.Models;
 using HamEvent.Services;
+using System.Collections.Generic;
 
 namespace HamEvent.Controllers
 {
@@ -27,24 +27,23 @@ namespace HamEvent.Controllers
         private readonly ICoreMvcMailer _mailer;
         private readonly MailerSettings _mailerSettings;
 
-        private readonly IMapper _mapper;
         private readonly HamEventContext _dbcontext;
         private readonly ILogger<HamEventController> _logger;
 
-        public HamEventController(ILogger<HamEventController> logger ,IMapper mapper, ICoreMvcMailer mailer, IOptions<MailerSettings> mailerSettings, TokenService tokenService, HamEventContext dbcontext)
+        public HamEventController(ILogger<HamEventController> logger, ICoreMvcMailer mailer, IOptions<MailerSettings> mailerSettings, TokenService tokenService, HamEventContext dbcontext)
         {
             _logger = logger;
-            _mapper = mapper;
             _mailer = mailer;
-            _mailerSettings = mailerSettings.Value;
+            _mailerSettings = mailerSettings?.Value ?? new MailerSettings();
 
             _dbcontext = dbcontext;
         }
 
         [HttpGet("QSOs/{hamevent}")]
-        public PageResult<QSO> Get(Guid hamevent, int? page, int pagesize = 10, string callsign = "")
+        public PageResult<QSO> Get(Guid hamevent, [FromQuery] int? page, [FromQuery] int? pagesize, [FromQuery] string callsign = "")
         {
-            _logger.LogInformation(MyLogEvents.GetQSOs, "Get QSOs for event {0} page {1} paginated by {2} per page, filtered by {3}",hamevent, page, pagesize, callsign);
+            int actualPageSize = pagesize ?? 10;
+            _logger.LogInformation(MyLogEvents.GetQSOs, "Get QSOs for event {0} page {1} paginated by {2} per page, filtered by {3}", hamevent, page, actualPageSize, callsign);
             IQueryable<QSO> qsos;
             try
             {
@@ -55,7 +54,7 @@ namespace HamEvent.Controllers
                 }
             }
             catch(Exception ex) {
-                _logger.LogError(MyLogEvents.GetQSOs,ex, "Failed getting QSOs for event {0} page {1} paginated by {2} per page, filtered by {3}", hamevent, page, pagesize, callsign);
+                _logger.LogError(MyLogEvents.GetQSOs,ex, "Failed getting QSOs for event {0} page {1} paginated by {2} per page, filtered by {3}", hamevent, page, actualPageSize, callsign);
 
                 return new PageResult<QSO>
                 {
@@ -68,7 +67,7 @@ namespace HamEvent.Controllers
             return new PageResult<QSO>
             {
                 Count = countDetails,
-                Data = qsos.Skip((page - 1 ?? 0) * pagesize).Take(pagesize).ToList()
+                Data = qsos.Skip((page - 1 ?? 0) * actualPageSize).Take(actualPageSize).ToList()
             };
         }
         public class Participant
@@ -141,6 +140,108 @@ namespace HamEvent.Controllers
             public IEnumerable<QSO> lastQSOs { get; set; } = new List<QSO>();
         }
 
+        public class BandModeStat
+        {
+            public string Band { get; set; } = string.Empty;
+            public string Mode { get; set; } = string.Empty;
+            public int Count { get; set; }
+        }
+
+        public class FoxBandStat
+        {
+            public string Fox { get; set; } = string.Empty;
+            public string Band { get; set; } = string.Empty;
+            public int Count { get; set; }
+            public int Total { get; set; }
+        }
+
+        public class FoxDailyStat
+        {
+            public string Fox { get; set; } = string.Empty;
+            public string Day { get; set; } = string.Empty;
+            public int Count { get; set; }
+        }
+
+        public class EventStatsResult
+        {
+            public int TotalQsos { get; set; }
+            public IEnumerable<BandModeStat> BandModeTotals { get; set; } = new List<BandModeStat>();
+            public IEnumerable<FoxBandStat> FoxBandTotals { get; set; } = new List<FoxBandStat>();
+            public IEnumerable<FoxDailyStat> FoxDailyTotals { get; set; } = new List<FoxDailyStat>();
+        }
+
+        [HttpGet("Stats/{hamevent}")]
+        public ActionResult<EventStatsResult> Stats(Guid hamevent)
+        {
+            _logger.LogInformation(MyLogEvents.GetEvents, "Get statistics for event {eventId}", hamevent);
+            try
+            {
+                var qsos = _dbcontext.QSOs.Where(q => q.EventId.Equals(hamevent)).ToList();
+                var totalQsos = qsos.Count;
+
+                var bandModeTotals = qsos
+                    .GroupBy(q => new { q.Band, q.Mode })
+                    .Select(g => new BandModeStat
+                    {
+                        Band = g.Key.Band,
+                        Mode = g.Key.Mode,
+                        Count = g.Count()
+                    })
+                    .OrderBy(b => b.Band)
+                    .ThenBy(b => b.Mode)
+                    .ToList();
+
+                var foxTotals = qsos
+                    .GroupBy(q => q.Callsign1)
+                    .Select(g => new { Fox = g.Key, Total = g.Count() })
+                    .ToDictionary(x => x.Fox, x => x.Total);
+
+                var foxBandTotals = qsos
+                    .GroupBy(q => new { q.Callsign1, q.Band })
+                    .Select(g => new FoxBandStat
+                    {
+                        Fox = g.Key.Callsign1,
+                        Band = g.Key.Band,
+                        Count = g.Count(),
+                        Total = 0
+                    })
+                    .ToList();
+
+                foreach (var stat in foxBandTotals)
+                {
+                    if (foxTotals.TryGetValue(stat.Fox, out var total))
+                    {
+                        stat.Total = total;
+                    }
+                }
+
+                var foxDailyTotals = qsos
+                    .GroupBy(q => new { q.Callsign1, Day = q.Timestamp.Date })
+                    .Select(g => new FoxDailyStat
+                    {
+                        Fox = g.Key.Callsign1,
+                        Day = g.Key.Day.ToString("yyyy-MM-dd"),
+                        Count = g.Count()
+                    })
+                    .OrderBy(g => g.Fox)
+                    .ThenBy(g => g.Day)
+                    .ToList();
+
+                return Ok(new EventStatsResult
+                {
+                    TotalQsos = totalQsos,
+                    BandModeTotals = bandModeTotals,
+                    FoxBandTotals = foxBandTotals,
+                    FoxDailyTotals = foxDailyTotals
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(MyLogEvents.GetEvents, ex, "Failed to get statistics for event {eventId}", hamevent);
+                return Ok(new EventStatsResult());
+            }
+        }
+
         [HttpGet("Live/{hamevent}")]
         public ActionResult<List<Operator>> Live(Guid hamevent)
         {
@@ -160,7 +261,7 @@ namespace HamEvent.Controllers
 
                 return new List<Operator>();
             }
-         
+        
             return operators.ToList();
         }
         [HttpGet("hamevents")]
@@ -174,9 +275,9 @@ namespace HamEvent.Controllers
 
                 events = _dbcontext.Events.Include(e => e.QSOs);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _logger.LogError(MyLogEvents.GetEvents,ex, "Failed getting Events page {0} paginated by {1} per page", page, pagesize);
+                _logger.LogError(MyLogEvents.GetEvents, ex, "Failed getting Events page {0} paginated by {1} per page", page, pagesize);
 
                 return new PageResult<Event>
                 {
@@ -184,7 +285,7 @@ namespace HamEvent.Controllers
                     Data = new List<Event>()
                 };
             }
-            events = events.OrderByDescending(e=>e.Name);
+            events = events.OrderByDescending(e => e.Name);
             events.ForEachAsync(e => e.SecretKey = "");
             var countDetails = events.Count();
             return new PageResult<Event>
@@ -196,7 +297,7 @@ namespace HamEvent.Controllers
 
 
         [HttpGet("Diploma/{hamevent}/{callsign}")]
-        public IActionResult PDF(Guid hamevent, string callsign)
+        public IActionResult PDF(Guid hamevent, string callsign, [FromQuery] string? lang = null)
         {
             _logger.LogInformation(MyLogEvents.GetDiploma, "Get Diploma for event {0} callsign {1}", hamevent, callsign);
 
@@ -222,7 +323,7 @@ namespace HamEvent.Controllers
 
                 diplomahtml = diplomahtml.Replace("--callsign2--", callsign.ToUpper());
                 diplomahtml = diplomahtml.Replace("--EventName--", myevent.Name);
-                diplomahtml = diplomahtml.Replace("--EventDescription--", myevent.Description);
+                diplomahtml = diplomahtml.Replace("--EventDescription--", myevent.GetDescription(lang));
 
 
 
@@ -257,7 +358,7 @@ namespace HamEvent.Controllers
                     diplomahtml = diplomahtml.Replace("--Modes--", participant.Mode.ToString());
 
                     diplomahtml = diplomahtml.Replace("--Rank--", participant.Rank.ToString());
-                    diplomahtml = diplomahtml.Replace("--Timestamp--", DateTime.UtcNow.ToString());
+                    diplomahtml = diplomahtml.Replace("--Timestamp--", DateTime.UtcNow.ToString("u"));
 
                     SelectPdf.HtmlToPdf converter = new SelectPdf.HtmlToPdf();
                     // set converter options
@@ -299,6 +400,86 @@ namespace HamEvent.Controllers
         }
 
         #region For Admin
+        public class AdminLinkRecoveryRequest
+        {
+            public string Email { get; set; } = string.Empty;
+        }
+
+        [HttpPost("hamevent/recover")]
+        public async Task<IActionResult> RecoverAdminLinks([FromBody] AdminLinkRecoveryRequest request)
+        {
+            if (request == null || string.IsNullOrWhiteSpace(request.Email))
+            {
+                return BadRequest("Email is required.");
+            }
+
+            var normalizedEmail = request.Email.Trim();
+            _logger.LogInformation(MyLogEvents.RecoverAdminLinks, "Recovering admin links for email {email}", normalizedEmail);
+
+            try
+            {
+                var eventsForEmail = _dbcontext.Events.Where(e => e.Email.ToLower() == normalizedEmail.ToLower()).ToList();
+
+                if (!eventsForEmail.Any())
+                {
+                    _logger.LogInformation(MyLogEvents.RecoverAdminLinks, "No events found for email {email}", normalizedEmail);
+                    return NotFound();
+                }
+
+                var baseUrl = $"{HttpContext?.Request?.Scheme ?? "https"}://{HttpContext?.Request?.Host.Value ?? "localhost"}{HttpContext?.Request?.PathBase.Value}".TrimEnd('/');
+                var eventLinks = new List<(Event, Guid)>();
+
+                foreach (var ev in eventsForEmail)
+                {
+                    var secretKey = Guid.NewGuid();
+                    ev.SecretKey = ComputeSha256Hash(secretKey);
+                    eventLinks.Add((ev, secretKey));
+                }
+
+                await _dbcontext.SaveChangesAsync();
+
+                MailerModel mdl = new MailerModel(_mailerSettings.Host, _mailerSettings.Port)
+                {
+                    ToAddresses = new List<string>() { normalizedEmail },
+                    FromAddress = _mailerSettings.From,
+                    IsHtml = true,
+                    ViewFile = "Shared/RecoverEvents.html",
+                    Subject = "Admin link recovery",
+                    User = _mailerSettings.Username,
+                    Key = _mailerSettings.Password,
+                    EnableSsl = _mailerSettings.EnableSSL,
+                    Model = new
+                    {
+                        baseUrl,
+                        events = eventLinks.Select(e => new
+                        {
+                            name = e.Item1.Name,
+                            url = $"{baseUrl}/{e.Item1.Id}/{e.Item2}"
+                        }).ToList()
+                    }
+                };
+
+                _logger.LogDebug(MyLogEvents.SendingEmail, "Sending recovery email to {email}", normalizedEmail);
+                try
+                {
+                    await _mailer.SendAsync(mdl);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(MyLogEvents.SendingEmail, ex, "Error sending recovery email to {email}", normalizedEmail);
+                    return StatusCode(500, "Error sending recovery email.");
+                }
+
+                _logger.LogInformation(MyLogEvents.RecoverAdminLinks, "Recovery email sent for {count} events", eventsForEmail.Count);
+                return Ok(new { count = eventsForEmail.Count });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(MyLogEvents.RecoverAdminLinks, ex, "Failed to recover admin links for email {email}", normalizedEmail);
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
         [HttpPost("hamevent")]
         public ActionResult Post(Event hamevent)
         {
@@ -311,7 +492,8 @@ namespace HamEvent.Controllers
                     var myevent = new Event()
                     {
                         Name = hamevent.Name,
-                        Description = hamevent.Description,
+                        Description = Event.CopyLocalizedValues(hamevent.Description),
+                        Rules = Event.CopyLocalizedValues(hamevent.Rules),
                         Diploma = hamevent.Diploma,
                         Email = hamevent.Email
                     };
@@ -326,6 +508,7 @@ namespace HamEvent.Controllers
                         _dbcontext.SaveChanges();
 
 
+                    var baseUrl = $"{HttpContext?.Request?.Scheme ?? "https"}://{HttpContext?.Request?.Host.Value ?? "localhost"}{HttpContext?.Request?.PathBase.Value}".TrimEnd('/');
                     MailerModel mdl = new MailerModel(_mailerSettings.Host, _mailerSettings.Port)
                     {
                         ToAddresses = new List<string>() { myevent.Email },
@@ -336,7 +519,7 @@ namespace HamEvent.Controllers
                         User = _mailerSettings.Username,
                         Key = _mailerSettings.Password,
                         EnableSsl = _mailerSettings.EnableSSL,
-                        Model = new { id = myevent.Id, secretKey = secretKey }
+                        Model = new { id = myevent.Id, secretKey = secretKey, baseUrl }
                     };
                     _logger.LogDebug(MyLogEvents.SendingEmail, "Sending Email");
                     try
@@ -371,7 +554,8 @@ namespace HamEvent.Controllers
                     else
                     {
                         myevent.Diploma = hamevent.Diploma;
-                        myevent.Description = hamevent.Description;
+                        myevent.Description = Event.CopyLocalizedValues(hamevent.Description);
+                        myevent.Rules = Event.CopyLocalizedValues(hamevent.Rules);
                         myevent.Email = hamevent.Email;
                         myevent.Name = hamevent.Name;
                         myevent.HasTop = hamevent.HasTop;
@@ -404,15 +588,15 @@ namespace HamEvent.Controllers
                 if (secret.HasValue)
                 {
                     var hashedSecret = ComputeSha256Hash(secret.Value);
-                    myevent = _dbcontext.Events.Where(e => e.Id.Equals(hamevent) && e.SecretKey.Equals(hashedSecret)).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Email = e.Email, Diploma = e.Diploma, HasTop = e.HasTop, StartDate = e.StartDate, EndDate = e.EndDate, ExcludeCallsigns=e.ExcludeCallsigns }).FirstOrDefault();
+                    myevent = _dbcontext.Events.Where(e => e.Id.Equals(hamevent) && e.SecretKey.Equals(hashedSecret)).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = Event.CopyLocalizedValues(e.Description), Email = e.Email, Diploma = e.Diploma, HasTop = e.HasTop, StartDate = e.StartDate, EndDate = e.EndDate, ExcludeCallsigns=e.ExcludeCallsigns, Rules = Event.CopyLocalizedValues(e.Rules) }).FirstOrDefault();
                 }
                 else
                 {
-                    myevent = _dbcontext.Events.Where(e => e.Id == hamevent).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Email = e.Email, Diploma = e.Diploma, HasTop = e.HasTop, StartDate = e.StartDate, EndDate = e.EndDate, ExcludeCallsigns = e.ExcludeCallsigns }).FirstOrDefault();
+                    myevent = _dbcontext.Events.Where(e => e.Id == hamevent).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = Event.CopyLocalizedValues(e.Description), Email = e.Email, Diploma = e.Diploma, HasTop = e.HasTop, StartDate = e.StartDate, EndDate = e.EndDate, ExcludeCallsigns = e.ExcludeCallsigns, Rules = e.Rules }).FirstOrDefault();
                 }
 
                 if (myevent == null) return NotFound();
-                else return Ok(myevent);
+                return Ok(myevent);
             }
             catch (Exception ex)
             {
@@ -440,7 +624,7 @@ namespace HamEvent.Controllers
                             var adif = reader.ReadToEnd();
                             AdifFile.TryParse(adif, out var file);
                             List<AdifContactRecord> adifQSOs = file.Records.ToList();
-                            List<QSO> QSOs = _mapper.Map<List<AdifContactRecord>, List<QSO>>(adifQSOs);
+                            List<QSO> QSOs = Mapster.TypeAdapter.Adapt<List<QSO>>(adifQSOs);
                             foreach (QSO myQSO in QSOs)
                             {
                                 myQSO.EventId = hamevent;
@@ -486,7 +670,7 @@ namespace HamEvent.Controllers
                 AdifFile export = new AdifFile();
                 export.Header = new AdifHeaderRecord();
                 export.Header.Fields.Add("Event", myevent.Name);
-                export.Header.Fields.Add("Description", myevent.Description);
+                export.Header.Fields.Add("Description", myevent.GetDescription());
                 foreach (var qso in _dbcontext.QSOs.Where(q => q.EventId.Equals(hamevent)))
                 {
                     AdifContactRecord item = new AdifContactRecord();
@@ -513,12 +697,13 @@ namespace HamEvent.Controllers
         {
             var hashedSecret = ComputeSha256Hash(secret);
             _logger.LogInformation(MyLogEvents.DeleteQSO, "Delete QSO callsign1 {0}, callsign2 {1}, mode {2}, band {3}, timestamp {4} from event {5}", callsign1, callsign2, mode, band, timestamp, hamevent);
-            var myqso = _dbcontext.QSOs.Where(qso => qso.EventId == hamevent &&
+            var parsedTimestamp = DateTime.Parse(timestamp, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
+            var myqso = _dbcontext.QSOs.Include(q => q.Event).Where(qso => qso.EventId == hamevent &&
                                                        qso.Callsign1 == callsign1 &&
                                                        qso.Callsign2 == callsign2 &&
                                                        qso.Mode == mode &&
                                                        qso.Band == band &&
-                                                       qso.Timestamp == DateTime.Parse(timestamp, CultureInfo.InvariantCulture) &&
+                                                       qso.Timestamp == parsedTimestamp &&
                                                        qso.Event != null && qso.Event.SecretKey == hashedSecret).FirstOrDefault();
             if (myqso == null) return NotFound();
             _dbcontext.QSOs.Remove(myqso);
@@ -543,13 +728,14 @@ namespace HamEvent.Controllers
         public ActionResult Post(Guid hamevent, Guid secret, [FromQuery] string callsign1, [FromQuery] string callsign2, [FromQuery] string mode, [FromQuery] string band, [FromQuery] string timestamp, [FromBody] QSO updatedQSO)
         {
             var hashedSecret = ComputeSha256Hash(secret);
+            var parsedTimestamp = DateTime.Parse(timestamp, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
             _logger.LogInformation(MyLogEvents.UpdateQSO, "Update QSO callsign1 {0}, callsign2 {1}, mode {2}, band {3}, timestamp {4} from event {5} to callsign1 {6}, callsign2 {7}, mode {8}, band {9}, timestamp {10}", callsign1, callsign2, mode, band, timestamp, hamevent, updatedQSO.Callsign1, updatedQSO.Callsign2, updatedQSO.Mode, updatedQSO.Band, updatedQSO.Timestamp);
             var myqso = _dbcontext.QSOs.Where(qso => qso.EventId == hamevent &&
                                                        qso.Callsign1 == callsign1 &&
                                                        qso.Callsign2 == callsign2 &&
                                                        qso.Mode == mode &&
                                                        qso.Band == band &&
-                                                       qso.Timestamp == DateTime.Parse(timestamp, CultureInfo.InvariantCulture) &&
+                                                       qso.Timestamp == parsedTimestamp &&
                                                        qso.Event != null && qso.Event.SecretKey == hashedSecret).FirstOrDefault();
             if (myqso == null) return NotFound();
             updatedQSO.RST1 = myqso.RST1;

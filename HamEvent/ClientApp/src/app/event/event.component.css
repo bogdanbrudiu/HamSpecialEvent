@@ -1,0 +1,44 @@
+.tab-content-wrapper {
+  padding: 20px;
+  /* Ensures the content within the tab is nicely centered or spaced */
+  max-width: 800px;
+  margin: auto;
+}
+
+.event-card {
+  /* Adds some margin around the card within the tab */
+  margin-top: 15px;
+}
+
+.details-section {
+  display: flex;
+  justify-content: space-between; /* Spaces date and location evenly */
+  gap: 20px; /* Space between the two detail items */
+  margin-bottom: 20px;
+  flex-wrap: wrap; /* Allows items to wrap on smaller screens */
+}
+
+.detail-item {
+  display: flex;
+  align-items: center; /* Aligns icon and text vertically */
+}
+
+  .detail-item mat-icon {
+    margin-right: 10px;
+    /* Optional: Adjust icon size slightly */
+  }
+
+.description {
+  margin-top: 20px;
+  line-height: 1.5;
+}
+
+/* Optional: Make the card header stand out */
+mat-card-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.page-header {
+    background-color: white;
+}

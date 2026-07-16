@@ -20,7 +20,8 @@
       "dom"
     ],
     "useDefineForClassFields": false,
-    "types": [ "@types/gtag.js" ]
+    "types": [ "@types/gtag.js" ],
+    "skipLibCheck": true
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

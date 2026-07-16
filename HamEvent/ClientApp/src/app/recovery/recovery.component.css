@@ -1,0 +1,7 @@
+.recovery-container { max-width: 480px; margin: 32px auto; padding: 16px; }
+.recovery-form { display: flex; flex-direction: column; gap: 16px; }
+.full-width { width: 100%; }
+.status { margin-top: 16px; }
+.success { color: #2e7d32; }
+.info { color: #0277bd; }
+.error { color: #c62828; }

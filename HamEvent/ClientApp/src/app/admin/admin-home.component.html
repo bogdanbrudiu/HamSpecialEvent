@@ -1,0 +1,64 @@
+<h2 class="admin-title">Admin Home</h2>
+<p class="admin-welcome">Welcome to the admin area {{ 'Home' | translate }}.</p>
+
+<button mat-raised-button color="primary" class="create-event-btn" (click)="createEvent()">
+  {{ 'Create New Event' | translate }}
+</button>
+
+<h2 class="admin-title">Admin Events</h2>
+<div class="admin-table-container">
+  <table mat-table [dataSource]="events" class="admin-table mat-elevation-z2" *ngIf="loaded && events.length">
+    <!-- Name Column -->
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef>{{ 'Name' | translate }}</th>
+      <td mat-cell *matCellDef="let event" (click)="gotoEvent(event)" class="admin-table-link">
+        {{ event.name }}
+      </td>
+    </ng-container>
+    <!-- Start Date Column -->
+    <ng-container matColumnDef="startDate">
+      <th mat-header-cell *matHeaderCellDef>{{ 'Start Date' | translate }}</th>
+      <td mat-cell *matCellDef="let event" (click)="gotoEvent(event)" class="admin-table-link">
+        {{ event.startDate | date: 'short' }}
+      </td>
+    </ng-container>
+    <!-- Description Column -->
+    <ng-container matColumnDef="description">
+      <th mat-header-cell *matHeaderCellDef>{{ 'Description' | translate }}</th>
+      <td mat-cell *matCellDef="let event" (click)="gotoEvent(event)" class="admin-table-link">
+        {{ event.description }}
+      </td>
+    </ng-container>
+    <!-- Email Column -->
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef>{{ 'Email' | translate }}</th>
+      <td mat-cell *matCellDef="let event" (click)="gotoEvent(event)" class="admin-table-link">
+        {{ event.email }}
+      </td>
+    </ng-container>
+    <!-- Days Column -->
+    <ng-container matColumnDef="days">
+      <th mat-header-cell *matHeaderCellDef>{{ 'Days' | translate }}</th>
+      <td mat-cell *matCellDef="let event" (click)="gotoEvent(event)" class="admin-table-link">
+        {{ event.days }}
+      </td>
+    </ng-container>
+    <!-- QSOs Count Column -->
+    <ng-container matColumnDef="count">
+      <th mat-header-cell *matHeaderCellDef>{{ 'QSOs Count' | translate }}</th>
+      <td mat-cell *matCellDef="let event" (click)="gotoQSOs(event)" class="admin-table-qso-link">
+        <span class="qso-count-link">{{ event.count }}</span>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+  <p *ngIf="loaded && !events.length"><em>No events found.</em></p>
+  <p *ngIf="!loaded"><em>Loading...</em></p>
+  <div class="admin-pagination" *ngIf="count > tableSize">
+    <button mat-stroked-button (click)="onPageChange(page - 1)" [disabled]="page === 1">&lt;</button>
+    <span>Page {{page}} of {{totalPages}}</span>
+    <button mat-stroked-button (click)="onPageChange(page + 1)" [disabled]="page === totalPages">&gt;</button>
+  </div>
+</div>

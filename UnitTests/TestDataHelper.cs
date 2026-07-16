@@ -16,9 +16,10 @@ namespace UnitTests
                     Id = Guid.NewGuid(),
                     SecretKey = HamEventController.ComputeSha256Hash(Guid.NewGuid()),
                     Name = "Name"+i,
-                    Description = "Description"+i,
+                    Description = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "Description"+i } },
                     Email = "Email" + i,
                     Diploma = "Diploma"+i,
+                    Rules = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) { { "en", "Rules"+i } },
                     StartDate = DateTime.Now,
                     EndDate = DateTime.Now.AddDays(1),
                     HasTop = false
@@ -96,6 +97,17 @@ namespace UnitTests
             });
             return result;
 
+        }
+
+        public static List<QSO> GetFakeQSOsForTop(Guid eventId)
+        {
+            return new List<QSO>
+            {
+                new QSO { EventId = eventId, Callsign1 = "Op1", Callsign2 = "User1", Band = "20m", Mode = "SSB", Timestamp = DateTime.UtcNow.AddMinutes(-5), Freq = "14000" },
+                new QSO { EventId = eventId, Callsign1 = "Op1", Callsign2 = "User1", Band = "40m", Mode = "CW", Timestamp = DateTime.UtcNow.AddMinutes(-10), Freq = "7000" },
+                new QSO { EventId = eventId, Callsign1 = "Op2", Callsign2 = "User2", Band = "20m", Mode = "SSB", Timestamp = DateTime.UtcNow.AddMinutes(-15), Freq = "14000" },
+                new QSO { EventId = eventId, Callsign1 = "Op2", Callsign2 = "User2", Band = "80m", Mode = "SSB", Timestamp = DateTime.UtcNow.AddMinutes(-20), Freq = "3500" },
+            };
         }
     }
 }

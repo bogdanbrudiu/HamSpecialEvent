@@ -21,6 +21,17 @@ jobs:
         with:
           dotnet-version: 6.0.x
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install client dependencies
+        run: npm --prefix HamEvent/ClientApp ci
+
+      - name: Verify i18n parity
+        run: npm --prefix HamEvent/ClientApp run i18n:check
+
       - name: Restore dependencies
         run: dotnet restore
 
@@ -65,7 +76,7 @@ jobs:
         run: |
           git config --global user.name "CD bot"
           git config --global user.email ""
-          copy fetched/App_Data/QSOs.db HamEvent/App_Data/QSOs.db
+          if (Test-Path -path fetched/App_Data/QSOs.db) {copy fetched/App_Data/QSOs.db HamEvent/App_Data/QSOs.db}
           $NOW=& Get-Date -format yyyy-MM-dd
           echo "New backup done on $NOW" >> HamEvent/App_Data/dbbackup_log
           git add HamEvent/App_Data/QSOs.db
@@ -80,7 +91,7 @@ jobs:
           branch: ${{ github.ref }} 
 
       - name: Publish
-        run: dotnet publish HamEvent/HamEvent.csproj --configuration Release --framework net8.0 --output ./publish --runtime win-x64 --self-contained true -p:PublishTrimmed=false -p:PublishSingleFile=false
+        run: dotnet publish HamEvent/HamEvent.csproj --configuration Release --framework net9.0 --output ./publish --runtime win-x64 --self-contained true -p:PublishTrimmed=false -p:PublishSingleFile=false
 
 
       - name: Deploy App Pool
@@ -90,7 +101,6 @@ jobs:
           server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
           server-username: ${{ secrets.SERVER_USERNAME }}
           server-password: ${{ secrets.SERVER_PASSWORD }}
-          target-path: '\wwwroot\'
           source-path: '\publish\'
 
       - name: Start App Pool
@@ -100,5 +110,3 @@ jobs:
           server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
           server-username: ${{ secrets.SERVER_USERNAME }}
           server-password: ${{ secrets.SERVER_PASSWORD }}
-
-

@@ -1,0 +1,81 @@
+.stats-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.stat-block {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 12px;
+}
+
+.stat-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.stat-table th, .stat-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+}
+
+.stat-table th:first-child,
+.stat-table td:first-child {
+  text-align: left;
+}
+
+.stat-table tfoot th,
+.stat-table tfoot td {
+  font-weight: 600;
+}
+
+.empty {
+  color: #666;
+  font-style: italic;
+}
+
+.fox-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fox-chart {
+  border: 1px solid #eee;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.chart-header {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+svg {
+  width: 100%;
+  height: 140px;
+  background: #fafafa;
+}
+
+.line {
+  fill: none;
+  stroke: #3f51b5;
+  stroke-width: 2;
+}
+
+.axis {
+  stroke: #ccc;
+  stroke-width: 1;
+}
+
+.chart-legend {
+  font-size: 12px;
+  margin-top: 6px;
+  color: #444;
+}
+
+.loading {
+  font-style: italic;
+}

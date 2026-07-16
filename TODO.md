@@ -3,17 +3,23 @@ Project Description
 
 ### ToDo
 
-- [ ] As a site visitor I can view statistics per band/mode/day #feat
-- [ ] Event Description should be multilanguage #feat
+
+
+
+
+
 
 ### In Progress
 
-
-- [ ] Drag & Drop editor for diploma  #feat @crisanalex08
-
+- [ ] Event Description should be multilanguage #feat @ bogdanbrudiu
+- [ ] Add Event Rules should be multilanguage  #feat @ bogdanbrudiu
+- [ ] I can request all admin links for my email adress #feat @bogdanbrudiu
+- [ ] Backend for Statistics: ranking/prefix; band/mode; qsos/h; multiplay for each fox #feat @bogdanbrudiu
+- [ ] remove tabs/unify menus #feat - @YO2MIT
 
 
 ### Done ✓
+- [✓] Fix Elmah #bug @bogdanbrudiu
 - [✓] After file upload status should be cleared #bug
 - [✓] As a site visitor I can request new event creation  #feat
 - [✓] Exclude callsign from top #feat

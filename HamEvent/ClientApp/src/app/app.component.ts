@@ -3,7 +3,6 @@ import { Component, Inject } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router, RouterState } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { NavMenuComponent } from './nav-menu/nav-menu.component';
 
 declare let gtag: Function;
 @Component({

@@ -30,21 +30,26 @@ export class LanguageSelectorComponent {
   languages: Language[] = [
     { code: 'en', name: 'English', icon: 'assets/icons/gb.svg' },
     { code: 'ro', name: 'Romana', icon: 'assets/icons/ro.svg' },
-    // Add more languages as needed
+    { code: 'de', name: 'Deutsch', icon: 'assets/icons/de.svg' },
+    { code: 'it', name: 'Italiano', icon: 'assets/icons/it.svg' },
+    { code: 'fr', name: 'Français', icon: 'assets/icons/fr.svg' },
+    { code: 'es', name: 'Español', icon: 'assets/icons/es.svg' },
+    { code: 'hu', name: 'Magyar', icon: 'assets/icons/hu.svg' },
+    { code: 'bg', name: 'Български', icon: 'assets/icons/bg.svg' },
+    { code: 'sr', name: 'Srpski', icon: 'assets/icons/sr.svg' }
   ];
-  selectedLanguage: Language = this.languages[0]; // Default language
+  selectedLanguage = this.languages[0].code;
   siteLanguage = 'English';
   constructor(private translate: TranslateService) { }
 
-  onLanguageChange(lang: Language) {
-    // Perform actions based on the selected language, e.g., update translation service
-    console.log('Selected language:', lang);
-    const selectedLanguage = this.languages.find((language) => language.code === lang.code)?.toString();
+  onLanguageChange(langCode: string) {
+    const selectedLanguage = this.languages.find((language) => language.code === langCode);
     if (selectedLanguage) {
-      this.siteLanguage = selectedLanguage;
-      this.translate.use(lang.code);
+      this.siteLanguage = selectedLanguage.name;
+      this.selectedLanguage = selectedLanguage.code;
+      this.translate.use(selectedLanguage.code);
+      this.languageChanged.emit(selectedLanguage.code);
     }
-    const currentLanguage = this.translate.currentLang;
   }
 
 }

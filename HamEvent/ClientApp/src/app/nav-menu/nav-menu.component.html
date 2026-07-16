@@ -3,5 +3,5 @@
   <a mat-button routerLink="/">{{'HamEvent' | translate}}</a>
   <a mat-button routerLink="/recover">{{'AdminLinkRecovery' | translate}}</a>
   <span class="nav-spacer"></span>
-  <app-language-selector class="lang-sel"></app-language-selector>
+  <app-language-selector class="lang-sel" (languageChanged)="changeSiteLanguage($event)"></app-language-selector>
 </mat-toolbar>

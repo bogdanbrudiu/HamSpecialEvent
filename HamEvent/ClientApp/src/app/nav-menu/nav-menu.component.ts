@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute, NavigationEnd, NavigationStart, Params, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router, RouterLink } from '@angular/router';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import { filter, map } from 'rxjs';
 import { EventsService, HamEvent } from '../events.service';
@@ -8,7 +8,6 @@ import { QSOsService } from '../qsos.service';
 import { LanguageSelectorComponent } from '../language-selector/language-selector.component';
 import { MatAnchor } from '@angular/material/button';
 import { MatToolbar } from '@angular/material/toolbar';
-import { Log } from 'oidc-client';
 import { MatIcon } from '@angular/material/icon';
 
 @Component({
@@ -22,25 +21,19 @@ export class NavMenuComponent {
   isExpanded = false;
 
   siteLanguage = 'English';
-  languageList = [
-    { code: 'en', label: 'English' },
-    { code: 'ro', label: 'Română' },
-  ];
   public eventId: string = '';
   public event: HamEvent | undefined;
   public isLive: boolean = false;
 
   constructor(private translate: TranslateService, private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService, private router: Router, private titleService: Title) { }
   changeSiteLanguage(localeCode: string): void {
-    const selectedLanguage = this.languageList
-      .find((language) => language.code === localeCode)
-      ?.label.toString();
-    if (selectedLanguage) {
-      this.siteLanguage = selectedLanguage;
-      this.translate.use(localeCode);
+    this.siteLanguage = localeCode;
+    this.translate.use(localeCode);
+    if (this.event?.name) {
+      this.titleService.setTitle(this.event.name);
+    } else {
+      this.titleService.setTitle(this.translate.instant("HamEvents"));
     }
-    const currentLanguage = this.translate.currentLang;
-    console.log('currentLanguage', currentLanguage);
   }
 
   collapse() {

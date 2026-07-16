@@ -21,6 +21,17 @@ jobs:
         with:
           dotnet-version: 6.0.x
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install client dependencies
+        run: npm --prefix HamEvent/ClientApp ci
+
+      - name: Verify i18n parity
+        run: npm --prefix HamEvent/ClientApp run i18n:check
+
       - name: Restore dependencies
         run: dotnet restore
 
@@ -99,4 +110,3 @@ jobs:
           server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
           server-username: ${{ secrets.SERVER_USERNAME }}
           server-password: ${{ secrets.SERVER_PASSWORD }}
-

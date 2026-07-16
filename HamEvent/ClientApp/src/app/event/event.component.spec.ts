@@ -1,65 +1,62 @@
-/// <reference types="jasmine" />
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { EventComponent } from './event.component';
-import { EventsService } from '../events.service';
-import { QSOsService } from '../qsos.service';
-import { ActivatedRoute, convertToParamMap } from '@angular/router';
+import { convertToParamMap } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ReactiveFormsModule } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { TranslateFakeLoader, TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
+import { EventsService } from '../events.service';
+import { QSOsService } from '../qsos.service';
+
+import { EventComponent } from './event.component';
 
 describe('EventComponent', () => {
   let component: EventComponent;
   let fixture: ComponentFixture<EventComponent>;
+  let eventsService: jasmine.SpyObj<EventsService>;
+  let qsosService: jasmine.SpyObj<QSOsService>;
 
-  beforeEach(async () => {
-    const eventsServiceSpy = jasmine.createSpyObj('EventsService', ['getEvent']);
-    const qsosServiceSpy = jasmine.createSpyObj('QSOsService', ['getAllQSOs', 'getTop', 'getLive', 'getStats']);
+  beforeEach(() => {
+    eventsService = jasmine.createSpyObj<EventsService>('EventsService', ['getEvent']);
+    qsosService = jasmine.createSpyObj<QSOsService>('QSOsService', ['getAllQSOs', 'getTop']);
 
-    eventsServiceSpy.getEvent.and.returnValue(of({
-      id: 'test-id',
-      name: 'Test Event',
+    eventsService.getEvent.and.returnValue(of({
+      id: 'evt-1',
+      name: 'Event Name',
       subtitle: '',
-      startDate: new Date(),
-      endDate: new Date(),
-      description: { en: 'desc' },
-      rules: { en: 'rules' },
+      startDate: '',
+      endDate: '',
+      description: { en: '' },
+      rules: { en: '' },
       email: '',
-      hasTop: false,
+      hasTop: true,
       diploma: '',
       days: 0,
       first: '',
       last: '',
-      count: 0,
-      unique: 0,
+      count: 10,
+      unique: 5,
       excludeCallsigns: '',
       excludedCallsigns: [],
       secretKey: '',
       icon: ''
     }));
-    qsosServiceSpy.getStats.and.returnValue(of({
-      totalQsos: 1,
-      bandModeTotals: [{ band: '20m', mode: 'SSB', count: 1 }],
-      foxBandTotals: [{ fox: 'A', band: '20m', count: 1, total: 1 }],
-      foxDailyTotals: [{ fox: 'A', day: '2024-01-01', count: 1 }]
-    }));
+    qsosService.getAllQSOs.and.returnValue(of({ data: [{ callsign1: 'A', callsign2: 'B', mode: 'SSB', band: '20m', timestamp: '2026-01-01' }] }));
+    qsosService.getTop.and.returnValue(of({ data: [{ callsign: 'YO1ABC', count: '1', mode: 'SSB', band: '20m', points: '1', rank: '1' }] }));
 
-    await TestBed.configureTestingModule({
-    imports: [EventComponent, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule, NoopAnimationsModule, TranslateModule.forRoot({
-          loader: { provide: TranslateLoader, useClass: TranslateFakeLoader },
-          defaultLanguage: 'en'
-        })],
-    providers: [
-        { provide: EventsService, useValue: eventsServiceSpy },
-        { provide: QSOsService, useValue: qsosServiceSpy },
-        { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({ id: 'test-id' })) } },
-        TranslateService
-    ]
-}).compileComponents();
+    TestBed.configureTestingModule({
+      imports: [EventComponent, RouterTestingModule, TranslateModule.forRoot(), NoopAnimationsModule],
+      providers: [
+        { provide: EventsService, useValue: eventsService },
+        { provide: QSOsService, useValue: qsosService },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            paramMap: of(convertToParamMap({ id: 'evt-1' }))
+          }
+        }
+      ]
+    });
     fixture = TestBed.createComponent(EventComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -67,5 +64,38 @@ describe('EventComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('loads event from route id on init', () => {
+    expect(eventsService.getEvent).toHaveBeenCalledWith('evt-1');
+    expect(component.event?.id).toBe('evt-1');
+  });
+
+  it('loads logs once when logs tab is selected', () => {
+    component.onTabChanged('logs');
+    component.onTabChanged('logs');
+
+    expect(qsosService.getAllQSOs).toHaveBeenCalledTimes(1);
+    expect(component.logsLoaded).toBeTrue();
+    expect(component.logs.length).toBe(1);
+  });
+
+  it('loads rankings once when rankings tab is selected', () => {
+    component.onTabChanged('rankings');
+    component.onTabChanged('rankings');
+
+    expect(qsosService.getTop).toHaveBeenCalledTimes(1);
+    expect(component.rankingsLoaded).toBeTrue();
+    expect(component.top.length).toBe(1);
+  });
+
+  it('switches rendered tab content when selectedTab changes', () => {
+    component.selectedTab = 'rules';
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('app-event-rules-tab')).not.toBeNull();
+
+    component.selectedTab = 'overview';
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('app-event-overview-tab')).not.toBeNull();
   });
 });

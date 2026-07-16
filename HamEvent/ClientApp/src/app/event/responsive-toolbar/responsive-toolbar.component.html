@@ -2,12 +2,15 @@
   <span fxFlex>
     <button mat-button [routerLink]="['/events']"><mat-icon class="mr">arrow_back</mat-icon>{{'HamEvents' | translate}}</button>
   </span>
-  <button mat-button *ngFor="let item of menuItems" [ngClass]="{'item_disabled': item.isDisabled}" [disabled]="item.isDisabled"
+  <button mat-button *ngFor="let item of menuItems"
+          [ngClass]="{'item_disabled': item.isDisabled, 'active_tab': enableTabSelection && isTabItem(item) && selectedTab === item.id}"
+          [disabled]="item.isDisabled"
           [fxShow]="item.showOnDesktop"
           [fxShow.xs]="item.showOnMobile"
           [fxShow.sm]="item.showOnTablet"
-          (click)="goto(item.link)">
+          (click)="onMenuItemClick(item)">
     <mat-icon class="mr">{{item.icon}}</mat-icon>
-    {{item.label | translate}}
+    <span *ngIf="item.id === 'overview' && enableTabSelection">{{event.name}}</span>
+    <span *ngIf="item.id !== 'overview' || !enableTabSelection">{{item.label | translate}}</span>
   </button>
 </mat-toolbar>

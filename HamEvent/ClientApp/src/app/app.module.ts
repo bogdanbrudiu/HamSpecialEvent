@@ -13,7 +13,6 @@ import { HomeComponent } from './home/home.component';
 import { EventsComponent } from './events/events.component';
 import { EventTopComponent } from './eventtop/eventtop.component';
 
-import { LanguageSelectorComponent } from './language-selector/language-selector.component';
 import { EventCardComponent } from './event-card/event-card.component';
 import { FooterComponent } from './footer/footer.component'; // Import the new footer component
 import { MatIconModule } from '@angular/material/icon';
@@ -52,7 +51,6 @@ export function createTranslateLoader(http: HttpClient) {
       NavMenuComponent,
       FooterComponent,
       EventCardComponent,
-      LanguageSelectorComponent,
       MatIconModule,
       MatToolbarModule,
       MatButtonModule,
@@ -66,7 +64,6 @@ export function createTranslateLoader(http: HttpClient) {
       MatExpansionModule,
       MatGridListModule,
       MatTooltipModule,
-      NgxPaginationModule,
       HttpClientModule,
         FormsModule,
         ReactiveFormsModule,

@@ -1,96 +1,55 @@
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { NgSwitch, NgSwitchCase } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 import { EventsService, HamEvent } from '../events.service';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { MatDivider } from '@angular/material/divider';
-import { ResponsiveToolbarComponent } from './responsive-toolbar/responsive-toolbar.component';
-import { NgIf, DatePipe } from '@angular/common';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-//import { MatDatepicker, MatDatepickerModule } from '@angular/material/datepicker';
-//import { MatInputModule } from '@angular/material/input';
-//import { MatNativeDateModule } from '@angular/material/core';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { QSO, QSOsService } from '../qsos.service';
-import { MatTableModule, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, MatTableDataSource } from '@angular/material/table';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatCardModule } from '@angular/material/card';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { Subscription } from 'rxjs';
-import { StatsComponent } from './stats/stats.component';
+import { ActivatedRoute } from '@angular/router';
+import { NgIf } from '@angular/common';
+import { Participant, QSO, QSOsService } from '../qsos.service';
+import { EventLogsTabComponent } from './event-logs-tab/event-logs-tab.component';
+import { EventOverviewTabComponent } from './event-overview-tab/event-overview-tab.component';
+import { EventRankingsTabComponent } from './event-rankings-tab/event-rankings-tab.component';
+import { EventRulesTabComponent } from './event-rules-tab/event-rules-tab.component';
+import { EventTab, ResponsiveToolbarComponent } from './responsive-toolbar/responsive-toolbar.component';
+
 
 @Component({
-    selector: 'app-event',
-    templateUrl: './event.component.html',
-    styleUrls: ['./event.component.css'],
+  selector: 'app-event',
+  templateUrl: './event.component.html',
+  styleUrls: ['./event.component.css'],
   standalone: true,
-  imports: [MatExpansionModule, MatCardModule, MatTableModule, NgIf, ResponsiveToolbarComponent, MatTable, MatColumnDef, MatHeaderCellDef, MatHeaderCell, MatCellDef, MatCell, MatHeaderRowDef, MatHeaderRow, MatRowDef, MatRow, DatePipe, TranslateModule, MatPaginatorModule, NgIf, ResponsiveToolbarComponent, RouterLink, MatIconModule, MatDivider, DatePipe, MatTabsModule, MatProgressBarModule, MatTable, TranslateModule, StatsComponent]
+  imports: [
+    NgIf,
+    NgSwitch,
+    NgSwitchCase,
+    ResponsiveToolbarComponent,
+    EventOverviewTabComponent,
+    EventRulesTabComponent,
+    EventLogsTabComponent,
+    EventRankingsTabComponent
+  ]
 })
-export class EventComponent implements OnInit, OnDestroy {
+export class EventComponent implements OnInit {
 
   public eventId: string = '';
   public event!: HamEvent;
   public searchInput = '';
-  public loaded = true;
   public logs: QSO[] = [];
-  public top: QSO[] = [];
+  public top: Participant[] = [];
   page: number = 0;
-  count: number = 0;
   tableSize: number = 20;
   displayedColumns: string[] = ['callsign1', 'callsign2', 'mode', 'band', 'timestamp'];
   displayedColumnsTop: string[] = ['callsign1', 'count', 'mode', 'band', 'points', 'rank'];
-  @ViewChild(MatTable) table!: MatTable<HamEvent>;
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  selectedTab: EventTab = 'overview';
+  logsLoaded = false;
+  rankingsLoaded = false;
 
-  public blob: Blob | undefined;
-  public isLive: boolean = false;
-  searchForm!: FormGroup;
-  gridColumns = 3;
-  public sanitizedDescription: SafeHtml | undefined;
-  public sanitizedRules: SafeHtml | undefined;
-  public currentLang = 'en';
-  private langSub?: Subscription;
-
-  toggleGridColumns() {
-    this.gridColumns = this.gridColumns === 3 ? 4 : 3;
-  }
-  private pickLocalized(value: { [lang: string]: string } | undefined): string {
-    if (!value) return '';
-    const lang = this.translate.currentLang || this.currentLang;
-    const fallback = value['en'] || Object.values(value)[0] || '';
-    return value[lang] || fallback || '';
-  }
-  constructor(private formBuilder: FormBuilder, private router: Router, private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService, private sanitizer: DomSanitizer, private translate: TranslateService) {
-    this.searchForm = this.formBuilder.group({
-      search: "",
-    });
-    this.currentLang = this.translate.currentLang || 'en';
-  }
-
-  private updateLocalizedContent() {
-    if (!this.event) {
-      return;
-    }
-    this.sanitizedDescription = this.sanitizer.bypassSecurityTrustHtml(this.pickLocalized(this.event.description));
-    this.sanitizedRules = this.sanitizer.bypassSecurityTrustHtml(this.pickLocalized(this.event.rules));
-  }
+  constructor(private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService) { }
 
   ngOnInit() {
-    console.log('EventComponent ngOnInit');
-    this.langSub = this.translate.onLangChange.subscribe(({ lang }) => {
-      this.currentLang = lang;
-      this.updateLocalizedContent();
-    });
     this.routes.paramMap.subscribe(params => {
       this.eventId = params.get('id')!;
-      console.log(this.eventId);
-      this.eventsService.getEvent(this.eventId, '', this.currentLang).subscribe(
+      this.eventsService.getEvent(this.eventId).subscribe(
         (response) => {
           this.event = response;
-          console.log(response);
-          this.updateLocalizedContent();
         },
         (error) => {
           console.log(error);
@@ -98,37 +57,11 @@ export class EventComponent implements OnInit, OnDestroy {
       );
     });
   }
-
-  ngOnDestroy(): void {
-    this.langSub?.unsubscribe();
-  }
-  submitForm() {
-    console.log('submitForm');
-    this.eventsService.getEvent(this.searchInput, '', this.currentLang).subscribe(
-      (response) => {
-        this.event = response;
-        console.log(response);
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
-  }
-  //searchForm() {
-  //  console.log('searchForm');
-  //  this.router.navigate(['events/' + this.searchInput]);
-  //}
-
   loadData() {
     this.qsosService.getAllQSOs(this.eventId, this.searchInput, this.page, this.tableSize).subscribe(
       (response) => {
         this.logs = response.data;
-        //this.dataSource = response.data;
-        this.count = response.count;
-        this.loaded = true;
-        this.table.renderRows();
-
-        console.log(response);
+        this.logsLoaded = true;
       },
       (error) => {
         console.log(error);
@@ -140,12 +73,7 @@ export class EventComponent implements OnInit, OnDestroy {
     this.qsosService.getTop(this.eventId, this.searchInput, this.page, this.tableSize).subscribe(
       (response) => {
         this.top = response.data;
-        //this.dataSource = response.data;
-        this.count = response.count;
-        this.loaded = true;
-        this.table.renderRows();
-
-        console.log(response);
+        this.rankingsLoaded = true;
       },
       (error) => {
         console.log(error);
@@ -153,11 +81,13 @@ export class EventComponent implements OnInit, OnDestroy {
     );
   }
 
-  tabClick(tab: any) {
-    console.log(tab);
-    if (tab.index == 2)
+  onTabChanged(tab: EventTab) {
+    this.selectedTab = tab;
+    if (tab === 'logs' && !this.logsLoaded) {
       this.loadData();
-    if (tab.index == 3)
+    }
+    if (tab === 'rankings' && !this.rankingsLoaded) {
       this.loadTop();
+    }
   }
 }

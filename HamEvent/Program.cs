@@ -17,7 +17,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.Configure<MailerSettings>(builder.Configuration.GetSection("MailerSettings"));
-builder.Services.AddScoped<ITemplateRenderer, TemplateRenderer>();
 builder.Services.AddScoped<ICoreMvcMailer, CoreMvcMailer>();
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();

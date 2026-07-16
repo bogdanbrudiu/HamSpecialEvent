@@ -73,7 +73,7 @@ describe('NavMenuComponent', () => {
     const translateService = TestBed.inject(TranslateService);
     spyOn(translateService, 'use');
     component.changeSiteLanguage('ro');
-    expect(component.siteLanguage).toBe('Română');
+    expect(component.siteLanguage).toBe('ro');
     expect(translateService.use).toHaveBeenCalledWith('ro');
   });
 

@@ -3,7 +3,7 @@ Project Description
 
 ### ToDo
 
-- [ ] remove tabs/unify menus #feat
+
 
 
 
@@ -15,7 +15,7 @@ Project Description
 - [ ] Add Event Rules should be multilanguage  #feat @ bogdanbrudiu
 - [ ] I can request all admin links for my email adress #feat @bogdanbrudiu
 - [ ] Backend for Statistics: ranking/prefix; band/mode; qsos/h; multiplay for each fox #feat @bogdanbrudiu
-
+- [ ] remove tabs/unify menus #feat - @YO2MIT
 
 
 ### Done ✓

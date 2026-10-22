@@ -1,11 +1,11 @@
-<h2 class="admin-title">Admin Home</h2>
-<p class="admin-welcome">Welcome to the admin area {{ 'Home' | translate }}.</p>
+<h2 class="admin-title">{{ 'Admin Home' | translate }}</h2>
+<p class="admin-welcome">{{ 'Welcome to the admin area' | translate }}</p>
 
 <button mat-raised-button color="primary" class="create-event-btn" (click)="createEvent()">
   {{ 'Create New Event' | translate }}
 </button>
 
-<h2 class="admin-title">Admin Events</h2>
+<h2 class="admin-title">{{ 'Admin Events' | translate }}</h2>
 <div class="admin-table-container">
   <table mat-table [dataSource]="events" class="admin-table mat-elevation-z2" *ngIf="loaded && events.length">
     <!-- Name Column -->
@@ -53,11 +53,11 @@
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
   </table>
-  <p *ngIf="loaded && !events.length"><em>No events found.</em></p>
-  <p *ngIf="!loaded"><em>Loading...</em></p>
+  <p *ngIf="loaded && !events.length"><em>{{ 'No events found.' | translate }}</em></p>
+  <p *ngIf="!loaded"><em>{{ 'Loading...' | translate }}</em></p>
   <div class="admin-pagination" *ngIf="count > tableSize">
     <button mat-stroked-button (click)="onPageChange(page - 1)" [disabled]="page === 1">&lt;</button>
-    <span>Page {{page}} of {{totalPages}}</span>
+    <span>{{ 'Page' | translate }} {{page}} {{ 'of' | translate }} {{totalPages}}</span>
     <button mat-stroked-button (click)="onPageChange(page + 1)" [disabled]="page === totalPages">&gt;</button>
   </div>
 </div>

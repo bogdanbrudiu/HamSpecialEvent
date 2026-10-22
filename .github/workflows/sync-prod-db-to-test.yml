@@ -1,0 +1,205 @@
+name: Sync PROD DB to TEST
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '15 2 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sync-prod-db-to-test
+  cancel-in-progress: false
+
+jobs:
+  fetch_prod_db:
+    name: Fetch PROD DB snapshot
+    runs-on: windows-latest
+    timeout-minutes: 20
+    environment: prod
+    steps:
+      - name: Fetch PROD site contents
+        uses: bogdanbrudiu/simply-web-deploy/Fetch@main
+        with:
+          website-name: ${{ secrets.WEBSITE_NAME }}
+          server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
+          server-username: ${{ secrets.SERVER_USERNAME }}
+          server-password: ${{ secrets.SERVER_PASSWORD }}
+          target-path: '\prod-snapshot\'
+          source-path: '""'
+
+      - name: Prepare PROD DB artifact
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path prod-db | Out-Null
+          if (-not (Test-Path 'prod-snapshot/App_Data/QSOs.db')) {
+            throw 'Could not find PROD DB at prod-snapshot/App_Data/QSOs.db'
+          }
+
+          Copy-Item 'prod-snapshot/App_Data/QSOs.db' 'prod-db/QSOs.db' -Force
+          Get-FileHash 'prod-db/QSOs.db' -Algorithm SHA256 | Select-Object -ExpandProperty Hash | Out-File 'prod-db/QSOs.sha256' -Encoding ascii
+
+      - name: Upload PROD DB snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: prod-db-current
+          path: prod-db
+          retention-days: 7
+
+  fetch_test_db:
+    name: Fetch TEST DB snapshot
+    runs-on: windows-latest
+    timeout-minutes: 20
+    environment: test
+    steps:
+      - name: Fetch TEST site contents
+        uses: bogdanbrudiu/simply-web-deploy/Fetch@main
+        with:
+          website-name: ${{ secrets.WEBSITE_NAME }}
+          server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
+          server-username: ${{ secrets.SERVER_USERNAME }}
+          server-password: ${{ secrets.SERVER_PASSWORD }}
+          target-path: '\test-snapshot\'
+          source-path: '""'
+
+      - name: Prepare TEST DB artifact
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path test-db | Out-Null
+          if (Test-Path 'test-snapshot/App_Data/QSOs.db') {
+            Copy-Item 'test-snapshot/App_Data/QSOs.db' 'test-db/QSOs.db' -Force
+            Get-FileHash 'test-db/QSOs.db' -Algorithm SHA256 | Select-Object -ExpandProperty Hash | Out-File 'test-db/QSOs.sha256' -Encoding ascii
+          }
+          else {
+            '' | Out-File 'test-db/QSOs.sha256' -Encoding ascii
+          }
+
+      - name: Upload TEST DB snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-db-current
+          path: test-db
+          retention-days: 7
+
+  compare_and_sync:
+    name: Compare and sync DB when changed
+    runs-on: windows-latest
+    needs:
+      - fetch_prod_db
+      - fetch_test_db
+    timeout-minutes: 20
+    environment: test
+    steps:
+      - name: Download PROD DB snapshot
+        uses: actions/download-artifact@v4
+        with:
+          name: prod-db-current
+          path: prod-db
+
+      - name: Download TEST DB snapshot
+        uses: actions/download-artifact@v4
+        with:
+          name: test-db-current
+          path: test-db
+
+      - id: compare
+        name: Compare DB hashes
+        shell: pwsh
+        run: |
+          $prodHash = (Get-Content 'prod-db/QSOs.sha256' -ErrorAction Stop | Select-Object -First 1).Trim()
+          $testHash = if (Test-Path 'test-db/QSOs.sha256') { (Get-Content 'test-db/QSOs.sha256' | Select-Object -First 1).Trim() } else { '' }
+
+          if ([string]::IsNullOrWhiteSpace($prodHash)) {
+            throw 'PROD hash is missing. Aborting sync.'
+          }
+
+          if ($prodHash -eq $testHash) {
+            Add-Content -Path $env:GITHUB_OUTPUT -Value 'changed=false'
+            Write-Host 'No DB change detected. Skipping TEST import.'
+          }
+          else {
+            Add-Content -Path $env:GITHUB_OUTPUT -Value 'changed=true'
+            Write-Host 'DB change detected. TEST import will run.'
+          }
+
+      - name: Create versioned PROD DB backup artifact
+        if: steps.compare.outputs.changed == 'true'
+        shell: pwsh
+        run: |
+          $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
+          New-Item -ItemType Directory -Force -Path prod-db-versioned | Out-Null
+          Copy-Item 'prod-db/QSOs.db' "prod-db-versioned/prod-QSOs-$stamp.db" -Force
+          Copy-Item 'prod-db/QSOs.sha256' "prod-db-versioned/prod-QSOs-$stamp.sha256" -Force
+
+      - name: Upload versioned PROD DB backup
+        if: steps.compare.outputs.changed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: prod-db-versioned-${{ github.run_id }}
+          path: prod-db-versioned
+          retention-days: 90
+
+      - name: Build TEST DB payload
+        if: steps.compare.outputs.changed == 'true'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path db-sync-payload/App_Data | Out-Null
+          Copy-Item 'prod-db/QSOs.db' 'db-sync-payload/App_Data/QSOs.db' -Force
+
+      - name: Stop TEST app pool
+        if: steps.compare.outputs.changed == 'true'
+        uses: bogdanbrudiu/simply-web-deploy/Stop@main
+        with:
+          website-name: ${{ secrets.WEBSITE_NAME }}
+          server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
+          server-username: ${{ secrets.SERVER_USERNAME }}
+          server-password: ${{ secrets.SERVER_PASSWORD }}
+
+      - name: Import PROD DB into TEST
+        if: steps.compare.outputs.changed == 'true'
+        uses: bogdanbrudiu/simply-web-deploy/Deploy@main
+        with:
+          website-name: ${{ secrets.WEBSITE_NAME }}
+          server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
+          server-username: ${{ secrets.SERVER_USERNAME }}
+          server-password: ${{ secrets.SERVER_PASSWORD }}
+          source-path: '\db-sync-payload\'
+          skip-directory-paths: 'wwwroot,bin,obj'
+
+      - name: Start TEST app pool
+        if: always()
+        uses: bogdanbrudiu/simply-web-deploy/Start@main
+        with:
+          website-name: ${{ secrets.WEBSITE_NAME }}
+          server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
+          server-username: ${{ secrets.SERVER_USERNAME }}
+          server-password: ${{ secrets.SERVER_PASSWORD }}
+
+      - name: Wait for TEST readiness after DB sync
+        if: steps.compare.outputs.changed == 'true'
+        shell: pwsh
+        env:
+          BASE_URL: ${{ secrets.TEST_BASE_URL }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:BASE_URL)) {
+            throw 'TEST_BASE_URL secret is required.'
+          }
+
+          $healthUrl = "$($env:BASE_URL.TrimEnd('/'))/health/ready"
+          $maxAttempts = 30
+          for ($i = 1; $i -le $maxAttempts; $i++) {
+            try {
+              $response = Invoke-WebRequest -Uri $healthUrl -Method Get -TimeoutSec 10 -SkipCertificateCheck
+              if ($response.StatusCode -eq 200) {
+                Write-Host "TEST readiness check passed on attempt $i"
+                exit 0
+              }
+            }
+            catch {
+              Write-Host "Attempt $i/$maxAttempts failed: $($_.Exception.Message)"
+            }
+            Start-Sleep -Seconds 5
+          }
+
+          throw "TEST readiness check failed for $healthUrl"

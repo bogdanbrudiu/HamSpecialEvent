@@ -11,7 +11,7 @@ export class EventsService {
   constructor(private http: HttpClient, @Inject('BASE_URL') public baseUrl: string) { }
 
   getAllEvents(page: number, size: number): Observable<any> {
-    return this.http.get(this.baseUrl + 'api/hamevent/hamevents?page='+page+'&size='+size);
+    return this.http.get(this.baseUrl + 'api/hamevent/hamevents?page=' + page + '&pagesize=' + size);
   }
   getEvent(eventId:string, secret:string="", lang:string="", adminKey:string=""): Observable<any> {
     const secretPart = secret ? `secret=${encodeURIComponent(secret)}` : '';

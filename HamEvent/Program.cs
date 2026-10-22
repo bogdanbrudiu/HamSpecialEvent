@@ -69,6 +69,31 @@ app.UseRouting();
 
 app.UseElmah();
 
+app.MapGet("/health/live", () =>
+{
+    return Results.Ok(new { status = "live" });
+});
+
+app.MapGet("/health/ready", async (HamEventContext dbContext, CancellationToken cancellationToken) =>
+{
+    try
+    {
+        var canConnect = await dbContext.Database.CanConnectAsync(cancellationToken);
+        if (!canConnect)
+        {
+            return Results.StatusCode(StatusCodes.Status503ServiceUnavailable);
+        }
+
+        // Touch a core table to ensure DB access is truly operational for request handling.
+        _ = await dbContext.Events.AsNoTracking().AnyAsync(cancellationToken);
+        return Results.Ok(new { status = "ready" });
+    }
+    catch
+    {
+        return Results.StatusCode(StatusCodes.Status503ServiceUnavailable);
+    }
+});
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller}/{action=Index}/{id?}");

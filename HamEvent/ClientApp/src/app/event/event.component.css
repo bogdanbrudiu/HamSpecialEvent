@@ -42,3 +42,13 @@ mat-card-title {
 .page-header {
     background-color: white;
 }
+
+.disabled_feature_button {
+  opacity: 0.7;
+  border: 1px dashed rgba(255, 193, 7, 0.85);
+}
+
+.disabled_feature_icon {
+  margin-left: 6px;
+  color: #ffb300;
+}

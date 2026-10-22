@@ -21,6 +21,7 @@ export interface MenuItem {
   showOnTablet: boolean;
   showOnDesktop: boolean;
   isDisabled?: boolean;
+  isMarkedForFix?: boolean;
   link?: string;
 }
 
@@ -79,7 +80,8 @@ export class ResponsiveToolbarComponent {
       showOnMobile: false,
       showOnTablet: false,
       showOnDesktop: true,
-      isDisabled: true
+      isDisabled: true,
+      isMarkedForFix: true
     },
     {
       id: 'onair',
@@ -96,7 +98,9 @@ export class ResponsiveToolbarComponent {
       icon: "emoji_events",
       showOnMobile: false,
       showOnTablet: false,
-      showOnDesktop: true
+      showOnDesktop: true,
+      isDisabled: true,
+      isMarkedForFix: true
     },
     {
       id: 'stats',
@@ -104,7 +108,9 @@ export class ResponsiveToolbarComponent {
       icon: "bar_chart_4_bars",
       showOnMobile: false,
       showOnTablet: false,
-      showOnDesktop: true
+      showOnDesktop: true,
+      isDisabled: true,
+      isMarkedForFix: true
     }
   ];
 

@@ -7,15 +7,6 @@ import { EventTopComponent } from './eventtop/eventtop.component';
 
 const eventRoutes: Routes = [
   {
-    path: ':id/:secret',
-    redirectTo: '/admin/:id/:secret/edit',
-    pathMatch: 'full'
-  },
-  {
-    path: ':id',
-    component: EventComponent,
-  },
-  {
     path: ":id/logs",
     component: QSOsComponent,
     title: "routing: Logs"
@@ -29,7 +20,17 @@ const eventRoutes: Routes = [
     path: ":id/live",
     component: DashboardComponent,
     title: "routing: Top"
-  },  {
+  },
+  {
+    path: ':id/:secret',
+    redirectTo: '/admin/:id/:secret/edit',
+    pathMatch: 'full'
+  },
+  {
+    path: ':id',
+    component: EventComponent,
+  },
+  {
     path: '',
     pathMatch: 'full',
     component: EventComponent,

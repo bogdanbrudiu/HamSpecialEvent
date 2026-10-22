@@ -3,7 +3,8 @@ Project Description
 
 ### ToDo
 
-
+- [ ] Repair disabled UI actions: LiveStream, Awards, Stats, ParticipateNow #bug @bogdanbrudiu
+- [ ] Review event/admin route ambiguity so public actions never redirect to admin edit by mistake #bug @bogdanbrudiu
 
 
 

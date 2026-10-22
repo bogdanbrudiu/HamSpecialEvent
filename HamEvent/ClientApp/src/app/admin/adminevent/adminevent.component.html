@@ -1,13 +1,13 @@
 <div class="row" style="margin-bottom:15px;">
   <p *ngIf="!event"><em>{{'Loading...' | translate}}</em></p>
-  <p *ngIf="!event && loadFailed"><em>Unable to load this event. Verify the link key or use the admin master key.</em></p>
+  <p *ngIf="!event && loadFailed"><em>{{ 'Unable to load this event. Verify the link key or use the admin master key.' | translate }}</em></p>
   <p *ngIf="saveError"><em>{{ saveError }}</em></p>
   <form *ngIf="event">
     <div class="mb-3" *ngIf="event.email!=initialEmail && codeGenerated">
-      <label for="emailValidationCode" class="form-label">{{'Email Validation Code' | translate}}</label>
+      <label for="emailValidationCode" class="form-label">{{'Email Validation Code' | translate }}</label>
       <input type="text" class="form-control" id="emailValidationCode" [(ngModel)]="emailValidationCode" name="emailValidationCode">
     </div>
-    <button type="submit" class="btn btn-primary" (click)="onSubmit()">{{(event.email!=initialEmail && !codeGenerated) ? 'Email verification':(event.id==='00000000-0000-0000-0000-000000000000' ? 'Add' : 'Update') | translate}}</button>
+    <button type="submit" class="btn btn-primary" (click)="onSubmit()">{{ (event.email!=initialEmail && !codeGenerated) ? ('Email verification' | translate) : (event.id==='00000000-0000-0000-0000-000000000000' ? ('Add' | translate) : ('Update' | translate)) }}</button>
   </form>
 </div>
 
@@ -97,9 +97,9 @@
       </mat-form-field>
 
       <section class="api-upload-instructions" aria-label="Logging software API upload instructions">
-        <h3>Logging software ADIF upload</h3>
+        <h3>{{ 'Logging software ADIF upload' | translate }}</h3>
         <p>
-          Configure your logger to export ADIF and send it to this API endpoint (same pattern as ClubLog-style ADIF upload):
+          {{ 'Configure your logger to export ADIF and send it to this API endpoint (same pattern as ClubLog-style ADIF upload):' | translate }}
         </p>
         <pre class="api-code">POST /api/hamevent/{{ event.id }}/{{ eventSecret }}/upload</pre>
         <ul>
@@ -114,7 +114,7 @@
         <p>Example:</p>
         <pre class="api-code">curl -X POST "https://your-host/api/hamevent/{{ event.id }}/{{ eventSecret }}/upload" -F "file=@log.adi"</pre>
 
-        <h4>Recommended setup presets (common logging software)</h4>
+        <h4>{{ 'Recommended setup presets (common logging software)' | translate }}</h4>
         <div class="software-grid">
           <article class="software-card">
             <h5>N1MM Logger+</h5>

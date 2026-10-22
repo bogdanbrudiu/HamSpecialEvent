@@ -144,10 +144,10 @@ export class AdminQSOsComponent implements AfterViewInit {
     this.router.navigate(['admin', this.eventId, this.eventSecret, 'edit']);
   }
   top() {
-    this.router.navigate([this.eventId, 'top']);
+    this.router.navigate(['/event', this.eventId, 'top']);
   }
   live() {
-    this.router.navigate([this.eventId, 'live']);
+    this.router.navigate(['/event', this.eventId, 'live']);
   }
   deleteall() {
     if (confirm(this.translate.instant('Are you sure?'))) {
@@ -163,15 +163,6 @@ export class AdminQSOsComponent implements AfterViewInit {
     }
   }
   delete(qso: QSO) {
-    this.qsosService.delete(qso, this.eventId, this.eventSecret).subscribe(
-      (response) => {
-        this.loadData();
-        console.log(response);
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: { message: this.translate.instant('Are you sure you want to delete this QSO?') }
     });

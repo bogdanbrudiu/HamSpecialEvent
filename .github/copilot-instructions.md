@@ -16,9 +16,9 @@ This workspace hosts a .NET/Angular platform for managing HAM radio special even
   - E2E tests: `npm run e2e`
 
 ## Architecture & Conventions
-- **Backend:** .NET projects under solution `HamEventMVP.sln` (main: `HamEvent/`, library: `AdifLib/`, mail: `CoreMailer/`).
+- **Backend:** .NET projects under solution `HamEventMVP.sln` (main: `HamEvent/`, library: `AdifLib/`).
 - **Frontend:** Angular app in `HamEvent/ClientApp/` (see its README for Angular CLI usage).
-- **Email:** Transactional emails use MailKit and Razor templates. Configure SMTP in `HamEvent/appsettings.json`.
+- **Email:** Transactional emails use MailKit and Razor templates. Configure SMTP in `HamEvent/appsettings.json`. Note: CoreMailer has been removed from the project; do not re-add it as a submodule. The application now sends email through a different implementation, so the obsolete CoreMailer gitlink should be removed when correcting this checkout issue.
 - **Deployment:** See `simply-web-deploy/README.md` for GitHub Actions Web Deploy setup.
 - **Tests:**
   - .NET: Place tests in `UnitTests/` or project-specific test folders.
@@ -35,9 +35,9 @@ This workspace hosts a .NET/Angular platform for managing HAM radio special even
 ## Documentation
 - See root and subproject `README.md` files for more details.
 - For deployment, see `simply-web-deploy/README.md`.
-- For mailer integration, see `CoreMailer/README.md`.
+- Email is sent by `HamEvent/Services/SmtpEmailService.cs` using MailKit and Razor templates.
 
 ## Testing
 - backend tests: dotnet test HamEventMVP.sln
 - playright tests: npm run e2e
-- ui tests: npm test -- --watch=false --browsers=ChromeHeadless 
+- ui tests: npm test -- --watch=false --browsers=ChromeHeadless

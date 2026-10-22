@@ -9,7 +9,7 @@ This workspace hosts a .NET/Angular platform for managing HAM radio special even
   - Test: `dotnet test HamEventMVP.sln` or run tests in `UnitTests/`
   - Watch/Run: `dotnet watch run --project HamEventMVP.sln`
 - **Angular Client (HamEvent/ClientApp):**
-  - Install: `npm install`
+  - Install: `npm install` (avoid repeated slow or hanging dependency-install commands when package registry access is failing)
   - Dev server: `npm run start` (see `package.json` for OS-specific scripts)
   - Build: `npm run build`
   - Unit tests: `npm run test`

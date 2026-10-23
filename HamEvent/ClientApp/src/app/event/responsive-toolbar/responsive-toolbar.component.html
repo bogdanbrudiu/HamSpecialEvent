@@ -1,6 +1,10 @@
 <mat-toolbar fxLayout="row" color="primary">
   <span fxFlex>
-    <button mat-button [routerLink]="['/events']"><mat-icon class="mr">arrow_back</mat-icon>{{'HamEvents' | translate}}</button>
+    <button mat-button *ngIf="adminSecret; else publicEvents" (click)="openAdmin('qsos')"><mat-icon class="mr">arrow_back</mat-icon>{{'Admin QSOs' | translate}}</button>
+    <ng-template #publicEvents>
+      <button mat-button [routerLink]="['/events']"><mat-icon class="mr">arrow_back</mat-icon>{{'HamEvents' | translate}}</button>
+    </ng-template>
+    <button mat-button *ngIf="adminSecret" (click)="openAdmin('edit')"><mat-icon class="mr">edit</mat-icon>{{'Edit Event' | translate}}</button>
   </span>
   <button mat-button *ngFor="let item of menuItems"
           [ngClass]="{'item_disabled': item.isDisabled, 'item_needs_fix': item.isMarkedForFix, 'active_tab': enableTabSelection && isTabItem(item) && selectedTab === item.id}"

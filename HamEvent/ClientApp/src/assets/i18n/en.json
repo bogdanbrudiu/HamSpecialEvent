@@ -1,4 +1,10 @@
 {
+  "Event created successfully.": "Event created successfully.",
+  "Event updated successfully.": "Event updated successfully.",
+  "Back to event list": "Back to event list",
+  "Browse events": "Browse events",
+  "Saving...": "Saving...",
+  "These examples use an event-specific credential. Keep it private.": "These examples use an event-specific credential. Keep it private.",
   "HamEvent": "hamevent.eu",
   "HamEvents": "Ham Events",
   "HamEventTitle": "Welcome to HamEvent!",

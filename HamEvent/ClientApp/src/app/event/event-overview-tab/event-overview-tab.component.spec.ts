@@ -1,4 +1,4 @@
-﻿import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { EventOverviewTabComponent } from './event-overview-tab.component';
@@ -45,5 +45,14 @@ describe('EventOverviewTabComponent', () => {
     const html = fixture.nativeElement as HTMLElement;
     expect(html.textContent).toContain('Event Name');
     expect(html.textContent).toContain('Event description');
+  });
+
+  it('marks Participate Now as a disabled dummy action with the existing repair indicator', () => {
+    const button = fixture.nativeElement.querySelector('mat-card-actions button') as HTMLButtonElement;
+    expect(button.disabled).toBeTrue();
+    expect(button.classList.contains('item_disabled')).toBeTrue();
+    expect(button.classList.contains('item_needs_fix')).toBeTrue();
+    expect(button.title).toBe('Needs repair before announcement');
+    expect(button.querySelector('mat-icon.needs_fix_icon')?.textContent?.trim()).toBe('priority_high');
   });
 });

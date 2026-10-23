@@ -1,4 +1,10 @@
 {
+  "Event created successfully.": "Veranstaltung erfolgreich erstellt.",
+  "Event updated successfully.": "Veranstaltung erfolgreich aktualisiert.",
+  "Back to event list": "Zurück zur Veranstaltungsliste",
+  "Browse events": "Veranstaltungen ansehen",
+  "Saving...": "Wird gespeichert...",
+  "These examples use an event-specific credential. Keep it private.": "Diese Beispiele verwenden einen veranstaltungsspezifischen Schlüssel. Halte ihn geheim.",
   "HamEvent": "hamevent.eu",
   "HamEvents": "Ham-Events",
   "HamEventTitle": "Willkommen bei HamEvent!",

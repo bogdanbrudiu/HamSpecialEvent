@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { HamEvent } from '../../events.service';
+import { AdminEventNavigationService } from '../../admin/admin-event-navigation.service';
 
 export type EventTab = 'overview' | 'rules' | 'logs' | 'rankings';
 export type ToolbarItemId = EventTab | 'livestream' | 'onair' | 'stats' | 'awards';
@@ -146,5 +147,16 @@ export class ResponsiveToolbarComponent {
     }
   }
 
-  constructor(private router: Router) { }
+  get adminSecret(): string | undefined {
+    return this.adminNavigation.getSecret(this.event?.id);
+  }
+
+  openAdmin(view: 'qsos' | 'edit'): void {
+    const secret = this.adminSecret;
+    if (secret) {
+      this.router.navigate(['/admin', this.event.id, secret, view]);
+    }
+  }
+
+  constructor(private router: Router, private adminNavigation: AdminEventNavigationService) { }
 }

@@ -78,5 +78,6 @@ export function createTranslateLoader(http: HttpClient) {
             path: 'admin',
             loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule),
           },
+          { path: ':id/:secret', redirectTo: '/admin/:id/:secret/edit', pathMatch: 'full' },
         ])], providers: [provideZoneChangeDetection({ eventCoalescing: true })] })
 export class AppModule { }

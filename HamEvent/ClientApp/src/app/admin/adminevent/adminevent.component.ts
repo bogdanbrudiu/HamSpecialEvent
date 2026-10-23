@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EventsService, HamEvent } from '../../events.service';
 import { VerificationService } from '../../verification.service';
@@ -15,6 +15,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 
 @Component({
@@ -24,7 +25,7 @@ import { MatTabsModule } from '@angular/material/tabs';
   standalone: true,
   imports: [
     NgIf, NgFor, ReactiveFormsModule, FormsModule, TranslateModule, SanitizedHtmlPipe,
-    MatCheckboxModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatDatepickerModule, MatNativeDateModule, MatProgressBarModule, MatTabsModule
+    MatCheckboxModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatDatepickerModule, MatNativeDateModule, MatProgressBarModule, MatTabsModule, MatSnackBarModule
   ]
 })
 export class AdminEventComponent implements OnInit {
@@ -41,20 +42,41 @@ export class AdminEventComponent implements OnInit {
   public selectedRulesIndex = 0;
   public loadFailed = false;
   public saveError = '';
+  public saveSuccess = '';
+  public busy = false;
 
-  constructor(public router: Router, private eventsService: EventsService, private verificationService: VerificationService, private routes: ActivatedRoute, private translate: TranslateService, private cdr: ChangeDetectorRef) { }
+  constructor(public router: Router, private eventsService: EventsService, private verificationService: VerificationService, private routes: ActivatedRoute, private translate: TranslateService, private cdr: ChangeDetectorRef, private snackBar: MatSnackBar, @Inject('BASE_URL') private baseUrl: string) { }
 
   private buildEditorRoute(eventId: string, secret: string) {
     return ['/admin', eventId, secret, 'edit'];
   }
 
   public cancelEdit() {
-    if (this.eventSecret) {
+    if (this.isAdminEditor) {
       this.router.navigate(['/admin', this.eventSecret]);
       return;
     }
 
-    this.router.navigate(['/admin']);
+    this.router.navigate(['/events']);
+  }
+
+  get isAdminEditor(): boolean {
+    return !!this.eventSecret && !this.isGuidLike(this.eventSecret) && !this.isSha256Like(this.eventSecret);
+  }
+
+  get uploadUrl(): string {
+    if (!this.event || this.event.id === '00000000-0000-0000-0000-000000000000') return '';
+    const secret = this.isAdminEditor ? this.event.secretKey : this.eventSecret;
+    if (!secret) return '';
+    return new URL(`api/hamevent/${this.event.id}/${encodeURIComponent(secret)}/upload`, this.baseUrl).href;
+  }
+
+  get powerShellUploadUrl(): string {
+    return `'${this.uploadUrl.replace(/'/g, "''")}'`;
+  }
+
+  get shellUploadUrl(): string {
+    return `'${this.uploadUrl.replace(/'/g, `'"'"'`)}'`;
   }
 
   private requestViewRefresh() {
@@ -68,7 +90,7 @@ export class AdminEventComponent implements OnInit {
   }
 
   private isGuidLike(value: string): boolean {
-    return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
   }
 
   private isSha256Like(value: string): boolean {
@@ -79,6 +101,10 @@ export class AdminEventComponent implements OnInit {
     this.routes.paramMap.subscribe(params => {
       this.loadFailed = false;
       this.saveError = '';
+      this.saveSuccess = '';
+      this.initialEmail = '';
+      this.emailValidationCode = '';
+      this.codeGenerated = false;
       this.eventId = params.get('id')!;
       this.eventSecret = params.get('secret')!;
       if (this.eventId === "00000000-0000-0000-0000-000000000000") {
@@ -144,11 +170,10 @@ export class AdminEventComponent implements OnInit {
     this.requestViewRefresh();
   }
   onSubmit() {
-    if (this.event) { 
+    if (this.event && !this.busy) {
+      this.busy = true;
       this.saveError = '';
-      this.event.secretKey = this.event.id === '00000000-0000-0000-0000-000000000000'
-        ? this.event.id
-        : this.eventSecret;
+      this.saveSuccess = '';
       this.ensureLanguageKeys();
       if (this.initialEmail != this.event.email) {
         if (!this.codeGenerated) {
@@ -156,9 +181,13 @@ export class AdminEventComponent implements OnInit {
           this.verificationService.SendVerificationEmail(this.event.email).subscribe(
             () => {
               this.codeGenerated = true;
+              this.busy = false;
+              this.requestViewRefresh();
             },
             () => {
+              this.busy = false;
               alert(this.translate.instant('Sending Email validation failed, try again later!'));
+              this.requestViewRefresh();
             }
           );
           return;
@@ -171,7 +200,9 @@ export class AdminEventComponent implements OnInit {
               this.updateEvent();
             },
             () => {
+              this.busy = false;
               alert(this.translate.instant('Email validation failed, code not valid!'));
+              this.requestViewRefresh();
             }
           );
         }
@@ -182,18 +213,25 @@ export class AdminEventComponent implements OnInit {
   }
 
     private updateEvent() {
-      this.eventsService.updateEvent(this.event, this.eventSecret).subscribe(
+      if (!this.event) return;
+      const isNew = this.event.id === '00000000-0000-0000-0000-000000000000';
+      const payload = { ...this.event, secretKey: isNew ? this.event.id : this.eventSecret };
+      this.eventsService.updateEvent(payload, this.isAdminEditor ? this.eventSecret : '').subscribe(
             (response) => {
+                this.busy = false;
                 this.saveError = '';
-
-
-                if (this.event && this.event.id === "00000000-0000-0000-0000-000000000000") {
-            this.router.navigate(this.buildEditorRoute(response.hamEvent.id, response.secretKey));
+                this.saveSuccess = isNew ? 'Event created successfully.' : 'Event updated successfully.';
+                this.snackBar.open(this.translate.instant(this.saveSuccess), '', { duration: 6000 });
+                if (this.isAdminEditor) {
+                  this.router.navigate(['/admin', this.eventSecret]);
+                } else if (isNew) {
+                  this.router.navigate(this.buildEditorRoute(response.hamEvent.id, response.secretKey));
                 } else {
-            this.router.navigate(this.buildEditorRoute(this.eventId, this.eventSecret));
+                  this.requestViewRefresh();
                 }
             },
           error => {
+            this.busy = false;
             this.saveError = this.extractHttpError(error, this.translate.instant('Saving event failed.'));
             this.requestViewRefresh();
             }

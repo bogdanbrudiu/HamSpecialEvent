@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { HamEvent } from '../../events.service';
 
 @Component({
   selector: 'app-event-rules-tab',
@@ -9,4 +10,13 @@ import { TranslateModule } from '@ngx-translate/core';
   imports: [MatExpansionModule, TranslateModule]
 })
 export class EventRulesTabComponent {
+  @Input() event!: HamEvent;
+
+  constructor(private translate: TranslateService) { }
+
+  get localizedRules(): string {
+    const rules = this.event?.rules ?? {};
+    const language = this.translate.currentLang || this.translate.defaultLang || 'en';
+    return rules[language]?.trim() ? rules[language] : rules['en'] ?? '';
+  }
 }

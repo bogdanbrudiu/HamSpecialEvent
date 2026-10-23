@@ -1,4 +1,10 @@
 {
+  "Event created successfully.": "Događaj je uspešno kreiran.",
+  "Event updated successfully.": "Događaj je uspešno ažuriran.",
+  "Back to event list": "Nazad na listu događaja",
+  "Browse events": "Pregledaj događaje",
+  "Saving...": "Čuvanje...",
+  "These examples use an event-specific credential. Keep it private.": "Ovi primeri koriste ključ za određeni događaj. Čuvajte ga u tajnosti.",
   "HamEvent": "hamevent.eu",
   "HamEvents": "Ham događaji",
   "HamEventTitle": "Dobrodošli na HamEvent!",

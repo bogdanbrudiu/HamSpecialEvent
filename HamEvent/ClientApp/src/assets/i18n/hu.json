@@ -1,4 +1,10 @@
 {
+  "Event created successfully.": "Az esemény sikeresen létrejött.",
+  "Event updated successfully.": "Az esemény sikeresen frissült.",
+  "Back to event list": "Vissza az eseménylistához",
+  "Browse events": "Események böngészése",
+  "Saving...": "Mentés...",
+  "These examples use an event-specific credential. Keep it private.": "Ezek a példák eseményspecifikus kulcsot használnak. Tartsa titokban.",
   "HamEvent": "hamevent.eu",
   "HamEvents": "Ham események",
   "HamEventTitle": "Üdvözlünk a HamEvent oldalon!",

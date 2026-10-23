@@ -28,6 +28,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { EditQsoDialogComponent } from './edit-qso-dialog.component';
 import { ConfirmDialogComponent } from './confirm-dialog.component';
 import { UploadComponent } from '../upload/upload.component';
+import { AdminEventNavigationService } from '../admin-event-navigation.service';
 
 
 declare let gtag: Function;
@@ -65,7 +66,7 @@ export class AdminQSOsComponent implements AfterViewInit {
 
 
   constructor(private formBuilder: FormBuilder, private router: Router, private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService, private pdfService: PdfService, private translate: TranslateService, public dialog: MatDialog,
-    private snackBar: MatSnackBar) {
+    private snackBar: MatSnackBar, private adminNavigation: AdminEventNavigationService) {
 
     this.searchForm = this.formBuilder.group({
       search: "",
@@ -76,10 +77,13 @@ export class AdminQSOsComponent implements AfterViewInit {
     this.routes.paramMap.subscribe(params => {
       this.eventId = params.get('id')!;
       this.eventSecret = params.get('secret')!;
-      this.eventsService.getEvent(this.eventId, this.eventSecret).subscribe(
+      this.event = undefined;
+      this.adminNavigation.forget(this.eventId);
+      const isEventSecret = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$|^[0-9a-f]{64}$/i.test(this.eventSecret);
+      this.eventsService.getEvent(this.eventId, isEventSecret ? this.eventSecret : '', '', isEventSecret ? '' : this.eventSecret).subscribe(
         (response) => {
           this.event = response;
-          console.log(response);
+          this.adminNavigation.remember(this.eventId, this.eventSecret);
         },
         (error) => {
           console.log(error);
@@ -130,7 +134,7 @@ export class AdminQSOsComponent implements AfterViewInit {
 
   saveQSO(qso: any) {
     if (this.originalQSO) {
-      this.qsosService.update(this.originalQSO, qso, this.eventId, this.eventSecret).subscribe(
+      this.qsosService.update(this.originalQSO, qso, this.eventId, this.actionSecret).subscribe(
         (response) => {
           this.loadData();
           console.log(response);
@@ -144,14 +148,14 @@ export class AdminQSOsComponent implements AfterViewInit {
     this.router.navigate(['admin', this.eventId, this.eventSecret, 'edit']);
   }
   top() {
-    this.router.navigate(['/event', this.eventId, 'top']);
+    this.router.navigate(['/event', this.eventId], { queryParams: { tab: 'rankings' } });
   }
   live() {
     this.router.navigate(['/event', this.eventId, 'live']);
   }
   deleteall() {
     if (confirm(this.translate.instant('Are you sure?'))) {
-      this.qsosService.deleteAll(this.eventId, this.eventSecret).subscribe(
+      this.qsosService.deleteAll(this.eventId, this.actionSecret).subscribe(
         (response) => {
           this.loadData();
           console.log(response);
@@ -169,7 +173,7 @@ export class AdminQSOsComponent implements AfterViewInit {
 
     dialogRef.afterClosed().subscribe(confirmed => {
       if (confirmed) {
-        this.qsosService.delete(qso, this.eventId, this.eventSecret).subscribe(
+        this.qsosService.delete(qso, this.eventId, this.actionSecret).subscribe(
           () => {
             this.loadData();
             this.snackBar.open(this.translate.instant('QSO deleted'), 'OK', { duration: 2000 });
@@ -180,7 +184,7 @@ export class AdminQSOsComponent implements AfterViewInit {
     });
   }
   exportall() {
-    this.qsosService.exportAll(this.eventId, this.eventSecret).subscribe((data: any) => {
+    this.qsosService.exportAll(this.eventId, this.actionSecret).subscribe((data: any) => {
 
       this.blob = new Blob([data], { type: 'text/xml' });
 
@@ -248,6 +252,10 @@ export class AdminQSOsComponent implements AfterViewInit {
   }
   qualifiesForDiploma() {
     return this.QSOs.length > 0 && this.searchInput.length > 0 && this.loaded;
+  }
+
+  private get actionSecret(): string {
+    return this.event?.secretKey || this.eventSecret;
   }
 }
 

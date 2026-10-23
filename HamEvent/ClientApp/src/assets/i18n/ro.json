@@ -1,4 +1,10 @@
 {
+  "Event created successfully.": "Evenimentul a fost creat cu succes.",
+  "Event updated successfully.": "Evenimentul a fost actualizat cu succes.",
+  "Back to event list": "Înapoi la lista de evenimente",
+  "Browse events": "Vezi evenimentele",
+  "Saving...": "Se salvează...",
+  "These examples use an event-specific credential. Keep it private.": "Aceste exemple folosesc o cheie specifică evenimentului. Păstreaz-o privată.",
   "HamEvent": "hamevent.eu",
   "HamEvents": "Evenimente radioamatori",
   "HamEventTitle": "Bine ati venit la HamEvent!",

@@ -228,6 +228,11 @@ namespace UnitTests
             var okResult = Assert.IsType<OkObjectResult>(getAction.Result);
             var returnedEvent = Assert.IsType<Event>(okResult.Value);
             Assert.Equal(evId, returnedEvent.Id);
+            Assert.Equal(hashedEventSecret, returnedEvent.SecretKey);
+
+            var adminOnlyAction = controller.Get(evId, null);
+            var adminOnlyResult = Assert.IsType<OkObjectResult>(adminOnlyAction.Result);
+            Assert.Equal(hashedEventSecret, Assert.IsType<Event>(adminOnlyResult.Value).SecretKey);
         }
 
         [Fact]
@@ -487,9 +492,18 @@ namespace UnitTests
 
             var logger = Mock.Of<ILogger<HamEventController>>();
             var mailer = new Mock<IEmailService>();
-            mailer.Setup(m => m.SendAsync(It.IsAny<EmailMessage>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+            EmailMessage? sentMessage = null;
+            mailer.Setup(m => m.SendAsync(It.IsAny<EmailMessage>(), It.IsAny<CancellationToken>()))
+                .Callback<EmailMessage, CancellationToken>((message, _) => sentMessage = message)
+                .Returns(Task.CompletedTask);
             var mailerSettings = Options.Create(new MailerSettings { Host = "localhost", Port = 25, From = "noreply@example.com", Username = "user", Password = "pass", EnableSSL = false });
             var controller = new HamEventController(logger, mailer.Object, mailerSettings, new TokenService("secret"), context);
+
+            var httpContext = new DefaultHttpContext();
+            httpContext.Request.Scheme = "https";
+            httpContext.Request.Host = new HostString("events.example.test");
+            httpContext.Request.PathBase = "/app";
+            controller.ControllerContext = new ControllerContext { HttpContext = httpContext };
 
             // Act
             var result = await controller.RecoverAdminLinks(new HamEventController.AdminLinkRecoveryRequest { Email = "test@example.com" }) as OkObjectResult;
@@ -503,6 +517,18 @@ namespace UnitTests
             var refreshed = context.Events.ToList();
             Assert.DoesNotContain(refreshed, e => e.SecretKey == "old1" || e.SecretKey == "old2");
             mailer.Verify(m => m.SendAsync(It.IsAny<EmailMessage>(), It.IsAny<CancellationToken>()), Times.Once);
+            Assert.NotNull(sentMessage);
+            using var emailModel = JsonDocument.Parse(JsonSerializer.Serialize(sentMessage.Model));
+            foreach (var item in emailModel.RootElement.GetProperty("events").EnumerateArray())
+            {
+                var url = Assert.IsType<string>(item.GetProperty("url").GetString());
+                Assert.StartsWith("https://events.example.test/app/admin/", url);
+                Assert.EndsWith("/edit", url);
+                var segments = new Uri(url).Segments;
+                var id = Guid.Parse(segments[3].Trim('/'));
+                var secret = segments[4].Trim('/');
+                Assert.Equal(context.Events.Single(e => e.Id == id).SecretKey, HamEventController.ComputeSha256Hash(secret));
+            }
         }
 
         [Fact]
@@ -548,6 +574,7 @@ namespace UnitTests
             var okResult = Assert.IsType<OkObjectResult>(action.Result);
             var returnedEvent = Assert.IsType<Event>(okResult.Value);
             Assert.Equal(ev.Id, returnedEvent.Id);
+            Assert.True(string.IsNullOrEmpty(returnedEvent.SecretKey));
         }
 
         [Fact]
@@ -568,6 +595,7 @@ namespace UnitTests
             var okResult = Assert.IsType<OkObjectResult>(action.Result);
             var returnedEvent = Assert.IsType<Event>(okResult.Value);
             Assert.Equal(evId, returnedEvent.Id);
+            Assert.Equal(hashed, returnedEvent.SecretKey);
         }
 
         [Fact]
@@ -824,6 +852,7 @@ namespace UnitTests
             // Get with non-matching secret and wrong adminkey -> NotFound
             var getResult = controller.Get(evId, Guid.NewGuid().ToString());
             Assert.IsType<NotFoundResult>(getResult.Result);
+            Assert.IsType<NotFoundResult>(controller.Get(evId, null).Result);
 
             // ExportAll should be NotFound
             var exportResult = controller.ExportAll(evId, Guid.NewGuid().ToString()) as NotFoundResult;

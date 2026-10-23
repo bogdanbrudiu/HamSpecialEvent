@@ -1,19 +1,14 @@
 <div class="row" style="margin-bottom:15px;">
   <p *ngIf="!event"><em>{{'Loading...' | translate}}</em></p>
   <p *ngIf="!event && loadFailed"><em>{{ 'Unable to load this event. Verify the link key or use the admin master key.' | translate }}</em></p>
-  <p *ngIf="saveError"><em>{{ saveError }}</em></p>
-  <form *ngIf="event">
-    <div class="mb-3" *ngIf="event.email!=initialEmail && codeGenerated">
-      <label for="emailValidationCode" class="form-label">{{'Email Validation Code' | translate }}</label>
-      <input type="text" class="form-control" id="emailValidationCode" [(ngModel)]="emailValidationCode" name="emailValidationCode">
-    </div>
-    <button type="submit" class="btn btn-primary" (click)="onSubmit()">{{ (event.email!=initialEmail && !codeGenerated) ? ('Email verification' | translate) : (event.id==='00000000-0000-0000-0000-000000000000' ? ('Add' | translate) : ('Update' | translate)) }}</button>
-  </form>
+  <p *ngIf="saveError" role="alert"><em>{{ saveError }}</em></p>
+  <p *ngIf="saveSuccess" role="status">{{ saveSuccess | translate }}</p>
 </div>
 
 <mat-card class="admin-event-card">
   <mat-card-title>{{ event?.id === '00000000-0000-0000-0000-000000000000' ? ('Create Event' | translate) : ('Edit Event' | translate) }}</mat-card-title>
   <mat-card-content>
+    <button mat-button type="button" (click)="cancelEdit()" [disabled]="busy">{{ (isAdminEditor ? 'Back to event list' : 'Browse events') | translate }}</button>
     <form (ngSubmit)="onSubmit()" *ngIf="event">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>{{ 'Name' | translate }}</mat-label>
@@ -68,7 +63,7 @@
           <mat-label>{{ 'Email Validation Code' | translate }}</mat-label>
           <input matInput [(ngModel)]="emailValidationCode" name="emailValidationCode">
         </mat-form-field>
-        <button mat-stroked-button color="primary" type="button" (click)="onSubmit()">
+        <button mat-stroked-button color="primary" type="button" (click)="onSubmit()" [disabled]="busy">
           {{ codeGenerated ? ('Validate Email' | translate) : ('Send Validation Code' | translate) }}
         </button>
       </div>
@@ -96,12 +91,12 @@
         <mat-hint>{{ 'Comma separated' | translate }}</mat-hint>
       </mat-form-field>
 
-      <section class="api-upload-instructions" aria-label="Logging software API upload instructions">
+      <section *ngIf="uploadUrl" class="api-upload-instructions" aria-label="Logging software API upload instructions">
         <h3>{{ 'Logging software ADIF upload' | translate }}</h3>
         <p>
           {{ 'Configure your logger to export ADIF and send it to this API endpoint (same pattern as ClubLog-style ADIF upload):' | translate }}
         </p>
-        <pre class="api-code">POST /api/hamevent/{{ event.id }}/{{ eventSecret }}/upload</pre>
+        <pre class="api-code">POST {{ uploadUrl }}</pre>
         <ul>
           <li>Method: <strong>POST</strong></li>
           <li>Body type: <strong>multipart/form-data</strong></li>
@@ -109,10 +104,10 @@
           <li>File format: <strong>ADIF</strong> (.adi)</li>
         </ul>
         <p>
-          Use the Event ID and Secret from this admin URL. Keep the secret private.
+          {{ 'These examples use an event-specific credential. Keep it private.' | translate }}
         </p>
         <p>Example:</p>
-        <pre class="api-code">curl -X POST "https://your-host/api/hamevent/{{ event.id }}/{{ eventSecret }}/upload" -F "file=@log.adi"</pre>
+        <pre class="api-code">curl -X POST {{ shellUploadUrl }} -F "file=@log.adi"</pre>
 
         <h4>{{ 'Recommended setup presets (common logging software)' | translate }}</h4>
         <div class="software-grid">
@@ -173,15 +168,11 @@
 
         <h4>Generic uploader scripts (works with any logger)</h4>
         <p>PowerShell:</p>
-        <pre class="api-code">$eventId = "{{ event.id }}"
-$secret = "{{ eventSecret }}"
-$url = "https://your-host/api/hamevent/$eventId/$secret/upload"
-      Invoke-RestMethod -Method Post -Uri $url -Form @&#123; file = Get-Item "C:\logs\event.adi" &#125;</pre>
+        <pre class="api-code">$url = {{ powerShellUploadUrl }}
+Invoke-RestMethod -Method Post -Uri $url -Form @&#123; file = Get-Item 'C:\logs\event.adi' &#125;</pre>
 
         <p>Linux/macOS shell:</p>
-        <pre class="api-code">EVENT_ID="{{ event.id }}"
-SECRET="{{ eventSecret }}"
-curl -X POST "https://your-host/api/hamevent/$EVENT_ID/$SECRET/upload" -F "file=@/var/log/event.adi"</pre>
+        <pre class="api-code">curl -X POST {{ shellUploadUrl }} -F "file=@/var/log/event.adi"</pre>
 
         <p>
           Tip: if your logger has direct ClubLog upload only, keep that for ClubLog and add this script as an additional export target for HamEvent.
@@ -189,8 +180,8 @@ curl -X POST "https://your-host/api/hamevent/$EVENT_ID/$SECRET/upload" -F "file=
       </section>
 
       <div class="actions">
-        <button mat-raised-button color="primary" type="submit">{{ 'Save' | translate }}</button>
-        <button mat-button color="warn" type="button" (click)="cancelEdit()">{{ 'Cancel' | translate }}</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="busy">{{ (busy ? 'Saving...' : 'Save') | translate }}</button>
+        <button mat-button color="warn" type="button" (click)="cancelEdit()" [disabled]="busy">{{ 'Cancel' | translate }}</button>
       </div>
     </form>
     <mat-progress-bar *ngIf="!event" mode="indeterminate"></mat-progress-bar>

@@ -500,7 +500,7 @@ namespace HamEvent.Controllers
                         events = eventLinks.Select(e => new
                         {
                             name = e.Item1.Name,
-                            url = $"{baseUrl}/{e.Item1.Id}/{e.Item2}"
+                            url = $"{baseUrl}/admin/{e.Item1.Id}/{e.Item2}/edit"
                         }).ToList()
                     }
                 };
@@ -638,7 +638,7 @@ namespace HamEvent.Controllers
                 Event? myevent = _dbcontext.Events.Where(e => e.Id == hamevent).FirstOrDefault();
                 if (myevent == null) return NotFound();
 
-            if (string.IsNullOrEmpty(secret))
+            if (string.IsNullOrEmpty(secret) && string.IsNullOrEmpty(HttpContext?.Request?.Query["adminkey"].FirstOrDefault()))
             {
                 // public view
                     var pub = new Event() { Id = myevent.Id, Name = myevent.Name, Description = Event.CopyLocalizedValues(myevent.Description), Email = myevent.Email, Diploma = myevent.Diploma, HasTop = myevent.HasTop, StartDate = myevent.StartDate, EndDate = myevent.EndDate, ExcludeCallsigns = myevent.ExcludeCallsigns, Rules = myevent.Rules };
@@ -647,7 +647,7 @@ namespace HamEvent.Controllers
                 // authorize using either event secret or admin secret
                 if (!IsAuthorizedForEvent(myevent, secret)) return NotFound();
 
-                myevent = new Event() { Id = myevent.Id, Name = myevent.Name, Description = Event.CopyLocalizedValues(myevent.Description), Email = myevent.Email, Diploma = myevent.Diploma, HasTop = myevent.HasTop, StartDate = myevent.StartDate, EndDate = myevent.EndDate, ExcludeCallsigns = myevent.ExcludeCallsigns, Rules = Event.CopyLocalizedValues(myevent.Rules) };
+                myevent = new Event() { Id = myevent.Id, SecretKey = myevent.SecretKey, Name = myevent.Name, Description = Event.CopyLocalizedValues(myevent.Description), Email = myevent.Email, Diploma = myevent.Diploma, HasTop = myevent.HasTop, StartDate = myevent.StartDate, EndDate = myevent.EndDate, ExcludeCallsigns = myevent.ExcludeCallsigns, Rules = Event.CopyLocalizedValues(myevent.Rules) };
 
                 if (myevent == null) return NotFound();
                 return Ok(myevent);

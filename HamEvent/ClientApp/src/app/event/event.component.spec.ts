@@ -90,10 +90,24 @@ describe('EventComponent', () => {
     expect(component.top.length).toBe(1);
   });
 
+  it('waits for the route event ID before loading a query-selected Rankings tab', () => {
+    fixture.destroy();
+    const route = TestBed.inject(ActivatedRoute);
+    Object.defineProperty(route, 'queryParamMap', { value: of(convertToParamMap({ tab: 'rankings' })) });
+    qsosService.getTop.calls.reset();
+    const nextFixture = TestBed.createComponent(EventComponent);
+    nextFixture.detectChanges();
+    expect(qsosService.getTop).toHaveBeenCalledOnceWith('evt-1', '', 0, 20);
+    expect(nextFixture.componentInstance.selectedTab).toBe('rankings');
+    nextFixture.destroy();
+  });
+
   it('switches rendered tab content when selectedTab changes', () => {
+    component.event.rules = { en: 'Rules for this specific event' };
     component.onTabChanged('rules');
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('app-event-rules-tab')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('.event-rules').textContent).toContain('Rules for this specific event');
 
     component.onTabChanged('overview');
     fixture.detectChanges();

@@ -1,4 +1,10 @@
 {
+  "Event created successfully.": "Събитието е създадено успешно.",
+  "Event updated successfully.": "Събитието е обновено успешно.",
+  "Back to event list": "Назад към списъка със събития",
+  "Browse events": "Разгледайте събитията",
+  "Saving...": "Запазване...",
+  "These examples use an event-specific credential. Keep it private.": "Тези примери използват ключ за конкретното събитие. Пазете го в тайна.",
   "HamEvent": "hamevent.eu",
   "HamEvents": "Ham събития",
   "HamEventTitle": "Добре дошли в HamEvent!",

@@ -53,6 +53,10 @@ export class EventComponent implements OnInit {
     });
     this.routes.paramMap.subscribe(params => {
       this.eventId = params.get('id')!;
+      this.logsLoaded = false;
+      this.rankingsLoaded = false;
+      this.logs = [];
+      this.top = [];
       this.eventsService.getEvent(this.eventId).subscribe(
         (response) => {
           this.event = response;
@@ -61,6 +65,7 @@ export class EventComponent implements OnInit {
           console.log(error);
         }
       );
+      this.onTabChanged(this.selectedTab);
     });
   }
   loadData() {
@@ -89,6 +94,7 @@ export class EventComponent implements OnInit {
 
   onTabChanged(tab: EventTab) {
     this.selectedTab = tab;
+    if (!this.eventId) return;
     if (tab === 'logs' && !this.logsLoaded) {
       this.loadData();
     }

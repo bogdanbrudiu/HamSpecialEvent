@@ -42,7 +42,12 @@
     </mat-card-content>
 
     <mat-card-actions>
-      <button mat-raised-button color="accent">Participate Now</button>
+      <button mat-raised-button color="accent" type="button"
+              class="item_disabled item_needs_fix" disabled
+              title="Needs repair before announcement">
+        Participate Now
+        <mat-icon class="needs_fix_icon">priority_high</mat-icon>
+      </button>
     </mat-card-actions>
   </mat-card>
 </div>

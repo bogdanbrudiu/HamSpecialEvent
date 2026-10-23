@@ -52,7 +52,8 @@ describe('EventComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: {
-            paramMap: of(convertToParamMap({ id: 'evt-1' }))
+            paramMap: of(convertToParamMap({ id: 'evt-1' })),
+            queryParamMap: of(convertToParamMap({}))
           }
         }
       ]

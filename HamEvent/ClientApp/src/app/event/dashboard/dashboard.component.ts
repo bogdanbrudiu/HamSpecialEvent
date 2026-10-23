@@ -1,25 +1,31 @@
 
 import { Component } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EventsService, HamEvent } from '../../events.service';
 import { Operator, QSO, QSOsService } from '../../qsos.service';
 import { ExtendedModule } from '@angular/flex-layout/extended';
-import { CommonModule, NgIf, NgClass, NgFor } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
+import { CommonModule, NgIf, NgClass, NgFor, DatePipe } from '@angular/common';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { MatCardModule } from '@angular/material/card';
+import { MatDividerModule } from '@angular/material/divider';
+import { ResponsiveToolbarComponent } from '../responsive-toolbar/responsive-toolbar.component';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.css'],
   standalone: true,
   imports: [
     CommonModule,
-    RouterLink,
-    RouterLinkActive,
     NgIf,
     NgClass,
     NgFor,
+    DatePipe,
     TranslateModule,
-    ExtendedModule
+    ExtendedModule,
+    MatCardModule,
+    MatDividerModule,
+    ResponsiveToolbarComponent
   ]
 })
 export class DashboardComponent {
@@ -28,10 +34,19 @@ export class DashboardComponent {
   public isLive: boolean = false;
   public Operators: Operator[] = [];
   public QSOs: QSO[] = [];
-    interval: any;
+  interval: any;
 
-  constructor(private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService, private router: Router) {
+  constructor(private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService, private router: Router, private translate: TranslateService) {
 
+  }
+
+  get localizedDescription(): string {
+    const descriptions = (this.event?.description ?? {}) as { [lang: string]: string };
+    if (typeof descriptions === 'string') {
+      return descriptions;
+    }
+    const currentLang = this.translate.currentLang || this.translate.defaultLang || 'en';
+    return descriptions[currentLang] || descriptions['en'] || Object.values(descriptions)[0] || '';
   }
   bandStatus(band: string): boolean {
     if (this.Operators) {

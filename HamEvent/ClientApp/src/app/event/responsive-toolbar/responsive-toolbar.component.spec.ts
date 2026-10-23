@@ -59,6 +59,16 @@ describe('ResponsiveToolbarComponent', () => {
     expect(component.tabChanged.emit).toHaveBeenCalledWith('logs');
   });
 
+  it('navigates back to the event page when a tab item is clicked and tab selection is disabled', () => {
+    spyOn(router, 'navigate');
+    const logsItem = component.menuItems.find(item => item.id === 'logs');
+    expect(logsItem).toBeTruthy();
+
+    component.onMenuItemClick(logsItem!);
+
+    expect(router.navigate).toHaveBeenCalledWith(['event/evt-1'], { queryParams: { tab: 'logs' } });
+  });
+
   it('navigates for linked non-tab items', () => {
     spyOn(router, 'navigate');
     const onAirItem = component.menuItems.find(item => item.id === 'onair');

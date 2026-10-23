@@ -45,6 +45,12 @@ export class EventComponent implements OnInit {
   constructor(private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService) { }
 
   ngOnInit() {
+    this.routes.queryParamMap.subscribe(queryParams => {
+      const tab = queryParams.get('tab') as EventTab | null;
+      if (tab && ['overview', 'rules', 'logs', 'rankings'].includes(tab)) {
+        this.onTabChanged(tab);
+      }
+    });
     this.routes.paramMap.subscribe(params => {
       this.eventId = params.get('id')!;
       this.eventsService.getEvent(this.eventId).subscribe(

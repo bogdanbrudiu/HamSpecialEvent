@@ -8,14 +8,15 @@ import { Participant, QSO, QSOsService } from '../../qsos.service';
 import { PdfService } from '../../pdf.service';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { ExtendedModule } from '@angular/flex-layout/extended';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ResponsiveToolbarComponent } from '../responsive-toolbar/responsive-toolbar.component';
 declare let gtag: Function;
 
 @Component({
   selector: 'app-eventtop',
   templateUrl: './eventtop.component.html',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, TranslateModule, ReactiveFormsModule, NgxPaginationModule]
+  imports: [CommonModule, RouterLink, RouterLinkActive, TranslateModule, ReactiveFormsModule, NgxPaginationModule, ResponsiveToolbarComponent]
 })
 export class EventTopComponent {
   searchForm!: FormGroup;
@@ -31,11 +32,20 @@ export class EventTopComponent {
   public blob: Blob | undefined;
   public isLive: boolean = false;
 
-  constructor(private formBuilder: FormBuilder, private router: Router, private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService, private pdfService: PdfService) {
+  constructor(private formBuilder: FormBuilder, private router: Router, private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService, private pdfService: PdfService, private translate: TranslateService) {
 
     this.searchForm = this.formBuilder.group({
       search: "",
     });
+  }
+
+  get localizedDescription(): string {
+    const descriptions = (this.event?.description ?? {}) as { [lang: string]: string };
+    if (typeof descriptions === 'string') {
+      return descriptions;
+    }
+    const currentLang = this.translate.currentLang || this.translate.defaultLang || 'en';
+    return descriptions[currentLang] || descriptions['en'] || Object.values(descriptions)[0] || '';
   }
 
   ngOnInit() {
@@ -64,7 +74,7 @@ export class EventTopComponent {
     
   }
   qsos() {
-    this.router.navigate([this.eventId]);
+    this.router.navigate(['/event', this.eventId]);
   }
   loadData() {
     this.qsosService.getTop(this.eventId, this.searchInput, this.page, this.tableSize).subscribe(

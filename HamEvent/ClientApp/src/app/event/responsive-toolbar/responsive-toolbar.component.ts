@@ -133,6 +133,14 @@ export class ResponsiveToolbarComponent {
       return;
     }
 
+    if (this.isTabItem(item)) {
+      const targetTab = item.id;
+      this.router.navigate(["event/" + this.event.id], {
+        queryParams: targetTab === 'overview' ? {} : { tab: targetTab }
+      });
+      return;
+    }
+
     if (item.link) {
       this.router.navigate(["event/" + this.event.id + "/" + item.link]);
     }

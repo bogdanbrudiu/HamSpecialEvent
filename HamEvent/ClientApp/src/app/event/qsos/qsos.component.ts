@@ -110,7 +110,7 @@ export class QSOsComponent implements OnInit, AfterViewInit {
   }
 
   top() {
-    this.router.navigate([this.eventId, 'top']);
+    this.router.navigate(['/event', this.eventId, 'top']);
   }
 
   genPdf() {

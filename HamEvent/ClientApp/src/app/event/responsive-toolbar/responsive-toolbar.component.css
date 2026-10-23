@@ -1,0 +1,25 @@
+.mr {
+  margin-right: 5px;
+}
+
+.item_disabled {
+  pointer-events: none;
+  cursor: not-allowed;
+  color: #ccc;
+  opacity: 0.7;
+}
+
+.item_needs_fix {
+  border: 1px dashed rgba(255, 193, 7, 0.85);
+  border-radius: 4px;
+  background-color: rgba(255, 193, 7, 0.08);
+}
+
+.needs_fix_icon {
+  margin-left: 6px;
+  color: #ffb300;
+}
+
+.active_tab {
+  background-color: rgba(255, 255, 255, 0.2);
+}

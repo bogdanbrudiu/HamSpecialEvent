@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+﻿using ElmahCore;
 using M0LTE.AdifLib;
 using Microsoft.AspNetCore.Mvc;
 using HamEvent.Data;
@@ -14,9 +14,9 @@ using System.Security.Cryptography;
 using Microsoft.AspNetCore.DataProtection;
 using System.Net.Sockets;
 using Microsoft.Extensions.Options;
-using CoreMailer.Interfaces;
-using CoreMailer.Models;
+using Microsoft.Extensions.Configuration;
 using HamEvent.Services;
+using System.Collections.Generic;
 
 namespace HamEvent.Controllers
 {
@@ -24,27 +24,76 @@ namespace HamEvent.Controllers
     [Route("api/[controller]")]
     public class HamEventController : ControllerBase
     {
-        private readonly ICoreMvcMailer _mailer;
+        private readonly IEmailService _emailService;
         private readonly MailerSettings _mailerSettings;
 
-        private readonly IMapper _mapper;
         private readonly HamEventContext _dbcontext;
         private readonly ILogger<HamEventController> _logger;
+        private readonly IConfiguration? _config;
 
-        public HamEventController(ILogger<HamEventController> logger ,IMapper mapper, ICoreMvcMailer mailer, IOptions<MailerSettings> mailerSettings, TokenService tokenService, HamEventContext dbcontext)
+        public HamEventController(ILogger<HamEventController> logger, IEmailService emailService, IOptions<MailerSettings> mailerSettings, TokenService tokenService, HamEventContext dbcontext, IConfiguration? config = null)
         {
             _logger = logger;
-            _mapper = mapper;
-            _mailer = mailer;
-            _mailerSettings = mailerSettings.Value;
+            _emailService = emailService;
+            _mailerSettings = mailerSettings?.Value ?? new MailerSettings();
 
             _dbcontext = dbcontext;
+            _config = config;
+        }
+
+        private bool IsAuthorizedForEvent(Data.Model.Event ev, string? secret)
+        {
+            if (ev == null) return false;
+
+            // if a secret string is provided, try to parse as Guid and validate against stored secret hash
+            if (!string.IsNullOrEmpty(secret))
+            {
+                    var normalized = secret.Trim();
+
+                    // Accept both plain secret and pre-hashed secret values.
+                    if (ev.SecretKey.Equals(normalized, StringComparison.OrdinalIgnoreCase)) return true;
+                    if (ev.SecretKey.Equals(ComputeSha256Hash(normalized), StringComparison.OrdinalIgnoreCase)) return true;
+
+                    // Legacy compatibility: some historical links may have used different Guid string formats
+                    // before hashing (with/without hyphens). Accept all canonical Guid variants.
+                    if (Guid.TryParse(normalized, out var parsedGuid))
+                    {
+                        var candidates = new[]
+                        {
+                            parsedGuid.ToString("D").ToLowerInvariant(),
+                            parsedGuid.ToString("N").ToLowerInvariant(),
+                            parsedGuid.ToString("B").ToLowerInvariant(),
+                            parsedGuid.ToString("P").ToLowerInvariant()
+                        };
+
+                        foreach (var candidate in candidates)
+                        {
+                            if (ev.SecretKey.Equals(candidate, StringComparison.OrdinalIgnoreCase)) return true;
+                            if (ev.SecretKey.Equals(ComputeSha256Hash(candidate), StringComparison.OrdinalIgnoreCase)) return true;
+                        }
+                    }
+            }
+
+            // allow admin key via query param 'adminkey'
+            var adminkey = HttpContext?.Request?.Query["adminkey"].FirstOrDefault();
+            var configured = _config?["AdminSecret"];
+            if (!string.IsNullOrEmpty(adminkey) && !string.IsNullOrEmpty(configured))
+            {
+                using var sha = SHA256.Create();
+                var bytes = Encoding.UTF8.GetBytes(adminkey);
+                var hash = sha.ComputeHash(bytes);
+                var hex = BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+                if (hex == configured.ToLowerInvariant()) return true;
+            }
+
+            return false;
         }
 
         [HttpGet("QSOs/{hamevent}")]
-        public PageResult<QSO> Get(Guid hamevent, int? page, int pagesize = 10, string callsign = "")
+        public PageResult<QSO> Get(Guid hamevent, [FromQuery] int? page, [FromQuery] int? pagesize, [FromQuery] string callsign = "")
         {
-            _logger.LogInformation(MyLogEvents.GetQSOs, "Get QSOs for event {0} page {1} paginated by {2} per page, filtered by {3}",hamevent, page, pagesize, callsign);
+            int actualPageSize = pagesize ?? 10;
+            _logger.LogInformation(MyLogEvents.GetQSOs, "Get QSOs for event {0} page {1} paginated by {2} per page, filtered by {3}", hamevent, page, actualPageSize, callsign);
             IQueryable<QSO> qsos;
             try
             {
@@ -55,7 +104,7 @@ namespace HamEvent.Controllers
                 }
             }
             catch(Exception ex) {
-                _logger.LogError(MyLogEvents.GetQSOs,ex, "Failed getting QSOs for event {0} page {1} paginated by {2} per page, filtered by {3}", hamevent, page, pagesize, callsign);
+                _logger.LogError(MyLogEvents.GetQSOs,ex, "Failed getting QSOs for event {0} page {1} paginated by {2} per page, filtered by {3}", hamevent, page, actualPageSize, callsign);
 
                 return new PageResult<QSO>
                 {
@@ -68,7 +117,7 @@ namespace HamEvent.Controllers
             return new PageResult<QSO>
             {
                 Count = countDetails,
-                Data = qsos.Skip((page - 1 ?? 0) * pagesize).Take(pagesize).ToList()
+                Data = qsos.Skip((page - 1 ?? 0) * actualPageSize).Take(actualPageSize).ToList()
             };
         }
         public class Participant
@@ -141,6 +190,108 @@ namespace HamEvent.Controllers
             public IEnumerable<QSO> lastQSOs { get; set; } = new List<QSO>();
         }
 
+        public class BandModeStat
+        {
+            public string Band { get; set; } = string.Empty;
+            public string Mode { get; set; } = string.Empty;
+            public int Count { get; set; }
+        }
+
+        public class FoxBandStat
+        {
+            public string Fox { get; set; } = string.Empty;
+            public string Band { get; set; } = string.Empty;
+            public int Count { get; set; }
+            public int Total { get; set; }
+        }
+
+        public class FoxDailyStat
+        {
+            public string Fox { get; set; } = string.Empty;
+            public string Day { get; set; } = string.Empty;
+            public int Count { get; set; }
+        }
+
+        public class EventStatsResult
+        {
+            public int TotalQsos { get; set; }
+            public IEnumerable<BandModeStat> BandModeTotals { get; set; } = new List<BandModeStat>();
+            public IEnumerable<FoxBandStat> FoxBandTotals { get; set; } = new List<FoxBandStat>();
+            public IEnumerable<FoxDailyStat> FoxDailyTotals { get; set; } = new List<FoxDailyStat>();
+        }
+
+        [HttpGet("Stats/{hamevent}")]
+        public ActionResult<EventStatsResult> Stats(Guid hamevent)
+        {
+            _logger.LogInformation(MyLogEvents.GetEvents, "Get statistics for event {eventId}", hamevent);
+            try
+            {
+                var qsos = _dbcontext.QSOs.Where(q => q.EventId.Equals(hamevent)).ToList();
+                var totalQsos = qsos.Count;
+
+                var bandModeTotals = qsos
+                    .GroupBy(q => new { q.Band, q.Mode })
+                    .Select(g => new BandModeStat
+                    {
+                        Band = g.Key.Band,
+                        Mode = g.Key.Mode,
+                        Count = g.Count()
+                    })
+                    .OrderBy(b => b.Band)
+                    .ThenBy(b => b.Mode)
+                    .ToList();
+
+                var foxTotals = qsos
+                    .GroupBy(q => q.Callsign1)
+                    .Select(g => new { Fox = g.Key, Total = g.Count() })
+                    .ToDictionary(x => x.Fox, x => x.Total);
+
+                var foxBandTotals = qsos
+                    .GroupBy(q => new { q.Callsign1, q.Band })
+                    .Select(g => new FoxBandStat
+                    {
+                        Fox = g.Key.Callsign1,
+                        Band = g.Key.Band,
+                        Count = g.Count(),
+                        Total = 0
+                    })
+                    .ToList();
+
+                foreach (var stat in foxBandTotals)
+                {
+                    if (foxTotals.TryGetValue(stat.Fox, out var total))
+                    {
+                        stat.Total = total;
+                    }
+                }
+
+                var foxDailyTotals = qsos
+                    .GroupBy(q => new { q.Callsign1, Day = q.Timestamp.Date })
+                    .Select(g => new FoxDailyStat
+                    {
+                        Fox = g.Key.Callsign1,
+                        Day = g.Key.Day.ToString("yyyy-MM-dd"),
+                        Count = g.Count()
+                    })
+                    .OrderBy(g => g.Fox)
+                    .ThenBy(g => g.Day)
+                    .ToList();
+
+                return Ok(new EventStatsResult
+                {
+                    TotalQsos = totalQsos,
+                    BandModeTotals = bandModeTotals,
+                    FoxBandTotals = foxBandTotals,
+                    FoxDailyTotals = foxDailyTotals
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(MyLogEvents.GetEvents, ex, "Failed to get statistics for event {eventId}", hamevent);
+                return Ok(new EventStatsResult());
+            }
+        }
+
         [HttpGet("Live/{hamevent}")]
         public ActionResult<List<Operator>> Live(Guid hamevent)
         {
@@ -160,7 +311,7 @@ namespace HamEvent.Controllers
 
                 return new List<Operator>();
             }
-         
+        
             return operators.ToList();
         }
         [HttpGet("hamevents")]
@@ -174,9 +325,9 @@ namespace HamEvent.Controllers
 
                 events = _dbcontext.Events.Include(e => e.QSOs);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _logger.LogError(MyLogEvents.GetEvents,ex, "Failed getting Events page {0} paginated by {1} per page", page, pagesize);
+                _logger.LogError(MyLogEvents.GetEvents, ex, "Failed getting Events page {0} paginated by {1} per page", page, pagesize);
 
                 return new PageResult<Event>
                 {
@@ -184,7 +335,7 @@ namespace HamEvent.Controllers
                     Data = new List<Event>()
                 };
             }
-            events = events.OrderByDescending(e=>e.Name);
+            events = events.OrderByDescending(e => e.Name);
             events.ForEachAsync(e => e.SecretKey = "");
             var countDetails = events.Count();
             return new PageResult<Event>
@@ -196,7 +347,7 @@ namespace HamEvent.Controllers
 
 
         [HttpGet("Diploma/{hamevent}/{callsign}")]
-        public IActionResult PDF(Guid hamevent, string callsign)
+        public IActionResult PDF(Guid hamevent, string callsign, [FromQuery] string? lang = null)
         {
             _logger.LogInformation(MyLogEvents.GetDiploma, "Get Diploma for event {0} callsign {1}", hamevent, callsign);
 
@@ -222,7 +373,7 @@ namespace HamEvent.Controllers
 
                 diplomahtml = diplomahtml.Replace("--callsign2--", callsign.ToUpper());
                 diplomahtml = diplomahtml.Replace("--EventName--", myevent.Name);
-                diplomahtml = diplomahtml.Replace("--EventDescription--", myevent.Description);
+                diplomahtml = diplomahtml.Replace("--EventDescription--", myevent.GetDescription(lang));
 
 
 
@@ -257,7 +408,7 @@ namespace HamEvent.Controllers
                     diplomahtml = diplomahtml.Replace("--Modes--", participant.Mode.ToString());
 
                     diplomahtml = diplomahtml.Replace("--Rank--", participant.Rank.ToString());
-                    diplomahtml = diplomahtml.Replace("--Timestamp--", DateTime.UtcNow.ToString());
+                    diplomahtml = diplomahtml.Replace("--Timestamp--", DateTime.UtcNow.ToString("u"));
 
                     SelectPdf.HtmlToPdf converter = new SelectPdf.HtmlToPdf();
                     // set converter options
@@ -299,8 +450,88 @@ namespace HamEvent.Controllers
         }
 
         #region For Admin
+        public class AdminLinkRecoveryRequest
+        {
+            public string Email { get; set; } = string.Empty;
+        }
+
+        [HttpPost("hamevent/recover")]
+        public async Task<IActionResult> RecoverAdminLinks([FromBody] AdminLinkRecoveryRequest request)
+        {
+            if (request == null || string.IsNullOrWhiteSpace(request.Email))
+            {
+                return BadRequest("Email is required.");
+            }
+
+            var normalizedEmail = request.Email.Trim();
+            _logger.LogInformation(MyLogEvents.RecoverAdminLinks, "Recovering admin links for email {email}", normalizedEmail);
+
+            try
+            {
+                var eventsForEmail = _dbcontext.Events.Where(e => e.Email.ToLower() == normalizedEmail.ToLower()).ToList();
+
+                if (!eventsForEmail.Any())
+                {
+                    _logger.LogInformation(MyLogEvents.RecoverAdminLinks, "No events found for email {email}", normalizedEmail);
+                    return NotFound();
+                }
+
+                var baseUrl = $"{HttpContext?.Request?.Scheme ?? "https"}://{HttpContext?.Request?.Host.Value ?? "localhost"}{HttpContext?.Request?.PathBase.Value}".TrimEnd('/');
+                var eventLinks = new List<(Event, string)>();
+
+                foreach (var ev in eventsForEmail)
+                {
+                    var secretKey = Guid.NewGuid().ToString();
+                    ev.SecretKey = ComputeSha256Hash(secretKey);
+                    eventLinks.Add((ev, secretKey));
+                }
+
+                await _dbcontext.SaveChangesAsync();
+
+                EmailMessage message = new EmailMessage
+                {
+                    ToAddresses = new List<string>() { normalizedEmail },
+                    IsHtml = true,
+                    TemplateName = "Shared/RecoverEvents",
+                    Subject = "Admin link recovery",
+                    Model = new
+                    {
+                        baseUrl,
+                        events = eventLinks.Select(e => new
+                        {
+                            name = e.Item1.Name,
+                            url = $"{baseUrl}/admin/{e.Item1.Id}/{e.Item2}/edit"
+                        }).ToList()
+                    }
+                };
+
+                _logger.LogDebug(MyLogEvents.SendingEmail, "Sending recovery email to {email}", normalizedEmail);
+                try
+                {
+                    await _emailService.SendAsync(message);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(MyLogEvents.SendingEmail, ex, "Error sending recovery email to {email}", normalizedEmail);
+                    if (HttpContext != null)
+                    {
+                        await HttpContext.RaiseError(ex);
+                    }
+                    return StatusCode(500, "Error sending recovery email.");
+                }
+
+                _logger.LogInformation(MyLogEvents.RecoverAdminLinks, "Recovery email sent for {count} events", eventsForEmail.Count);
+                return Ok(new { count = eventsForEmail.Count });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(MyLogEvents.RecoverAdminLinks, ex, "Failed to recover admin links for email {email}", normalizedEmail);
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
         [HttpPost("hamevent")]
-        public ActionResult Post(Event hamevent)
+        public async Task<ActionResult> Post(Event hamevent)
         {
             if (hamevent.Id.ToString().Equals(hamevent.SecretKey) && hamevent.Id.Equals(Guid.Empty))
             {
@@ -311,12 +542,13 @@ namespace HamEvent.Controllers
                     var myevent = new Event()
                     {
                         Name = hamevent.Name,
-                        Description = hamevent.Description,
+                        Description = Event.CopyLocalizedValues(hamevent.Description),
+                        Rules = Event.CopyLocalizedValues(hamevent.Rules),
                         Diploma = hamevent.Diploma,
                         Email = hamevent.Email
                     };
                         myevent.Id = Guid.NewGuid();
-                        var secretKey = Guid.NewGuid();
+                        var secretKey = Guid.NewGuid().ToString();
                         myevent.SecretKey = HamEventController.ComputeSha256Hash(secretKey);
                         myevent.HasTop = hamevent.HasTop;
                         myevent.ExcludeCallsigns = hamevent.ExcludeCallsigns;
@@ -326,26 +558,27 @@ namespace HamEvent.Controllers
                         _dbcontext.SaveChanges();
 
 
-                    MailerModel mdl = new MailerModel(_mailerSettings.Host, _mailerSettings.Port)
+                    var baseUrl = $"{HttpContext?.Request?.Scheme ?? "https"}://{HttpContext?.Request?.Host.Value ?? "localhost"}{HttpContext?.Request?.PathBase.Value}".TrimEnd('/');
+                    EmailMessage message = new EmailMessage
                     {
                         ToAddresses = new List<string>() { myevent.Email },
-                        FromAddress = _mailerSettings.From,
                         IsHtml = true,
-                        ViewFile = "Shared/AddEvent.html",
+                        TemplateName = "Shared/AddEvent",
                         Subject = "Event Added",
-                        User = _mailerSettings.Username,
-                        Key = _mailerSettings.Password,
-                        EnableSsl = _mailerSettings.EnableSSL,
-                        Model = new { id = myevent.Id, secretKey = secretKey }
+                        Model = new { id = myevent.Id, secretKey = secretKey, baseUrl }
                     };
                     _logger.LogDebug(MyLogEvents.SendingEmail, "Sending Email");
                     try
                     {
-                        _mailer.SendAsync(mdl);
+                        await _emailService.SendAsync(message, HttpContext?.RequestAborted ?? CancellationToken.None);
                     }
                     catch(Exception ex)
                     {
                         _logger.LogError(MyLogEvents.SendingEmail, ex ,"Error Sending Email");
+                        if (HttpContext != null)
+                        {
+                            await HttpContext.RaiseError(ex);
+                        }
                     }
 
                     
@@ -366,12 +599,14 @@ namespace HamEvent.Controllers
 
                 try
                 {
-                    var myevent = _dbcontext.Events.Where(e => e.Id == hamevent.Id && e.SecretKey == ComputeSha256Hash(new Guid(hamevent.SecretKey))).FirstOrDefault();
+                    var myevent = _dbcontext.Events.Where(e => e.Id == hamevent.Id).FirstOrDefault();
                     if (myevent == null) return NotFound();
+                    if (!IsAuthorizedForEvent(myevent, hamevent.SecretKey)) return NotFound();
                     else
                     {
                         myevent.Diploma = hamevent.Diploma;
-                        myevent.Description = hamevent.Description;
+                        myevent.Description = Event.CopyLocalizedValues(hamevent.Description);
+                        myevent.Rules = Event.CopyLocalizedValues(hamevent.Rules);
                         myevent.Email = hamevent.Email;
                         myevent.Name = hamevent.Name;
                         myevent.HasTop = hamevent.HasTop;
@@ -393,26 +628,29 @@ namespace HamEvent.Controllers
         }
 
         [HttpGet("hamevent/{hamevent}")]
-        public ActionResult<Event> Get(Guid hamevent, Guid? secret)
+        public ActionResult<Event> Get(Guid hamevent, string? secret)
         {
             
             _logger.LogInformation(MyLogEvents.GetEvent, "Get Event {0}", hamevent);
 
             try
             {
-                Event? myevent;
-                if (secret.HasValue)
-                {
-                    var hashedSecret = ComputeSha256Hash(secret.Value);
-                    myevent = _dbcontext.Events.Where(e => e.Id.Equals(hamevent) && e.SecretKey.Equals(hashedSecret)).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Email = e.Email, Diploma = e.Diploma, HasTop = e.HasTop, StartDate = e.StartDate, EndDate = e.EndDate, ExcludeCallsigns=e.ExcludeCallsigns }).FirstOrDefault();
+                Event? myevent = _dbcontext.Events.Where(e => e.Id == hamevent).FirstOrDefault();
+                if (myevent == null) return NotFound();
+
+            if (string.IsNullOrEmpty(secret) && string.IsNullOrEmpty(HttpContext?.Request?.Query["adminkey"].FirstOrDefault()))
+            {
+                // public view
+                    var pub = new Event() { Id = myevent.Id, Name = myevent.Name, Description = Event.CopyLocalizedValues(myevent.Description), Email = myevent.Email, Diploma = myevent.Diploma, HasTop = myevent.HasTop, StartDate = myevent.StartDate, EndDate = myevent.EndDate, ExcludeCallsigns = myevent.ExcludeCallsigns, Rules = myevent.Rules };
+                    return Ok(pub);
                 }
-                else
-                {
-                    myevent = _dbcontext.Events.Where(e => e.Id == hamevent).Select(e => new Event() { Id = e.Id, Name = e.Name, Description = e.Description, Email = e.Email, Diploma = e.Diploma, HasTop = e.HasTop, StartDate = e.StartDate, EndDate = e.EndDate, ExcludeCallsigns = e.ExcludeCallsigns }).FirstOrDefault();
-                }
+                // authorize using either event secret or admin secret
+                if (!IsAuthorizedForEvent(myevent, secret)) return NotFound();
+
+                myevent = new Event() { Id = myevent.Id, SecretKey = myevent.SecretKey, Name = myevent.Name, Description = Event.CopyLocalizedValues(myevent.Description), Email = myevent.Email, Diploma = myevent.Diploma, HasTop = myevent.HasTop, StartDate = myevent.StartDate, EndDate = myevent.EndDate, ExcludeCallsigns = myevent.ExcludeCallsigns, Rules = Event.CopyLocalizedValues(myevent.Rules) };
 
                 if (myevent == null) return NotFound();
-                else return Ok(myevent);
+                return Ok(myevent);
             }
             catch (Exception ex)
             {
@@ -423,70 +661,86 @@ namespace HamEvent.Controllers
 
         }
         [HttpPost("{hamevent}/{eventsecret}/upload")]
-        public IActionResult Upload(Guid hamevent, Guid eventsecret)
+        public IActionResult Upload(Guid hamevent, string eventsecret)
         {
-            var hashedSecret = ComputeSha256Hash(eventsecret);
+            var myevent = _dbcontext.Events.Where(e => e.Id.Equals(hamevent)).FirstOrDefault();
+            if (myevent == null) return NotFound();
+            if (!IsAuthorizedForEvent(myevent, eventsecret)) return NotFound();
             _logger.LogInformation(MyLogEvents.UploadLog, "Uploading log for event {0}", hamevent);
+
             int added = 0;
             try
             {
-                var myevent=_dbcontext.Events.Where(e => e.Id.Equals(hamevent) && e.SecretKey.Equals(hashedSecret)).FirstOrDefault();
+                // Prefer IFormFeature when tests set it directly to avoid triggering request body reads
+                var formFeature = HttpContext?.Features?.Get<Microsoft.AspNetCore.Http.Features.IFormFeature>();
+                var files = formFeature?.Form?.Files;
 
-                    var adifInport = Request.Form.Files[0];
-                    if (adifInport.Length > 0 && myevent != null)
+                if (files == null || files.Count == 0)
+                {
+                    if (!Request.HasFormContentType) return BadRequest();
+                    files = Request.Form.Files;
+                }
+
+                if (files == null || files.Count == 0) return BadRequest();
+
+                var adifInport = files[0];
+                if (adifInport == null || adifInport.Length == 0) return BadRequest();
+
+                using (var reader = new StreamReader(adifInport.OpenReadStream()))
+                {
+                    var adif = reader.ReadToEnd();
+                    if (string.IsNullOrWhiteSpace(adif)) return BadRequest();
+
+                    if (!M0LTE.AdifLib.AdifFile.TryParse(adif, out var file, out var reason))
                     {
-                        using (var reader = new StreamReader(adifInport.OpenReadStream()))
+                        _logger.LogWarning(MyLogEvents.UploadLog, "ADIF parse failed: {0}", reason);
+                        return BadRequest(reason);
+                    }
+
+                    var adifQSOs = file.Records.ToList();
+                    var QSOs = Mapster.TypeAdapter.Adapt<List<QSO>>(adifQSOs);
+                    foreach (var myQSO in QSOs)
+                    {
+                        myQSO.EventId = hamevent;
+                        bool exists = _dbcontext.QSOs.Any(qso =>
+                            qso.EventId.Equals(myQSO.EventId)
+                            && qso.Callsign1 == myQSO.Callsign1
+                            && qso.Callsign2 == myQSO.Callsign2
+                            && qso.Band == myQSO.Band
+                            && qso.Mode == myQSO.Mode
+                            && (qso.Freq != null && qso.Freq == myQSO.Freq)
+                            && qso.Timestamp == myQSO.Timestamp
+                        );
+                        if (!exists)
                         {
-                            var adif = reader.ReadToEnd();
-                            AdifFile.TryParse(adif, out var file);
-                            List<AdifContactRecord> adifQSOs = file.Records.ToList();
-                            List<QSO> QSOs = _mapper.Map<List<AdifContactRecord>, List<QSO>>(adifQSOs);
-                            foreach (QSO myQSO in QSOs)
-                            {
-                                myQSO.EventId = hamevent;
-                            if (_dbcontext.QSOs.Count(qso =>
-                                qso.EventId.Equals(myQSO.EventId)
-                                && qso.Callsign1.Equals(myQSO.Callsign1)
-                                && qso.Callsign2.Equals(myQSO.Callsign2)
-                                && qso.Band.Equals(myQSO.Band)
-                                && qso.Mode.Equals(myQSO.Mode)
-                                && (qso.Freq !=null  && qso.Freq.Equals(myQSO.Freq))
-                                && qso.Timestamp.Equals(myQSO.Timestamp)
-                                ) == 0)
-                            {
-                                added++;
-                                _dbcontext.QSOs.Add(myQSO);
-                            }
-                            }
-                            _dbcontext.SaveChanges();
+                            added++;
+                            _dbcontext.QSOs.Add(myQSO);
                         }
+                    }
+                    _dbcontext.SaveChanges();
+                }
 
-                        return Ok($"<P>Number of QSO's Added to the Database:<b>{added}qso's</b></P>");
-                    }
-                    else
-                    {
-                        return BadRequest();
-                    }
+                return Ok($"<P>Number of QSO's Added to the Database:<b>{added}qso's</b></P>");
             }
             catch (Exception ex)
             {
-                _logger.LogError(MyLogEvents.UploadLog, "Failed uploading log for event {0}", hamevent);
-
-                return StatusCode(500, $"Internal server error: {ex}");
+                _logger.LogError(MyLogEvents.UploadLog, ex, "Failed uploading log for event {0}", hamevent);
+                return StatusCode(500, "Internal server error");
             }
         }
         [HttpGet("ADIF/{hamevent}/{secret}")]
-        public ActionResult ExportAll(Guid hamevent, Guid secret)
+        public ActionResult ExportAll(Guid hamevent, string secret)
         {
-            var hashedSecret = ComputeSha256Hash(secret);
             _logger.LogInformation(MyLogEvents.DeleteAllQSOs, "Export All QSOs from event {0}", hamevent);
-            Event? myevent = _dbcontext.Events.Where(e => e.Id.Equals(hamevent) && e.SecretKey.Equals(hashedSecret)).FirstOrDefault();
+            Event? myevent = _dbcontext.Events.Where(e => e.Id.Equals(hamevent)).FirstOrDefault();
+            if (myevent == null) return NotFound();
+            if (!IsAuthorizedForEvent(myevent, secret)) return NotFound();
             if (myevent != null)
             {
                 AdifFile export = new AdifFile();
                 export.Header = new AdifHeaderRecord();
                 export.Header.Fields.Add("Event", myevent.Name);
-                export.Header.Fields.Add("Description", myevent.Description);
+                export.Header.Fields.Add("Description", myevent.GetDescription());
                 foreach (var qso in _dbcontext.QSOs.Where(q => q.EventId.Equals(hamevent)))
                 {
                     AdifContactRecord item = new AdifContactRecord();
@@ -509,29 +763,31 @@ namespace HamEvent.Controllers
             return NotFound();
         }
         [HttpDelete("QSOs/{hamevent}/{secret}")]
-        public ActionResult Delete(Guid hamevent, Guid secret, string callsign1, string callsign2, string mode, string band, string timestamp)
+        public ActionResult Delete(Guid hamevent, string secret, string callsign1, string callsign2, string mode, string band, string timestamp)
         {
-            var hashedSecret = ComputeSha256Hash(secret);
+            var parsedTimestamp = DateTime.Parse(timestamp, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
+            var myevent = _dbcontext.Events.Where(e => e.Id == hamevent).FirstOrDefault();
+            if (myevent == null) return NotFound();
+            if (!IsAuthorizedForEvent(myevent, secret)) return NotFound();
             _logger.LogInformation(MyLogEvents.DeleteQSO, "Delete QSO callsign1 {0}, callsign2 {1}, mode {2}, band {3}, timestamp {4} from event {5}", callsign1, callsign2, mode, band, timestamp, hamevent);
-            var myqso = _dbcontext.QSOs.Where(qso => qso.EventId == hamevent &&
+            var myqso = _dbcontext.QSOs.Include(q => q.Event).Where(qso => qso.EventId == hamevent &&
                                                        qso.Callsign1 == callsign1 &&
                                                        qso.Callsign2 == callsign2 &&
                                                        qso.Mode == mode &&
                                                        qso.Band == band &&
-                                                       qso.Timestamp == DateTime.Parse(timestamp, CultureInfo.InvariantCulture) &&
-                                                       qso.Event != null && qso.Event.SecretKey == hashedSecret).FirstOrDefault();
+                                                       qso.Timestamp == parsedTimestamp).FirstOrDefault();
             if (myqso == null) return NotFound();
             _dbcontext.QSOs.Remove(myqso);
             _dbcontext.SaveChanges();
             return Ok();
         }
         [HttpDelete("QSOs/{hamevent}/{secret}/all")]
-        public ActionResult DeleteAll(Guid hamevent, Guid secret)
+        public ActionResult DeleteAll(Guid hamevent, string secret)
         {
-            var hashedSecret = ComputeSha256Hash(secret);
             _logger.LogInformation(MyLogEvents.DeleteAllQSOs, "Delete All QSOs from event {0}", hamevent);
-            var myevent=_dbcontext.Events.Where(e => e.Id.Equals(hamevent) && e.SecretKey.Equals(hashedSecret)).Include(e => e.QSOs).FirstOrDefault();
+            var myevent=_dbcontext.Events.Where(e => e.Id.Equals(hamevent)).Include(e => e.QSOs).FirstOrDefault();
             if (myevent == null) throw new Exception("Event not found");
+            if (!IsAuthorizedForEvent(myevent, secret)) throw new Exception("Event not found");
             foreach (var qso in myevent.QSOs)
             {
                 _dbcontext.QSOs.Remove(qso);
@@ -540,17 +796,20 @@ namespace HamEvent.Controllers
             return Ok();
         }
         [HttpPost("QSOs/{hamevent}/{secret}")]
-        public ActionResult Post(Guid hamevent, Guid secret, [FromQuery] string callsign1, [FromQuery] string callsign2, [FromQuery] string mode, [FromQuery] string band, [FromQuery] string timestamp, [FromBody] QSO updatedQSO)
+        public ActionResult Post(Guid hamevent, string secret, [FromQuery] string callsign1, [FromQuery] string callsign2, [FromQuery] string mode, [FromQuery] string band, [FromQuery] string timestamp, [FromBody] QSO updatedQSO)
         {
-            var hashedSecret = ComputeSha256Hash(secret);
+            var parsedTimestamp = DateTime.Parse(timestamp, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
             _logger.LogInformation(MyLogEvents.UpdateQSO, "Update QSO callsign1 {0}, callsign2 {1}, mode {2}, band {3}, timestamp {4} from event {5} to callsign1 {6}, callsign2 {7}, mode {8}, band {9}, timestamp {10}", callsign1, callsign2, mode, band, timestamp, hamevent, updatedQSO.Callsign1, updatedQSO.Callsign2, updatedQSO.Mode, updatedQSO.Band, updatedQSO.Timestamp);
+            var myevent = _dbcontext.Events.Where(e => e.Id == hamevent).FirstOrDefault();
+            if (myevent == null) return NotFound();
+            if (!IsAuthorizedForEvent(myevent, secret)) return NotFound();
+
             var myqso = _dbcontext.QSOs.Where(qso => qso.EventId == hamevent &&
                                                        qso.Callsign1 == callsign1 &&
                                                        qso.Callsign2 == callsign2 &&
                                                        qso.Mode == mode &&
                                                        qso.Band == band &&
-                                                       qso.Timestamp == DateTime.Parse(timestamp, CultureInfo.InvariantCulture) &&
-                                                       qso.Event != null && qso.Event.SecretKey == hashedSecret).FirstOrDefault();
+                                                       qso.Timestamp == parsedTimestamp).FirstOrDefault();
             if (myqso == null) return NotFound();
             updatedQSO.RST1 = myqso.RST1;
             updatedQSO.RST2 = myqso.RST2;
@@ -563,13 +822,13 @@ namespace HamEvent.Controllers
             return Ok();
         }
 
-        public static string ComputeSha256Hash(Guid rawData)
+        public static string ComputeSha256Hash(string rawData)
         {
             // Create a SHA256
             using (SHA256 sha256Hash = SHA256.Create())
             {
                 // ComputeHash - returns byte array
-                byte[] bytes = sha256Hash.ComputeHash(rawData.ToByteArray());
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.ASCII.GetBytes(rawData));
 
                 // Convert byte array to a string
                 StringBuilder builder = new StringBuilder();

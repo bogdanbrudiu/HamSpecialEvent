@@ -1,0 +1,49 @@
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { EventComponent } from './event.component';
+import { QSOsComponent } from './qsos/qsos.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { EventTopComponent } from './eventtop/eventtop.component';
+
+const eventRoutes: Routes = [
+  {
+    path: ":id/logs",
+    component: QSOsComponent,
+    title: "routing: Logs"
+  },
+  {
+    path: ":id/top",
+    component: EventTopComponent,
+    title: "routing: Top"
+  },
+  {
+    path: ":id/live",
+    component: DashboardComponent,
+    title: "routing: Top"
+  },
+  {
+    path: ':id/:secret',
+    redirectTo: '/admin/:id/:secret/edit',
+    pathMatch: 'full'
+  },
+  {
+    path: ':id',
+    component: EventComponent,
+  },
+  {
+    path: '',
+    pathMatch: 'full',
+    component: EventComponent,
+  },
+];
+
+@NgModule({
+  imports: [RouterModule.forChild(eventRoutes)],
+  exports: [RouterModule]
+})
+export class EventRoutingModule {
+  //constructor() {
+  //  console.log("MODULE EVENT");
+  //  console.log(this);
+  //}
+}

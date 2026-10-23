@@ -1,0 +1,4 @@
+.admin-login { max-width: 360px; margin: 2rem auto; }
+.admin-login .error { color: red; margin-bottom: 0.5rem; }
+.admin-login input { width: 100%; padding: 0.5rem; margin-bottom: 0.5rem; }
+.admin-login button { padding: 0.5rem 1rem; }

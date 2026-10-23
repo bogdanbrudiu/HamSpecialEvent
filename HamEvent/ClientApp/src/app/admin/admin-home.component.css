@@ -1,0 +1,112 @@
+
+.admin-pagination button {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  margin: 0 0.5rem;
+  padding: 0.4rem 1.2rem;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.admin-pagination button[disabled] {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.admin-table-row {
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.admin-table-row:hover {
+  background: #e3f2fd;
+}
+
+.create-event-btn {
+  margin-top: 1.5rem;
+}
+
+.admin-title {
+  text-align: center;
+  margin-top: 2rem;
+  color: #1976d2;
+  font-weight: 600;
+}
+
+.admin-welcome {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #444;
+}
+
+.admin-table-container {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  padding: 2rem;
+  max-width: 1100px;
+  margin: 2rem auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+  .admin-table th, .admin-table td {
+    border: 1px solid #bbb;
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    background: #fff;
+  }
+
+  .admin-table th {
+    background: #f5f5f5;
+    font-weight: 600;
+  }
+
+  .admin-table tr:nth-child(even) {
+    background: #f9f9f9;
+  }
+
+.admin-table-link {
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+  .admin-table-link:hover {
+    background: #e3f2fd;
+  }
+
+.admin-table-qso-link {
+  cursor: pointer;
+  color: #1976d2;
+  font-weight: bold;
+  text-align: center;
+  background: #e3f2fd;
+  transition: background 0.2s, color 0.2s;
+}
+
+  .admin-table-qso-link:hover {
+    background: #bbdefb;
+    color: #0d47a1;
+  }
+
+.qso-count-link {
+  text-decoration: underline;
+}
+
+.create-event-btn {
+  margin-bottom: 1.5rem;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.admin-pagination {
+  margin-top: 1rem;
+  text-align: center;
+}

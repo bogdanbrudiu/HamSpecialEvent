@@ -1,32 +1,49 @@
-.bi:hover {
-  color: red;
-  cursor: pointer;
-}
-
-
-.trow {
-  transition: transform .2s;
-}
-
-  .trow:hover {
-    cursor: pointer;
-    transform: scale(1.03);
-
-  }
-body, html {
-  min-height: 100%;
+html, body {
   height: 100%;
+  min-height: 100%;
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background: url('/assets/background.png') no-repeat center center fixed;
+  background-size: cover;
 }
 
-.mycheckbox {
-  background-color: #198754 !important;
-  border-color: #198754 !important;
+.site-container {
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  min-height: 100vh; /* Ensure container takes full screen height */
 }
 
-.navbar-blue {
-  background-color: #0099F7;
-}
-.nav-link-white {
-  font-family: sans-serif;
+/* ------------------------------------- */
+/* FIXED HEADER STYLES */
+/* ------------------------------------- */
+.site-header {
+  position: fixed; /* Fixes header to the top of the viewport */
+  top: 0;
+  left: 0;
+  width: 100%;
   color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+}
+
+/* ------------------------------------- */
+/* MAIN CONTENT STYLES */
+/* ------------------------------------- */
+.site-content {
+  flex: 1 0 auto; /* Grows to fill available space (the key Flexbox property) */
+  padding-top: 60px; /* IMPORTANT: Add padding equal to the header's height to prevent overlap */
+  padding-bottom: 70px; /* IMPORTANT: Add padding equal to the footer's height */
+  /* This prevents the text from being hidden behind the fixed elements */
+}
+
+/* ------------------------------------- */
+/* STICKY FOOTER STYLES */
+/* ------------------------------------- */
+footer {
+  /* This works perfectly with the flex layout to stay at the bottom */
+  position: fixed;
+  bottom: 0px;
+  width: 100%;
+  text-align: center;
+  z-index: 1;
 }

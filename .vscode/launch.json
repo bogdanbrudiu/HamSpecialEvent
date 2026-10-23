@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/HamEvent/bin/Debug/net7.0/HamEvent.dll",
+            "program": "${workspaceFolder}/HamEvent/bin/Debug/net9.0/HamEvent.dll",
             "args": [],
             "cwd": "${workspaceFolder}/HamEvent",
             "stopAtEntry": false,

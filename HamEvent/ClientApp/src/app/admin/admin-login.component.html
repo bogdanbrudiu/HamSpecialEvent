@@ -1,0 +1,10 @@
+<div class="admin-login">
+  <h2>Admin login</h2>
+  <div *ngIf="error" class="error">{{ error }}</div>
+  <div>
+    <input type="password" [(ngModel)]="password" placeholder="Enter admin password" />
+  </div>
+  <div>
+    <button (click)="submit()" [disabled]="loading">Login</button>
+  </div>
+</div>

@@ -1,28 +1,25 @@
-using CoreMailer.Implementation;
-using CoreMailer.Interfaces;
 using ElmahCore;
 using ElmahCore.Mvc;
 using HamEvent;
 using HamEvent.Data;
+using HamEvent.Mapping;
 using HamEvent.Services;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using NReco.Logging.File;
-using System.Net;
-using System.Net.Mail;
+using System.Configuration;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.Configure<MailerSettings>(builder.Configuration.GetSection("MailerSettings"));
-builder.Services.AddScoped<ICoreMvcMailer, CoreMvcMailer>();
+builder.Services.AddScoped<IEmailTemplateRenderer, RazorEmailTemplateRenderer>();
+builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-var tokenSecret = builder.Configuration["Token:Secret"] ?? throw new ArgumentNullException("Token:Secret", "Token secret is not configured.");
+MapsterConfig.Register(TypeAdapterConfig.GlobalSettings);
+var tokenSecret = builder.Configuration["Token:Secret"] ?? throw new ConfigurationErrorsException("Token secret is not configured.");
 
 builder.Services.AddSingleton<TokenService>(provider => new TokenService(tokenSecret));
 
@@ -38,11 +35,9 @@ builder.Configuration.GetSection("IPWhitelist").Bind(wl);
 builder.Services.AddElmah<XmlFileErrorLog>(options =>
 {
     options.Filters.Add(new MyElmahFilter());
-    options.OnPermissionCheck = context => wl.Whitelist
-                .Where(ip => IPAddress.Parse(ip)
-                .Equals(context.Connection.RemoteIpAddress))
-                .Any();
+    options.OnPermissionCheck = context => wl.IsAllowed(context.Connection.RemoteIpAddress);
     options.LogPath = "~/log";
+    options.Path = "/api/elmah";
 });
 builder.Services.AddLogging(loggingBuilder => {
     var loggingSection = builder.Configuration.GetSection("Logging");
@@ -59,25 +54,55 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path.StartsWithSegments("/api/elmah") && !wl.IsAllowed(context.Connection.RemoteIpAddress))
+    {
+        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+        return;
+    }
+
+    await next(context);
+});
+app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseRouting();
 
+app.UseElmah();
+
+app.MapGet("/health/live", () =>
+{
+    return Results.Ok(new { status = "live" });
+});
+
+app.MapGet("/health/ready", async (HamEventContext dbContext, CancellationToken cancellationToken) =>
+{
+    try
+    {
+        var canConnect = await dbContext.Database.CanConnectAsync(cancellationToken);
+        if (!canConnect)
+        {
+            return Results.StatusCode(StatusCodes.Status503ServiceUnavailable);
+        }
+
+        // Touch a core table to ensure DB access is truly operational for request handling.
+        _ = await dbContext.Events.AsNoTracking().AnyAsync(cancellationToken);
+        return Results.Ok(new { status = "ready" });
+    }
+    catch
+    {
+        return Results.StatusCode(StatusCodes.Status503ServiceUnavailable);
+    }
+});
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller}/{action=Index}/{id?}");
 
+app.MapRazorPages();
 app.MapFallbackToFile("index.html");
-app.UseElmah();
+
 app.Run();
 
-
-public class MailerSettings
-{
-    public string From { get; set; } = String.Empty;
-    public string Username { get; set; } = String.Empty;
-    public string Password { get; set; } = String.Empty;
-    public string Host { get; set; } = String.Empty;
-    public short Port { get; set; } 
-    public Boolean EnableSSL { get; set; } 
-}
+// Expose Program class for WebApplicationFactory in integration tests
+public partial class Program { }

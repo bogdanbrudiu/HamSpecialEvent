@@ -1,0 +1,144 @@
+name: Deploy PROD
+
+on:
+  workflow_dispatch:
+    inputs:
+      ci_run_id:
+        description: CI run id containing the publish artifact
+        required: true
+        type: string
+      confirm_prod_deploy:
+        description: Type YES to deploy to production
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+jobs:
+  precheck:
+    name: Validate manual confirmation
+    runs-on: ubuntu-latest
+    steps:
+      - shell: bash
+        run: |
+          if [[ "${{ inputs.confirm_prod_deploy }}" != "YES" ]]; then
+            echo "confirm_prod_deploy must be YES" >&2
+            exit 1
+          fi
+
+  deploy_prod:
+    name: Deploy to PROD
+    runs-on: windows-latest
+    needs: precheck
+    timeout-minutes: 35
+    environment: prod
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: app-publish
+          path: publish
+          run-id: ${{ inputs.ci_run_id }}
+          github-token: ${{ github.token }}
+
+      - name: App settings substitution (PROD)
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: publish/appsettings.json
+        env:
+          MailerSettings.From: ${{ secrets.MAILER_SETTINGS_FROM }}
+          MailerSettings.Username: ${{ secrets.MAILER_SETTINGS_USERNAME }}
+          MailerSettings.Password: ${{ secrets.MAILER_SETTINGS_PASSWORD }}
+          MailerSettings.Host: ${{ secrets.MAILER_SETTINGS_HOST }}
+          MailerSettings.Port: ${{ secrets.MAILER_SETTINGS_PORT }}
+          MailerSettings.EnableSSL: ${{ secrets.MAILER_SETTINGS_ENABLESSL }}
+          Token.Secret: ${{ secrets.TOKEN_SECRET }}
+
+      - name: Stop PROD app pool
+        uses: bogdanbrudiu/simply-web-deploy/Stop@main
+        with:
+          website-name: ${{ secrets.WEBSITE_NAME }}
+          server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
+          server-username: ${{ secrets.SERVER_USERNAME }}
+          server-password: ${{ secrets.SERVER_PASSWORD }}
+
+      - name: Fetch PROD site for DB backup
+        uses: bogdanbrudiu/simply-web-deploy/Fetch@main
+        with:
+          website-name: ${{ secrets.WEBSITE_NAME }}
+          server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
+          server-username: ${{ secrets.SERVER_USERNAME }}
+          server-password: ${{ secrets.SERVER_PASSWORD }}
+          target-path: '\fetched-prod\'
+          source-path: '""'
+
+      - name: Backup PROD database
+        shell: pwsh
+        run: |
+          $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
+          New-Item -ItemType Directory -Force -Path backup | Out-Null
+
+          if (-not (Test-Path 'fetched-prod/App_Data/QSOs.db')) {
+            throw 'Could not find fetched PROD DB at fetched-prod/App_Data/QSOs.db'
+          }
+
+          Copy-Item 'fetched-prod/App_Data/QSOs.db' "backup/prod-QSOs-$stamp.db" -Force
+          Get-FileHash "backup/prod-QSOs-$stamp.db" -Algorithm SHA256 | Select-Object -ExpandProperty Hash | Out-File "backup/prod-QSOs-$stamp.sha256" -Encoding ascii
+
+      - name: Upload PROD DB backup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: prod-db-backup-${{ github.run_id }}
+          path: backup
+          retention-days: 90
+
+      - name: Deploy PROD app (preserve DB)
+        uses: bogdanbrudiu/simply-web-deploy/Deploy@main
+        with:
+          website-name: ${{ secrets.WEBSITE_NAME }}
+          server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
+          server-username: ${{ secrets.SERVER_USERNAME }}
+          server-password: ${{ secrets.SERVER_PASSWORD }}
+          source-path: '\publish\'
+          skip-files: 'App_Data\\QSOs.db'
+
+      - name: Start PROD app pool
+        if: always()
+        uses: bogdanbrudiu/simply-web-deploy/Start@main
+        with:
+          website-name: ${{ secrets.WEBSITE_NAME }}
+          server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
+          server-username: ${{ secrets.SERVER_USERNAME }}
+          server-password: ${{ secrets.SERVER_PASSWORD }}
+
+      - name: Wait for PROD readiness
+        shell: pwsh
+        env:
+          BASE_URL: ${{ secrets.PROD_BASE_URL }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:BASE_URL)) {
+            throw 'PROD_BASE_URL secret is required.'
+          }
+
+          $healthUrl = "$($env:BASE_URL.TrimEnd('/'))/health/ready"
+          $maxAttempts = 30
+          for ($i = 1; $i -le $maxAttempts; $i++) {
+            try {
+              $response = Invoke-WebRequest -Uri $healthUrl -Method Get -TimeoutSec 10 -SkipCertificateCheck
+              if ($response.StatusCode -eq 200) {
+                Write-Host "PROD readiness check passed on attempt $i"
+                exit 0
+              }
+            }
+            catch {
+              Write-Host "Attempt $i/$maxAttempts failed: $($_.Exception.Message)"
+            }
+            Start-Sleep -Seconds 5
+          }
+
+          throw "PROD readiness check failed for $healthUrl"

@@ -1,0 +1,38 @@
+.footer-container {
+  background-color: #f1f3f5;
+  display: flex;
+  justify-content: space-between; /* Pushes content to the far left and far right */
+  align-items: center; /* Vertically centers the text within the footer */
+  width: 100%;
+  padding: 0 20px; /* Add some horizontal padding so content isn't flush with edges */
+  height: 70px; /* Adjust height as needed, make sure it matches the padding-bottom of your main content */
+}
+
+.footer-left span {
+  /* Styles for your copyright text */
+  font-size: 0.9rem;
+}
+
+.footer-right {
+  padding-right: 40px;
+}
+.footer-right a {
+  /* Styles for your links */
+  color: black;
+  text-decoration: none;
+  margin-left: 15px; /* Spacing between the right-side links/text */
+}
+
+.footer-right span {
+  /* Styles for the separator '|' */
+  margin-left: 15px;
+  opacity: 0.7;
+}
+
+/* Ensure the main footer element adheres to the sticky positioning */
+footer {
+  /* These styles carry over from the previous sticky/flex setup */
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+}

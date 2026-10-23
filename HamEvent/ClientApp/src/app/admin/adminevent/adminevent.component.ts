@@ -146,7 +146,9 @@ export class AdminEventComponent implements OnInit {
   onSubmit() {
     if (this.event) { 
       this.saveError = '';
-      this.event.secretKey = this.eventSecret;
+      this.event.secretKey = this.event.id === '00000000-0000-0000-0000-000000000000'
+        ? this.event.id
+        : this.eventSecret;
       this.ensureLanguageKeys();
       if (this.initialEmail != this.event.email) {
         if (!this.codeGenerated) {

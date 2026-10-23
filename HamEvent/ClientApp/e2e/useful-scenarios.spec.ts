@@ -200,7 +200,7 @@ test.describe('Useful E2E scenarios @useful', () => {
 
     await page.goto(`/event/${eventId}`);
     await expect(page.getByText(eventName).first()).toBeVisible({ timeout: 15_000 });
-    await expect(page.locator('mat-tab-group')).toBeVisible({ timeout: 15_000 });
+    await expect(page.locator('app-event-overview-tab')).toBeVisible({ timeout: 15_000 });
   });
 
   test('event edit secret URL opens admin edit page', async ({ page, request }) => {

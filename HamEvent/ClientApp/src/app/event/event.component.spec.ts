@@ -90,11 +90,11 @@ describe('EventComponent', () => {
   });
 
   it('switches rendered tab content when selectedTab changes', () => {
-    component.selectedTab = 'rules';
+    component.onTabChanged('rules');
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('app-event-rules-tab')).not.toBeNull();
 
-    component.selectedTab = 'overview';
+    component.onTabChanged('overview');
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('app-event-overview-tab')).not.toBeNull();
   });

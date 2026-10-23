@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('Public smoke @smoke', () => {
-  test('home page loads and navigates to events', async ({ page }) => {
+  test('home page loads, navigates to events, and opens an event page', async ({ page }) => {
     await page.goto('/');
 
     await expect(page.getByRole('heading', { name: 'Welcome to HamEvent!' })).toBeVisible();
@@ -11,6 +11,13 @@ test.describe('Public smoke @smoke', () => {
 
     await expect(page).toHaveURL(/\/events$/);
     await expect(page.getByRole('heading', { name: 'Ham Events' })).toBeVisible();
+
+    const firstEventCard = page.locator('app-event-card').first();
+    await expect(firstEventCard).toBeVisible();
+    await firstEventCard.getByRole('button', { name: 'Go to event' }).click();
+
+    await expect(page).toHaveURL(/\/event\/[0-9a-f-]+$/i);
+    await expect(page.locator('app-event-overview-tab')).toBeVisible();
   });
 
   test('recovery form validates the email field', async ({ page }) => {

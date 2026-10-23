@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule } from '@angular/core';
+import { NgModule, provideZoneChangeDetection } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
@@ -78,5 +78,5 @@ export function createTranslateLoader(http: HttpClient) {
             path: 'admin',
             loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule),
           },
-        ])], providers: [] })
+        ])], providers: [provideZoneChangeDetection({ eventCoalescing: true })] })
 export class AppModule { }

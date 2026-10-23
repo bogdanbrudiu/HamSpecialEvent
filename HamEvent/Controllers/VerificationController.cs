@@ -1,4 +1,5 @@
-﻿using HamEvent.Data.Model;
+﻿using ElmahCore;
+using HamEvent.Data.Model;
 using HamEvent.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -57,6 +58,10 @@ namespace HamEvent.Controllers
             catch(Exception ex)
             {
                 _logger.LogError(MyLogEvents.SendingEmail, ex, "Error Sending Email");
+                if (HttpContext != null)
+                {
+                    await HttpContext.RaiseError(ex);
+                }
                 return StatusCode(500, $"Email send error!");
             }
             return Ok();

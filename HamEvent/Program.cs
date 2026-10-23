@@ -8,7 +8,6 @@ using Mapster;
 using Microsoft.EntityFrameworkCore;
 using NReco.Logging.File;
 using System.Configuration;
-using System.Net;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,15 +35,7 @@ builder.Configuration.GetSection("IPWhitelist").Bind(wl);
 builder.Services.AddElmah<XmlFileErrorLog>(options =>
 {
     options.Filters.Add(new MyElmahFilter());
-    options.OnPermissionCheck = context => {
-                try {
-                    var remote = context.Connection.RemoteIpAddress;
-                    if (remote != null && IPAddress.IsLoopback(remote)) return true;
-                    return wl.Whitelist.Any(ip => IPAddress.Parse(ip).Equals(remote));
-                } catch {
-                    return false;
-                }
-            };
+    options.OnPermissionCheck = context => wl.IsAllowed(context.Connection.RemoteIpAddress);
     options.LogPath = "~/log";
     options.Path = "/api/elmah";
 });
@@ -63,6 +54,16 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path.StartsWithSegments("/api/elmah") && !wl.IsAllowed(context.Connection.RemoteIpAddress))
+    {
+        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+        return;
+    }
+
+    await next(context);
+});
 app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseRouting();

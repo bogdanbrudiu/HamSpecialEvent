@@ -1,58 +1,86 @@
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Authentication;
-using System.Security.Claims;
-using System.Text.Encodings.Web;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace UnitTests
 {
+    [Collection("Elmah integration")]
     public class ElmahIntegrationTests : IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly WebApplicationFactory<Program> _factory;
 
         public ElmahIntegrationTests(WebApplicationFactory<Program> factory)
         {
-            _factory = factory.WithWebHostBuilder(builder =>
+            _factory = factory;
+        }
+
+        private WebApplicationFactory<Program> CreateFactory(string? remoteIp)
+        {
+            return _factory.WithWebHostBuilder(builder =>
             {
                 builder.UseSetting("Logging:File:Path", $"elmah-integration-{Guid.NewGuid():N}.log");
-                builder.UseSetting("IPWhitelist:Whitelist:0", "127.0.0.1");
+                builder.UseSetting("IPWhitelist:Whitelist:0", "203.0.113.10");
                 builder.ConfigureServices(services =>
                 {
-                    services.AddAuthentication("Test").AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", options => { });
-                    services.AddAuthorization();
-                    services.PostConfigure<ElmahCore.ElmahOptions>(opts => opts.OnPermissionCheck = ctx => true);
+                    services.AddSingleton<IStartupFilter>(new RemoteIpStartupFilter(remoteIp));
                 });
             });
         }
 
-        private class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+        private sealed class RemoteIpStartupFilter : IStartupFilter
         {
-            public TestAuthHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder)
-                : base(options, logger, encoder) { }
+            private readonly IPAddress? _remoteIp;
 
-            protected override Task<AuthenticateResult> HandleAuthenticateAsync()
+            public RemoteIpStartupFilter(string? remoteIp)
             {
-                var claims = new[] { new Claim(ClaimTypes.Name, "testuser") };
-                var identity = new ClaimsIdentity(claims, Scheme.Name);
-                var principal = new ClaimsPrincipal(identity);
-                var ticket = new AuthenticationTicket(principal, Scheme.Name);
-                return Task.FromResult(AuthenticateResult.Success(ticket));
+                _remoteIp = remoteIp == null ? null : IPAddress.Parse(remoteIp);
+            }
+
+            public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+            {
+                return app =>
+                {
+                    app.Use(async (context, nextMiddleware) =>
+                    {
+                        context.Connection.RemoteIpAddress = _remoteIp;
+                        await nextMiddleware();
+                    });
+                    next(app);
+                };
             }
         }
 
-        [Fact]
-        public async Task ElmahEndpoint_ReturnsOk()
+        [Theory]
+        [InlineData("127.0.0.1")]
+        [InlineData("::1")]
+        [InlineData("203.0.113.10")]
+        [InlineData("::ffff:203.0.113.10")]
+        public async Task ElmahEndpoint_ReturnsOk_ForAllowedAddress(string remoteIp)
         {
-            var client = _factory.CreateClient();
+            using var factory = CreateFactory(remoteIp);
+            using var client = factory.CreateClient();
             var res = await client.GetAsync("/api/elmah");
             Assert.Equal(HttpStatusCode.OK, res.StatusCode);
             var body = await res.Content.ReadAsStringAsync();
             Assert.Contains("ELMAH", body, System.StringComparison.OrdinalIgnoreCase);
+        }
+
+        [Theory]
+        [InlineData("203.0.113.11", "/api/elmah")]
+        [InlineData("::ffff:203.0.113.11", "/api/elmah")]
+        [InlineData(null, "/api/elmah")]
+        [InlineData("203.0.113.11", "/api/elmah/detail")]
+        public async Task ElmahEndpoint_ReturnsForbidden_ForDeniedAddress(string? remoteIp, string path)
+        {
+            using var factory = CreateFactory(remoteIp);
+            using var client = factory.CreateClient();
+            var res = await client.GetAsync(path);
+            Assert.Equal(HttpStatusCode.Forbidden, res.StatusCode);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using M0LTE.AdifLib;
+﻿using ElmahCore;
+using M0LTE.AdifLib;
 using Microsoft.AspNetCore.Mvc;
 using HamEvent.Data;
 using HamEvent.Data.Model;
@@ -512,6 +513,10 @@ namespace HamEvent.Controllers
                 catch (Exception ex)
                 {
                     _logger.LogError(MyLogEvents.SendingEmail, ex, "Error sending recovery email to {email}", normalizedEmail);
+                    if (HttpContext != null)
+                    {
+                        await HttpContext.RaiseError(ex);
+                    }
                     return StatusCode(500, "Error sending recovery email.");
                 }
 
@@ -570,6 +575,10 @@ namespace HamEvent.Controllers
                     catch(Exception ex)
                     {
                         _logger.LogError(MyLogEvents.SendingEmail, ex ,"Error Sending Email");
+                        if (HttpContext != null)
+                        {
+                            await HttpContext.RaiseError(ex);
+                        }
                     }
 
                     

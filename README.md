@@ -63,23 +63,16 @@ Relevant files:
 
 # Mail Configuration
 
-Configure SMTP in `HamEvent/appsettings.json` or environment-specific settings:
+SMTP credentials must not be committed to application settings. Deployment workflows populate `MailerSettings` in the published `appsettings.json` from GitHub environment secrets. Keep `MailerSettings` out of `appsettings.Production.json` and `appsettings.Development.json` so those files cannot override the deployed values.
 
-```json
-"MailerSettings": {
-	"From": "from@email.address",
-	"Username": "smtpusername",
-	"Password": "smtppassword",
-	"Host": "smtphost",
-	"Port": 587,
-	"EnableSSL": true
-}
-```
+For local development, supply `MailerSettings__From`, `MailerSettings__Username`, `MailerSettings__Password`, `MailerSettings__Host`, `MailerSettings__Port`, and `MailerSettings__EnableSSL` as environment variables before starting the application. Configure these privately; do not paste passwords into chat or commit them to launch settings.
 
 Notes:
-- `EnableSSL` enables TLS negotiation for MailKit SMTP connections.
+- `EnableSSL=true` requires STARTTLS; the current default port is `587`.
+- For Gmail, use an app password where supported by the account policy, not the normal account password.
 - If your SMTP server does not require authentication, leave `Username` empty.
 - Email templates are rendered from Razor views under `HamEvent/Views/Shared`.
+- Rotate any previously committed SMTP password. Removing it from current files does not remove it from Git history.
 
 # Deployment Operations
 
@@ -135,6 +128,16 @@ Set these secrets in both `test` and `prod` environments:
 - `MAILER_SETTINGS_ENABLESSL`
 - `TOKEN_SECRET`
 
+Provision SMTP secrets in **Settings > Environments > test/prod > Environment secrets** before deploying:
+
+1. Reuse the existing TEST environment and create `prod` if it does not exist.
+2. Set all six `MAILER_SETTINGS_*` secrets separately in each environment, using identical SMTP values and the same new password.
+3. Use the exact name `MAILER_SETTINGS_PASSWORD`. The legacy misspelling `MAILER_SETTINGS_PASSOWRD` is not read by the workflows; remove it after setting the correctly named secret.
+4. Keep `WEBSITE_NAME`, `SERVER_*`, `TOKEN_SECRET`, and base URLs specific to each environment. Do not copy TEST deployment credentials into PROD.
+5. GitHub does not expose existing secret values for comparison. Re-enter the same known values securely in both environments to ensure they match.
+
+Sharing the production SMTP account means TEST can send real email. Use controlled recipient addresses when validating email delivery. Changing GitHub secrets or local files does not update a running site until it is deployed; do not deploy PROD merely to provision its secrets.
+
 Additional environment-specific secrets:
 
 - `test`: `TEST_BASE_URL`
@@ -187,6 +190,9 @@ For a small SQLite database this is a reasonable short-term safety net. If the d
 
 ## Operational Notes
 
+- Elmah is available at `/api/elmah` only for loopback and IPs listed in `IPWhitelist:Whitelist`. The development machine's public IPv4 `85.204.138.20` was added to `HamEvent/appsettings.json`; recheck it if the connection or VPN changes.
+- After deploying to TEST, check `https://hameventtest.brudiu.ro/api/elmah` from the allowed connection. An HTTP 500 does not confirm an IP denial: inspect the server logs if it persists. Do not disable IP restrictions or trust arbitrary forwarded headers to work around it.
+- Caught email exceptions are logged through `ILogger` to the application's `app.log` and rotated log files, and may not appear in Elmah. Search for `Error Sending Email` or `Error sending recovery email` and redact sensitive data before sharing logs.
 - Normal application deploys do not overwrite `App_Data/QSOs.db`.
 - Database schema updates rely on EF Core startup migrations.
 - After importing PROD DB into TEST, the TEST application restarts and applies any pending migrations at startup.

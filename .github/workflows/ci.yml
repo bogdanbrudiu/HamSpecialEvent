@@ -7,7 +7,7 @@ on:
   push:
     branches:
       - main
-      - upgrade-dotnet-10
+      - updateversions
       - feature/**
       - bugfix/**
       - hotfix/**
@@ -25,8 +25,8 @@ env:
   PROJECT_PATH: HamEvent/HamEvent.csproj
 
 jobs:
-  build_test_publish:
-    name: Build, Test, Publish
+  build:
+    name: Build
     runs-on: windows-latest
     timeout-minutes: 35
     steps:
@@ -54,10 +54,6 @@ jobs:
         working-directory: HamEvent/ClientApp
         run: npm run i18n:check
 
-      - name: Test client
-        working-directory: HamEvent/ClientApp
-        run: npm test -- --watch=false --browsers=ChromeHeadless
-
       - name: Build client
         working-directory: HamEvent/ClientApp
         run: npm run build -- --configuration production
@@ -68,8 +64,69 @@ jobs:
       - name: Build
         run: dotnet build ${{ env.SOLUTION_PATH }} --configuration Release --no-restore
 
+  test:
+    name: Test
+    runs-on: windows-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: HamEvent/ClientApp/package-lock.json
+
+      - name: Install client dependencies
+        working-directory: HamEvent/ClientApp
+        run: npm ci
+
+      - name: Test client
+        working-directory: HamEvent/ClientApp
+        run: npm test -- --watch=false --browsers=ChromeHeadless
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.SOLUTION_PATH }}
+
+      - name: Build tests
+        run: dotnet build ${{ env.SOLUTION_PATH }} --configuration Release --no-restore
+
       - name: Test
         run: dotnet test ${{ env.SOLUTION_PATH }} --configuration Release --no-build --verbosity normal
+
+  publish:
+    name: Publish
+    needs: [build, test]
+    runs-on: windows-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: HamEvent/ClientApp/package-lock.json
+
+      - name: Install client dependencies
+        working-directory: HamEvent/ClientApp
+        run: npm ci
 
       - name: Publish build artifact
         run: dotnet publish ${{ env.PROJECT_PATH }} --configuration Release --framework net10.0 --output ./publish --runtime win-x64 --self-contained true -p:PublishTrimmed=false -p:PublishSingleFile=false

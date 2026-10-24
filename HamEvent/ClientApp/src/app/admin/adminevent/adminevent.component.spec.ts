@@ -7,6 +7,7 @@ import { of, Subject, throwError } from 'rxjs';
 import { AdminEventComponent } from './adminevent.component';
 import { EventsService } from '../../events.service';
 import { VerificationService } from '../../verification.service';
+import { AdminEventNavigationService } from '../admin-event-navigation.service';
 
 describe('AdminEventComponent', () => {
   const emptyGuid = '00000000-0000-0000-0000-000000000000';
@@ -18,6 +19,8 @@ describe('AdminEventComponent', () => {
   let verificationService: jasmine.SpyObj<VerificationService>;
   let router: jasmine.SpyObj<Router>;
   let snackBar: jasmine.SpyObj<MatSnackBar>;
+  let navigation: AdminEventNavigationService;
+  let routes: ActivatedRoute;
 
   beforeEach(() => {
     eventsService = jasmine.createSpyObj('EventsService', ['getEvent', 'updateEvent']);
@@ -30,14 +33,15 @@ describe('AdminEventComponent', () => {
     verificationService.VerifyEmail.and.returnValue(of('Email verified.'));
     router = jasmine.createSpyObj('Router', ['navigate']);
     snackBar = jasmine.createSpyObj('MatSnackBar', ['open']);
-    const routes = {
+    routes = {
       paramMap: of(convertToParamMap({ id: emptyGuid, secret: adminKey }))
     } as ActivatedRoute;
     const translate = jasmine.createSpyObj<TranslateService>('TranslateService', ['instant']);
     translate.instant.and.callFake((key: string) => key);
     const cdr = jasmine.createSpyObj<ChangeDetectorRef>('ChangeDetectorRef', ['detectChanges']);
 
-    component = new AdminEventComponent(router, eventsService, verificationService, routes, translate, cdr, snackBar, 'https://events.example.test/app/');
+    navigation = new AdminEventNavigationService();
+    component = new AdminEventComponent(router, eventsService, verificationService, routes, translate, cdr, snackBar, 'https://events.example.test/app/', navigation);
     component.ngOnInit();
     component.event!.name = 'Regression event';
     component.event!.email = 'local@example.test';
@@ -110,6 +114,25 @@ describe('AdminEventComponent', () => {
 
   it('does not show upload instructions for an unsaved event', () => {
     expect(component.uploadUrl).toBe('');
+    expect(navigation.getSecret(emptyGuid)).toBeUndefined();
+  });
+
+  for (const secret of [adminKey, eventSecret]) {
+    it(`remembers the original editor key after successful authorization: ${secret}`, () => {
+      eventsService.getEvent.and.returnValue(of({ ...component.event!, id: createdId }));
+      Object.defineProperty(routes, 'paramMap', { value: of(convertToParamMap({ id: createdId, secret })) });
+      component.ngOnInit();
+      expect(navigation.getSecret(createdId)).toBe(secret);
+    });
+  }
+
+  it('clears stale navigation context when editor authorization fails', () => {
+    navigation.remember(createdId, adminKey);
+    eventsService.getEvent.and.returnValue(throwError(() => ({ status: 404 })));
+    Object.defineProperty(routes, 'paramMap', { value: of(convertToParamMap({ id: createdId, secret: 'invalid' })) });
+    component.ngOnInit();
+    expect(navigation.getSecret(createdId)).toBeUndefined();
+    expect(component.event).toBeUndefined();
   });
 
   it('uses the actual base URL and event credential instead of the master key', () => {

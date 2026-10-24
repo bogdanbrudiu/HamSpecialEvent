@@ -113,6 +113,12 @@
 
 </div>
 
+<app-responsive-toolbar *ngIf="event" [event]="event">
+  <button mat-button (click)="exportall()">{{ 'Export All' | translate }}</button>
+  <button mat-button (click)="genPdf()">{{ 'Generate PDF' | translate }}</button>
+  <button mat-button color="warn" (click)="deleteall()">{{ 'Delete All' | translate }}</button>
+</app-responsive-toolbar>
+
 <mat-card class="admin-qsos-card">
   <mat-card-title>{{ 'Admin QSOs' | translate }}</mat-card-title>
   <mat-card-content>
@@ -125,15 +131,6 @@
         </button>
       </mat-form-field>
     </form>
-
-    <div class="actions">
-      <button mat-raised-button color="primary" (click)="exportall()">{{ 'Export All' | translate }}</button>
-      <button mat-raised-button color="accent" (click)="genPdf()">{{ 'Generate PDF' | translate }}</button>
-      <button mat-raised-button color="warn" (click)="deleteall()">{{ 'Delete All' | translate }}</button>
-      <button mat-stroked-button (click)="edit()">{{ 'Edit Event' | translate }}</button>
-      <button mat-stroked-button (click)="top()">{{ 'Rankings' | translate }}</button>
-      <button mat-stroked-button (click)="live()">{{ 'OnAir' | translate }}</button>
-    </div>
 
     <mat-progress-bar *ngIf="!loaded" mode="indeterminate"></mat-progress-bar>
 

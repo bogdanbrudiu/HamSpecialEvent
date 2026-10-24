@@ -29,6 +29,7 @@ import { EditQsoDialogComponent } from './edit-qso-dialog.component';
 import { ConfirmDialogComponent } from './confirm-dialog.component';
 import { UploadComponent } from '../upload/upload.component';
 import { AdminEventNavigationService } from '../admin-event-navigation.service';
+import { ResponsiveToolbarComponent } from '../../event/responsive-toolbar/responsive-toolbar.component';
 
 
 declare let gtag: Function;
@@ -37,7 +38,7 @@ declare let gtag: Function;
   templateUrl: './adminqsos.component.html',
   styleUrl: './adminqsos.component.css',
   standalone: true,
-  imports: [NgIf, DatePipe, ReactiveFormsModule, FormsModule, NgxPaginationModule, TranslateModule,
+  imports: [NgIf, DatePipe, ReactiveFormsModule, FormsModule, NgxPaginationModule, TranslateModule, ResponsiveToolbarComponent,
     MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatTableModule, MatPaginatorModule, MatProgressBarModule, MatDialogModule, MatSortModule, MatSnackBarModule
   ]
 })

@@ -16,6 +16,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { ResponsiveToolbarComponent } from '../../event/responsive-toolbar/responsive-toolbar.component';
+import { AdminEventNavigationService } from '../admin-event-navigation.service';
 
 
 @Component({
@@ -24,7 +26,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
   styleUrl: './adminevent.component.css',
   standalone: true,
   imports: [
-    NgIf, NgFor, ReactiveFormsModule, FormsModule, TranslateModule, SanitizedHtmlPipe,
+    NgIf, NgFor, ReactiveFormsModule, FormsModule, TranslateModule, SanitizedHtmlPipe, ResponsiveToolbarComponent,
     MatCheckboxModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatDatepickerModule, MatNativeDateModule, MatProgressBarModule, MatTabsModule, MatSnackBarModule
   ]
 })
@@ -45,7 +47,7 @@ export class AdminEventComponent implements OnInit {
   public saveSuccess = '';
   public busy = false;
 
-  constructor(public router: Router, private eventsService: EventsService, private verificationService: VerificationService, private routes: ActivatedRoute, private translate: TranslateService, private cdr: ChangeDetectorRef, private snackBar: MatSnackBar, @Inject('BASE_URL') private baseUrl: string) { }
+  constructor(public router: Router, private eventsService: EventsService, private verificationService: VerificationService, private routes: ActivatedRoute, private translate: TranslateService, private cdr: ChangeDetectorRef, private snackBar: MatSnackBar, @Inject('BASE_URL') private baseUrl: string, private adminNavigation: AdminEventNavigationService) { }
 
   private buildEditorRoute(eventId: string, secret: string) {
     return ['/admin', eventId, secret, 'edit'];
@@ -107,6 +109,8 @@ export class AdminEventComponent implements OnInit {
       this.codeGenerated = false;
       this.eventId = params.get('id')!;
       this.eventSecret = params.get('secret')!;
+      this.event = undefined;
+      this.adminNavigation.forget(this.eventId);
       if (this.eventId === "00000000-0000-0000-0000-000000000000") {
         var date = new Date();
         var now_utc = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(),
@@ -163,6 +167,7 @@ export class AdminEventComponent implements OnInit {
 
   private applyLoadedEvent(response: any) {
     this.event = response;
+    this.adminNavigation.remember(this.eventId, this.eventSecret);
     this.loadFailed = false;
     this.saveError = '';
     this.ensureLanguageKeys();

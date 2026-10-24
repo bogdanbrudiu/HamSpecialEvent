@@ -2,6 +2,13 @@
   margin-right: 5px;
 }
 
+mat-toolbar {
+  flex-wrap: wrap;
+  height: auto;
+  min-height: 64px;
+  white-space: normal;
+}
+
 .item_disabled {
   pointer-events: none;
   cursor: not-allowed;

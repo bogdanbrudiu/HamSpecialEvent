@@ -106,4 +106,23 @@ test.describe('Event editor feedback and links', () => {
     await expect(toolbar.getByRole('button', { name: /Admin QSOs/ })).toHaveCount(0);
     await expect(toolbar.getByRole('button', { name: /Edit Event/ })).toHaveCount(0);
   });
+
+  for (const [label, secret] of [['SuperAdmin', adminKey], ['event admin', eventSecret]]) {
+    test(`${label} editor shares public navigation with extra admin actions`, async ({ page }) => {
+      await page.goto(`/admin/${eventId}/${secret}/edit`);
+      const toolbar = page.locator('app-responsive-toolbar');
+      await expect(toolbar).toBeVisible();
+      await expect(toolbar.getByRole('button', { name: /Rules/ })).toBeVisible();
+      await expect(toolbar.getByRole('button', { name: /Admin QSOs/ })).toBeVisible();
+      await toolbar.getByRole('button', { name: /Rules/ }).click();
+      await expect(page).toHaveURL(new RegExp(`/event/${eventId}\\?tab=rules$`));
+      await toolbar.getByRole('button', { name: /Edit Event/ }).click();
+      await expect(page).toHaveURL(new RegExp(`/admin/${eventId}/${secret}/edit$`));
+      await toolbar.getByRole('button', { name: /Admin QSOs/ }).click();
+      await expect(page).toHaveURL(new RegExp(`/admin/${eventId}/${secret}/qsos$`));
+      await expect(toolbar.getByRole('button', { name: 'Export All', exact: true })).toBeVisible();
+      await expect(toolbar.getByRole('button', { name: 'Delete All', exact: true })).toBeVisible();
+      await expect(page.getByRole('button', { name: /Edit Event/ })).toHaveCount(1);
+    });
+  }
 });

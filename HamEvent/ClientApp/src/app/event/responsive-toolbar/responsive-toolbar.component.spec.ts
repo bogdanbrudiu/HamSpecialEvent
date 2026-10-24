@@ -99,6 +99,9 @@ describe('ResponsiveToolbarComponent', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('Admin QSOs');
     expect(fixture.nativeElement.textContent).toContain('Edit Event');
+    expect(fixture.nativeElement.textContent).toContain('HamEvents');
+    expect(fixture.nativeElement.textContent).toContain('Rules');
+    expect(fixture.nativeElement.textContent).toContain('Rankings');
     component.openAdmin('qsos');
     expect(router.navigate).toHaveBeenCalledWith(['/admin', 'evt-1', 'master-key', 'qsos']);
     component.openAdmin('edit');

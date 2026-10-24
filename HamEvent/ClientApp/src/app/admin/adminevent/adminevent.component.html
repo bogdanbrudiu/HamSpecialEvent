@@ -1,3 +1,5 @@
+<app-responsive-toolbar *ngIf="event && event.id !== '00000000-0000-0000-0000-000000000000'" [event]="event"></app-responsive-toolbar>
+
 <div class="row" style="margin-bottom:15px;">
   <p *ngIf="!event"><em>{{'Loading...' | translate}}</em></p>
   <p *ngIf="!event && loadFailed"><em>{{ 'Unable to load this event. Verify the link key or use the admin master key.' | translate }}</em></p>

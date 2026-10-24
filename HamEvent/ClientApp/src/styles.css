@@ -14,10 +14,10 @@ html, body {
 }
 
 /* ------------------------------------- */
-/* FIXED HEADER STYLES */
+/* STICKY HEADER STYLES */
 /* ------------------------------------- */
 .site-header {
-  position: fixed; /* Fixes header to the top of the viewport */
+  position: sticky;
   top: 0;
   left: 0;
   width: 100%;
@@ -31,7 +31,7 @@ html, body {
 /* ------------------------------------- */
 .site-content {
   flex: 1 0 auto; /* Grows to fill available space (the key Flexbox property) */
-  padding-top: 60px; /* IMPORTANT: Add padding equal to the header's height to prevent overlap */
+  padding-top: 0;
   padding-bottom: 70px; /* IMPORTANT: Add padding equal to the footer's height */
   /* This prevents the text from being hidden behind the fixed elements */
 }

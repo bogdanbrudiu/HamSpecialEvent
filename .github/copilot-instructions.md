@@ -38,6 +38,9 @@ This workspace hosts a .NET/Angular platform for managing HAM radio special even
 - Email is sent by `HamEvent/Services/SmtpEmailService.cs` using MailKit and Razor templates.
 
 ## Testing
-- backend tests: dotnet test HamEventMVP.sln
-- playright tests: npm run e2e
-- ui tests: npm test -- --watch=false --browsers=ChromeHeadless
+- backend tests: `dotnet test HamEventMVP.sln`
+- Playwright tests: `npm run e2e`
+- UI tests: `npm test -- --watch=false --browsers=ChromeHeadless`
+
+## TODO Management
+- When updating `TODO.md`, preserve its exact existing format and only check off existing list items that have been completed; do not restructure it or add branch summaries and validation reports.

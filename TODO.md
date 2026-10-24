@@ -6,20 +6,16 @@ Project Description
 - [ ] Repair disabled UI actions: LiveStream, Awards, Stats, ParticipateNow #bug @bogdanbrudiu
 - [ ] Review event/admin route ambiguity so public actions never redirect to admin edit by mistake #bug @bogdanbrudiu
 
-
-
-
-
 ### In Progress
 
-- [✓] Event Description should be multilanguage #feat @ bogdanbrudiu
-- [✓] Add Event Rules should be multilanguage  #feat @ bogdanbrudiu
-- [✓] I can request all admin links for my email adress #feat @bogdanbrudiu
 - [ ] Backend for Statistics: ranking/prefix; band/mode; qsos/h; multiplay for each fox #feat @bogdanbrudiu
 - [ ] remove tabs/unify menus #feat - @YO2MIT
 
 
 ### Done ✓
+- [✓] Event Description should be multilanguage #feat @ bogdanbrudiu
+- [✓] Add Event Rules should be multilanguage  #feat @ bogdanbrudiu
+- [✓] I can request all admin links for my email adress #feat @bogdanbrudiu
 - [✓] Remove CoreMailer submodule and switch app email delivery to MailKit #techdebt @bogdanbrudiu
 - [✓] Replace CoreMailer dependency with local MailKit-based email service #techdebt @bogdanbrudiu
 - [✓] Fix Elmah #bug @bogdanbrudiu

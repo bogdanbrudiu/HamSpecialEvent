@@ -60,8 +60,19 @@ jobs:
       - name: Build
         run: dotnet build ${{ env.SOLUTION_PATH }} --configuration Release --no-restore
 
+      - name: Publish build artifact
+        run: dotnet publish ${{ env.PROJECT_PATH }} --configuration Release --framework net10.0 --output ./publish --runtime win-x64 --self-contained true -p:PublishTrimmed=false -p:PublishSingleFile=false
+
+      - name: Upload publish artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-publish
+          path: publish
+          retention-days: 14
+
   test:
     name: Test
+    needs: build
     runs-on: windows-latest
     timeout-minutes: 35
     steps:
@@ -98,45 +109,9 @@ jobs:
       - name: Test
         run: dotnet test ${{ env.SOLUTION_PATH }} --configuration Release --no-build --verbosity normal
 
-  publish:
-    name: Publish
-    needs: [build, test]
-    runs-on: windows-latest
-    timeout-minutes: 35
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          cache: npm
-          cache-dependency-path: HamEvent/ClientApp/package-lock.json
-
-      - name: Install client dependencies
-        working-directory: HamEvent/ClientApp
-        run: npm ci
-
-      - name: Publish build artifact
-        run: dotnet publish ${{ env.PROJECT_PATH }} --configuration Release --framework net10.0 --output ./publish --runtime win-x64 --self-contained true -p:PublishTrimmed=false -p:PublishSingleFile=false
-
-      - name: Upload publish artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-publish
-          path: publish
-          retention-days: 14
-
   deploy_prod:
-    name: Deploy to PROD
-    needs: publish
+    name: Publish PROD
+    needs: test
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: windows-latest
     timeout-minutes: 35
@@ -286,8 +261,8 @@ jobs:
           retention-days: 14
 
   deploy_test:
-    name: Deploy to TEST
-    needs: publish
+    name: Publish TEST
+    needs: test
     if: github.event_name == 'push' && github.ref != 'refs/heads/main'
     runs-on: windows-latest
     timeout-minutes: 30

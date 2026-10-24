@@ -7,7 +7,6 @@ using HamEvent.Services;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 using NReco.Logging.File;
-using System.Configuration;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,7 +18,7 @@ builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
 MapsterConfig.Register(TypeAdapterConfig.GlobalSettings);
-var tokenSecret = builder.Configuration["Token:Secret"] ?? throw new ConfigurationErrorsException("Token secret is not configured.");
+var tokenSecret = builder.Configuration["Token:Secret"] ?? throw new InvalidOperationException("Token secret is not configured.");
 
 builder.Services.AddSingleton<TokenService>(provider => new TokenService(tokenSecret));
 

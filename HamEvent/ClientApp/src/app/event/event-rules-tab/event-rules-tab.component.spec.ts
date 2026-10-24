@@ -71,13 +71,16 @@ describe('EventRulesTabComponent', () => {
   });
 
   it('does not show another event rules when no rules are configured', () => {
-    component.event = { ...component.event, rules: {} };
+    fixture.componentRef.setInput('event', { ...component.event, rules: {} });
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.event-rules').textContent).toBe('');
   });
 
   it('sanitizes unsafe HTML while preserving rule formatting', () => {
-    component.event.rules['en'] = '<strong>Valid rule</strong><img src="x" onerror="alert(1)">';
+    fixture.componentRef.setInput('event', {
+      ...component.event,
+      rules: { ...component.event.rules, en: '<strong>Valid rule</strong><img src="x" onerror="alert(1)">' }
+    });
     fixture.detectChanges();
     const rules = fixture.nativeElement.querySelector('.event-rules') as HTMLElement;
     expect(rules.querySelector('strong')?.textContent).toBe('Valid rule');

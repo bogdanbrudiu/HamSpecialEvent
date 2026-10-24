@@ -1,5 +1,5 @@
 import { NgSwitch, NgSwitchCase } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { EventsService, HamEvent } from '../events.service';
 import { ActivatedRoute } from '@angular/router';
 import { NgIf } from '@angular/common';
@@ -42,7 +42,7 @@ export class EventComponent implements OnInit {
   logsLoaded = false;
   rankingsLoaded = false;
 
-  constructor(private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService) { }
+  constructor(private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService, private changeDetector: ChangeDetectorRef) { }
 
   ngOnInit() {
     this.routes.queryParamMap.subscribe(queryParams => {
@@ -94,6 +94,7 @@ export class EventComponent implements OnInit {
 
   onTabChanged(tab: EventTab) {
     this.selectedTab = tab;
+    this.changeDetector.markForCheck();
     if (!this.eventId) return;
     if (tab === 'logs' && !this.logsLoaded) {
       this.loadData();

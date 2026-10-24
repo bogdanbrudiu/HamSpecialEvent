@@ -7,6 +7,7 @@ on:
   push:
     branches:
       - main
+      - upgrade-dotnet-10
       - feature/**
       - bugfix/**
       - hotfix/**
@@ -19,7 +20,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  DOTNET_VERSION: 9.0.x
+  DOTNET_VERSION: 10.0.x
   SOLUTION_PATH: HamEventMVP.sln
   PROJECT_PATH: HamEvent/HamEvent.csproj
 
@@ -38,6 +39,29 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: HamEvent/ClientApp/package-lock.json
+
+      - name: Install client dependencies
+        working-directory: HamEvent/ClientApp
+        run: npm ci
+
+      - name: Verify i18n parity
+        working-directory: HamEvent/ClientApp
+        run: npm run i18n:check
+
+      - name: Test client
+        working-directory: HamEvent/ClientApp
+        run: npm test -- --watch=false --browsers=ChromeHeadless
+
+      - name: Build client
+        working-directory: HamEvent/ClientApp
+        run: npm run build -- --configuration production
+
       - name: Restore dependencies
         run: dotnet restore ${{ env.SOLUTION_PATH }}
 
@@ -48,7 +72,7 @@ jobs:
         run: dotnet test ${{ env.SOLUTION_PATH }} --configuration Release --no-build --verbosity normal
 
       - name: Publish build artifact
-        run: dotnet publish ${{ env.PROJECT_PATH }} --configuration Release --framework net9.0 --output ./publish --runtime win-x64 --self-contained true -p:PublishTrimmed=false -p:PublishSingleFile=false
+        run: dotnet publish ${{ env.PROJECT_PATH }} --configuration Release --framework net10.0 --output ./publish --runtime win-x64 --self-contained true -p:PublishTrimmed=false -p:PublishSingleFile=false
 
       - name: Upload publish artifact
         uses: actions/upload-artifact@v4

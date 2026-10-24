@@ -96,6 +96,7 @@ describe('ResponsiveToolbarComponent', () => {
   it('returns to admin QSOs and editing with the original key', () => {
     TestBed.inject(AdminEventNavigationService).remember('evt-1', 'master-key');
     spyOn(router, 'navigate');
+    fixture.componentRef.setInput('event', { ...component.event });
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('Admin QSOs');
     expect(fixture.nativeElement.textContent).toContain('Edit Event');

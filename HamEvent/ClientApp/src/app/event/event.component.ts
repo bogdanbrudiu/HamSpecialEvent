@@ -60,6 +60,7 @@ export class EventComponent implements OnInit {
       this.eventsService.getEvent(this.eventId).subscribe(
         (response) => {
           this.event = response;
+          this.changeDetector.markForCheck();
         },
         (error) => {
           console.log(error);

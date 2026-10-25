@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { convertToParamMap } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { RouterTestingModule } from '@angular/router/testing';
 import { TranslateModule } from '@ngx-translate/core';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -70,6 +70,20 @@ describe('EventComponent', () => {
   it('loads event from route id on init', () => {
     expect(eventsService.getEvent).toHaveBeenCalledWith('evt-1');
     expect(component.event?.id).toBe('evt-1');
+  });
+
+  it('renders the overview when the event arrives asynchronously', async () => {
+    fixture.destroy();
+    const eventResponse = new Subject<any>();
+    eventsService.getEvent.and.returnValue(eventResponse.asObservable());
+    const nextFixture = TestBed.createComponent(EventComponent);
+    nextFixture.autoDetectChanges();
+    expect(nextFixture.nativeElement.querySelector('app-event-overview-tab')).toBeNull();
+
+    eventResponse.next({ id: 'evt-1', name: 'Event Name', description: { en: '' }, rules: { en: '' } });
+    await nextFixture.whenStable();
+    expect(nextFixture.nativeElement.querySelector('app-event-overview-tab')).not.toBeNull();
+    nextFixture.destroy();
   });
 
   it('loads logs once when logs tab is selected', () => {

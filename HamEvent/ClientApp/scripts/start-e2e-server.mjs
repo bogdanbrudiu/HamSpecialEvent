@@ -41,7 +41,7 @@ async function main() {
     '--configuration',
     'Release',
     '--framework',
-    'net9.0',
+    'net10.0',
     '--output',
     publishDir,
     '--runtime',

@@ -1,8 +1,12 @@
 import { FormBuilder } from '@angular/forms';
+import { ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, convertToParamMap, ParamMap, Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { TestBed } from '@angular/core/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { of, Subject, throwError } from 'rxjs';
 import { EventsService, HamEvent } from '../../events.service';
 import { QSOsService } from '../../qsos.service';
@@ -21,6 +25,7 @@ describe('AdminQSOsComponent navigation', () => {
   let router: jasmine.SpyObj<Router>;
   let params: Subject<ParamMap>;
   let navigation: AdminEventNavigationService;
+  let changeDetector: jasmine.SpyObj<ChangeDetectorRef>;
 
   beforeEach(() => {
     events = jasmine.createSpyObj('EventsService', ['getEvent']);
@@ -39,6 +44,7 @@ describe('AdminQSOsComponent navigation', () => {
     router = jasmine.createSpyObj('Router', ['navigate']);
     params = new Subject<ParamMap>();
     navigation = new AdminEventNavigationService();
+    changeDetector = jasmine.createSpyObj<ChangeDetectorRef>('ChangeDetectorRef', ['markForCheck']);
     const route = new ActivatedRoute();
     Object.defineProperty(route, 'paramMap', { value: params.asObservable() });
     component = new AdminQSOsComponent(
@@ -46,10 +52,61 @@ describe('AdminQSOsComponent navigation', () => {
       events, qsos, jasmine.createSpyObj<PdfService>('PdfService', ['getPdf']),
       jasmine.createSpyObj<TranslateService>('TranslateService', ['instant']),
       jasmine.createSpyObj<MatDialog>('MatDialog', ['open']),
-      jasmine.createSpyObj<MatSnackBar>('MatSnackBar', ['open']), navigation
+      jasmine.createSpyObj<MatSnackBar>('MatSnackBar', ['open']), navigation, changeDetector
     );
     spyOn(console, 'log');
     component.ngOnInit();
+  });
+
+  it('refreshes the toolbar and the QSO list when async requests complete', () => {
+    const eventResponse = new Subject<HamEvent>();
+    const qsosResponse = new Subject<any>();
+    events.getEvent.and.returnValue(eventResponse.asObservable());
+    qsos.getAllQSOs.and.returnValue(qsosResponse.asObservable());
+    open();
+    expect(component.event).toBeUndefined();
+    expect(component.loaded).toBeFalse();
+    expect(changeDetector.markForCheck).not.toHaveBeenCalled();
+
+    eventResponse.next({ id: eventId, name: 'Test event', secretKey: eventCredential } as HamEvent);
+    expect(navigation.getSecret(eventId)).toBe(masterKey);
+    expect(changeDetector.markForCheck).toHaveBeenCalledTimes(1);
+    qsosResponse.next({ data: [{ callsign1: 'YO1ABC' }], count: 1 });
+    expect(component.loaded).toBeTrue();
+    expect(component.QSOs.length).toBe(1);
+    expect(changeDetector.markForCheck).toHaveBeenCalledTimes(2);
+  });
+
+  it('renders admin actions and QSOs after asynchronous responses', async () => {
+    const eventResponse = new Subject<HamEvent>();
+    const qsosResponse = new Subject<any>();
+    events.getEvent.and.returnValue(eventResponse.asObservable());
+    qsos.getAllQSOs.and.returnValue(qsosResponse.asObservable());
+    TestBed.configureTestingModule({
+      imports: [AdminQSOsComponent, RouterTestingModule, TranslateModule.forRoot(), NoopAnimationsModule],
+      providers: [
+        { provide: ActivatedRoute, useValue: { paramMap: params.asObservable() } },
+        { provide: EventsService, useValue: events },
+        { provide: QSOsService, useValue: qsos },
+        { provide: PdfService, useValue: jasmine.createSpyObj('PdfService', ['getPdf']) },
+        { provide: MatDialog, useValue: jasmine.createSpyObj('MatDialog', ['open']) },
+        { provide: MatSnackBar, useValue: jasmine.createSpyObj('MatSnackBar', ['open']) },
+        { provide: AdminEventNavigationService, useValue: navigation }
+      ]
+    });
+    const fixture = TestBed.createComponent(AdminQSOsComponent);
+    fixture.autoDetectChanges();
+    open();
+    expect(fixture.nativeElement.querySelector('mat-progress-bar')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('app-responsive-toolbar')).toBeNull();
+
+    eventResponse.next({ id: eventId, name: 'Test event', secretKey: eventCredential } as HamEvent);
+    qsosResponse.next({ data: [{ callsign1: 'YO1ABC', callsign2: 'YO2XYZ', mode: 'SSB', band: '20m', timestamp: '2026-01-01' }], count: 1 });
+    await fixture.whenStable();
+    expect(fixture.nativeElement.querySelector('app-responsive-toolbar')?.textContent).toContain('Export All');
+    expect(fixture.nativeElement.querySelector('mat-progress-bar')).toBeNull();
+    expect(fixture.nativeElement.querySelector('table')?.textContent).toContain('YO1ABC');
+    fixture.destroy();
   });
 
   function open(secret = masterKey) {

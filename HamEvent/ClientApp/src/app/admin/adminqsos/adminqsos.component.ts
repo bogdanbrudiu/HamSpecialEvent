@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Inject, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, Inject, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -67,7 +67,7 @@ export class AdminQSOsComponent implements AfterViewInit {
 
 
   constructor(private formBuilder: FormBuilder, private router: Router, private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService, private pdfService: PdfService, private translate: TranslateService, public dialog: MatDialog,
-    private snackBar: MatSnackBar, private adminNavigation: AdminEventNavigationService) {
+    private snackBar: MatSnackBar, private adminNavigation: AdminEventNavigationService, private changeDetector: ChangeDetectorRef) {
 
     this.searchForm = this.formBuilder.group({
       search: "",
@@ -85,6 +85,7 @@ export class AdminQSOsComponent implements AfterViewInit {
         (response) => {
           this.event = response;
           this.adminNavigation.remember(this.eventId, this.eventSecret);
+          this.changeDetector.markForCheck();
         },
         (error) => {
           console.log(error);
@@ -231,6 +232,7 @@ export class AdminQSOsComponent implements AfterViewInit {
           this.upload.message = '';
           this.upload.progress = 0;
         }
+        this.changeDetector.markForCheck();
         //// Set paginator and sort after data is loaded
         //this.dataSource.paginator = this.paginator;
         //this.dataSource.sort = this.sort;
@@ -241,6 +243,7 @@ export class AdminQSOsComponent implements AfterViewInit {
         console.log(error);
         this.loaded = true;
         this.snackBar.open(this.translate.instant('Failed to load QSOs'), 'OK', { duration: 3000 });
+        this.changeDetector.markForCheck();
       }
     );
   }

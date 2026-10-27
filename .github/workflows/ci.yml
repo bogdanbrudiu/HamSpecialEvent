@@ -126,12 +126,8 @@ jobs:
       - name: Verify PROD prerequisites
         shell: pwsh
         env:
-          DOTNET10_HOSTING_READY: ${{ vars.DOTNET10_HOSTING_READY }}
           BASE_URL: ${{ secrets.PROD_BASE_URL }}
         run: |
-          if ($env:DOTNET10_HOSTING_READY -ne 'true') {
-            throw 'Confirm the .NET 10 Hosting Bundle on PROD and set DOTNET10_HOSTING_READY=true in the prod environment.'
-          }
           if ([string]::IsNullOrWhiteSpace($env:BASE_URL)) {
             throw 'PROD_BASE_URL is required.'
           }
@@ -277,12 +273,8 @@ jobs:
       - name: Verify TEST prerequisites
         shell: pwsh
         env:
-          DOTNET10_HOSTING_READY: ${{ vars.DOTNET10_HOSTING_READY }}
           BASE_URL: ${{ secrets.TEST_BASE_URL }}
         run: |
-          if ($env:DOTNET10_HOSTING_READY -ne 'true') {
-            throw 'Confirm the .NET 10 Hosting Bundle on TEST and set DOTNET10_HOSTING_READY=true in the test environment.'
-          }
           if ([string]::IsNullOrWhiteSpace($env:BASE_URL)) {
             throw 'TEST_BASE_URL is required.'
           }

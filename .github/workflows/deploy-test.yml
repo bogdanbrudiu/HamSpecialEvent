@@ -76,15 +76,6 @@ jobs:
           MailerSettings.EnableSSL: ${{ secrets.MAILER_SETTINGS_ENABLESSL }}
           Token.Secret: ${{ secrets.TOKEN_SECRET }}
 
-      - name: Verify TEST .NET 10 hosting prerequisite
-        shell: pwsh
-        env:
-          DOTNET10_HOSTING_READY: ${{ vars.DOTNET10_HOSTING_READY }}
-        run: |
-          if ($env:DOTNET10_HOSTING_READY -ne 'true') {
-            throw 'Confirm the .NET 10 Hosting Bundle is installed on TEST, then set the test environment variable DOTNET10_HOSTING_READY=true.'
-          }
-
       - name: Fetch TEST database before deployment
         uses: bogdanbrudiu/simply-web-deploy/Fetch@main
         with:

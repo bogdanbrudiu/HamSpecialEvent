@@ -1,0 +1,15 @@
+.hamware-logo {
+  width: 36px;
+  margin-right: 5px;
+}
+.lang-sel {
+  width: 200px;
+}
+.mat-toolbar {
+  height: auto;
+  min-height: 64px;
+  flex-wrap: wrap;
+}
+.nav-spacer {
+  flex: 1 1 auto;
+}

@@ -3,17 +3,22 @@ Project Description
 
 ### ToDo
 
-- [ ] As a site visitor I can view statistics per band/mode/day #feat
-- [ ] Event Description should be multilanguage #feat
+- [ ] Repair disabled UI actions: LiveStream, Awards, Stats, ParticipateNow #bug @bogdanbrudiu
+- [ ] Review event/admin route ambiguity so public actions never redirect to admin edit by mistake #bug @bogdanbrudiu
 
 ### In Progress
 
-
-- [ ] Drag & Drop editor for diploma  #feat @crisanalex08
-
+- [ ] Backend for Statistics: ranking/prefix; band/mode; qsos/h; multiplay for each fox #feat @bogdanbrudiu
+- [ ] remove tabs/unify menus #feat - @YO2MIT
 
 
 ### Done ✓
+- [✓] Event Description should be multilanguage #feat @ bogdanbrudiu
+- [✓] Add Event Rules should be multilanguage  #feat @ bogdanbrudiu
+- [✓] I can request all admin links for my email adress #feat @bogdanbrudiu
+- [✓] Remove CoreMailer submodule and switch app email delivery to MailKit #techdebt @bogdanbrudiu
+- [✓] Replace CoreMailer dependency with local MailKit-based email service #techdebt @bogdanbrudiu
+- [✓] Fix Elmah #bug @bogdanbrudiu
 - [✓] After file upload status should be cleared #bug
 - [✓] As a site visitor I can request new event creation  #feat
 - [✓] Exclude callsign from top #feat

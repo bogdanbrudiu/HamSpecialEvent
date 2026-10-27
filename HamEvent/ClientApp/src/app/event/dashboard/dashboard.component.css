@@ -1,0 +1,61 @@
+.page-header {
+  background-color: white;
+}
+
+.live-content-wrapper {
+  padding: 20px;
+  max-width: 1000px;
+  margin: auto;
+}
+
+.live-card {
+  margin-top: 15px;
+}
+
+.description {
+  margin: 16px 0;
+  line-height: 1.5;
+}
+
+.empty-state {
+  color: #666;
+  font-style: italic;
+  margin-top: 16px;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  margin-top: 16px;
+}
+
+.live-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.live-table th,
+.live-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #e0e0e0;
+  text-align: center;
+}
+
+.live-table th:first-child,
+.live-table td:first-child {
+  text-align: left;
+  font-weight: 500;
+}
+
+.live-table thead th {
+  background-color: #f5f5f5;
+  font-weight: 600;
+}
+
+.live-table tbody tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.band-active {
+  background-color: #c8e6c9 !important;
+  color: #1b5e20;
+}

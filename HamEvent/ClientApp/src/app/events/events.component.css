@@ -1,0 +1,50 @@
+.events-background {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.events-container {
+  margin-top: 1rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  padding: 2rem 3rem;
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+}
+
+.events-top-image {
+  width: 110px;
+  margin-bottom: 1.2rem;
+}
+
+.events-content h1 {
+  margin-bottom: 1.2rem;
+  font-size: 2.2rem;
+  color: #2a3b4c;
+}
+
+.events-content {
+  color: #333;
+}
+
+.events-content .mat-card {
+  margin: 1rem auto;
+  width: 90%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border-radius: 12px;
+}
+
+.content {
+  padding: 16px;
+}
+
+.content > mat-card {
+  margin-bottom: 16px;
+}
+
+.content > mat-card {
+  width: 200px;
+}

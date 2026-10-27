@@ -49,6 +49,10 @@ namespace HamEvent.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Rules")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("SecretKey")
                         .IsRequired()
                         .HasColumnType("TEXT");

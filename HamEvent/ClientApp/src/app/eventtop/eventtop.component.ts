@@ -1,14 +1,29 @@
 import { Component, Inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
+import { NgxPaginationModule } from 'ngx-pagination';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HamEvent, EventsService } from '../events.service';
 import { Participant, QSO, QSOsService } from '../qsos.service';
 import { PdfService } from '../pdf.service';
+import { TranslateService } from '@ngx-translate/core';
 declare let gtag: Function;
 @Component({
   selector: 'app-eventtop',
-  templateUrl: './eventtop.component.html'
+  templateUrl: './eventtop.component.html',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    RouterModule,
+    TranslateModule,
+    NgxPaginationModule
+  ]
 })
 export class EventTopComponent {
   searchForm!: FormGroup;
@@ -24,7 +39,7 @@ export class EventTopComponent {
   public blob: Blob | undefined;
   public isLive: boolean = false;
 
-  constructor(private formBuilder: FormBuilder, private router: Router, private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService, private pdfService: PdfService) {
+  constructor(private formBuilder: FormBuilder, private router: Router, private routes: ActivatedRoute, private eventsService: EventsService, private qsosService: QSOsService, private pdfService: PdfService, private translate: TranslateService) {
 
     this.searchForm = this.formBuilder.group({
       search: "",
@@ -34,7 +49,7 @@ export class EventTopComponent {
   ngOnInit() {
     this.routes.paramMap.subscribe(params => {
       this.eventId = params.get('id')!;
-      this.eventsService.getEvent(this.eventId).subscribe(
+      this.eventsService.getEvent(this.eventId, '', this.translate.currentLang || 'en').subscribe(
         (response) => {
           this.event = response;
           console.log(response);

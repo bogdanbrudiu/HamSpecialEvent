@@ -1,10 +1,11 @@
-<div class="px-4 text-center border-bottom">
- 
-  <h1 class="display-4 fw-bold text-body-emphasis">{{'HamEventTitle' | translate}}</h1>
-  <div class="col mx-auto">
-    <p class="lead mb-4">{{'HamEventDescription' | translate}}</p>
-    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mb-5">
-      <button type="button" class="btn btn-primary btn-lg px-4 me-sm-3" routerLink="/Events">{{'Search QSO' | translate}}</button>
+<div class="home-background">
+  <div class="home-container">
+    <img src="./assets/sigla.jpg" alt="Top" class="home-top-image" />
+    <div class="home-content">
+      <h1>{{'HamEventTitle' | translate}}</h1>
+      <p>{{'HamEventDescription' | translate}}</p>
+      <button mat-raised-button routerLink="/events">{{'Search QSO' | translate}}</button>
+      <button mat-stroked-button routerLink="/recover">{{'AdminLinkRecovery' | translate}}</button>
     </div>
   </div>
 </div>

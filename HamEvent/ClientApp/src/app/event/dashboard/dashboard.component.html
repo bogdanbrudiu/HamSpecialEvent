@@ -1,0 +1,80 @@
+<app-responsive-toolbar *ngIf="event" [event]="event">
+</app-responsive-toolbar>
+
+<div class="mat-elevation-z8 page-header" *ngIf="event">
+  <div class="live-content-wrapper">
+    <mat-card class="live-card">
+      <mat-card-header>
+        <mat-card-title>{{ event.name }}</mat-card-title>
+        <mat-card-subtitle>{{ 'OnAir' | translate }}</mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <p *ngIf="localizedDescription" class="description" [innerHTML]="localizedDescription"></p>
+
+        <mat-divider *ngIf="localizedDescription"></mat-divider>
+
+        <p *ngIf="!Operators.length" class="empty-state"><em>{{ 'No entries...' | translate }}</em></p>
+
+        <div class="table-wrapper" *ngIf="Operators.length">
+          <table class="live-table" aria-labelledby="tableLabel">
+            <thead>
+              <tr>
+                <th>{{ 'Callsign 1' | translate }}</th>
+                <th [ngClass]="{'band-active': bandStatus('160')}">160</th>
+                <th [ngClass]="{'band-active': bandStatus('80')}">80</th>
+                <th [ngClass]="{'band-active': bandStatus('60')}">60</th>
+                <th [ngClass]="{'band-active': bandStatus('40')}">40</th>
+                <th [ngClass]="{'band-active': bandStatus('30')}">30</th>
+                <th [ngClass]="{'band-active': bandStatus('20')}">20</th>
+                <th [ngClass]="{'band-active': bandStatus('17')}">17</th>
+                <th [ngClass]="{'band-active': bandStatus('15')}">15</th>
+                <th [ngClass]="{'band-active': bandStatus('12')}">12</th>
+                <th [ngClass]="{'band-active': bandStatus('10')}">10</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let operator of Operators">
+                <td>{{ operator.callsign }}</td>
+                <td>{{ status(operator, "160") }}</td>
+                <td>{{ status(operator, "80") }}</td>
+                <td>{{ status(operator, "60") }}</td>
+                <td>{{ status(operator, "40") }}</td>
+                <td>{{ status(operator, "30") }}</td>
+                <td>{{ status(operator, "20") }}</td>
+                <td>{{ status(operator, "17") }}</td>
+                <td>{{ status(operator, "15") }}</td>
+                <td>{{ status(operator, "12") }}</td>
+                <td>{{ status(operator, "10") }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="table-wrapper" *ngIf="QSOs.length">
+          <table class="live-table" aria-labelledby="tableLabel">
+            <thead>
+              <tr>
+                <th>{{ 'Callsign 1' | translate }}</th>
+                <th>{{ 'Callsign 2' | translate }}</th>
+                <th>{{ 'Mode' | translate }}</th>
+                <th>{{ 'Band' | translate }}</th>
+                <th>{{ 'Timestamp' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let QSO of QSOs">
+                <td>{{ QSO.callsign1 }}</td>
+                <td>{{ QSO.callsign2 }}</td>
+                <td>{{ QSO.mode }}</td>
+                <td>{{ QSO.band }}</td>
+                <td>{{ QSO.timestamp | date:'medium' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+

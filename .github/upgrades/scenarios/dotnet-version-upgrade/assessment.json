@@ -1,0 +1,788 @@
+{
+  "settings": {
+    "components": {
+      "code": true,
+      "binaries": false
+    },
+    "targetId": "net10.0",
+    "targetDisplayName": ".NETCoreApp,Version=v10.0"
+  },
+  "analysisStartTime": "2026-10-24T08:21:27.8000042Z",
+  "analysisEndTime": "2026-10-24T08:21:28.6385673Z",
+  "privacyModeHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2270980",
+  "stats": {
+    "summary": {
+      "projects": 3,
+      "issues": 8,
+      "incidents": 22,
+      "effort": 22
+    },
+    "charts": {
+      "severity": {
+        "Mandatory": 4,
+        "Optional": 1,
+        "Potential": 17,
+        "Information": 0
+      },
+      "category": {
+        "NuGet": 9,
+        "Project": 2,
+        "Api": 11
+      }
+    }
+  },
+  "projects": [
+    {
+      "path": "AdifLib\\AdifLib\\AdifLib.csproj",
+      "startingProject": true,
+      "issues": 0,
+      "storyPoints": 0,
+      "properties": {
+        "appName": "AdifLib",
+        "projectKind": "ClassLibrary",
+        "frameworks": [
+          "netstandard2.0"
+        ],
+        "languages": [
+          "C#"
+        ],
+        "tools": [
+          "MSBuild"
+        ],
+        "isSdkStyle": true,
+        "numberOfFiles": 4,
+        "numberOfCodeFiles": 4,
+        "linesTotal": 446,
+        "linesOfCode": 446,
+        "totalApiScanned": 446,
+        "minLinesOfCodeToChange": 0,
+        "maxLinesOfCodeToChange": 0
+      },
+      "ruleInstances": [],
+      "features": []
+    },
+    {
+      "path": "HamEvent\\HamEvent.csproj",
+      "startingProject": true,
+      "issues": 4,
+      "storyPoints": 9,
+      "properties": {
+        "appName": "HamEvent",
+        "projectKind": "AspNetCore",
+        "frameworks": [
+          "net9.0"
+        ],
+        "languages": [
+          "C#"
+        ],
+        "tools": [
+          "MSBuild"
+        ],
+        "isSdkStyle": true,
+        "numberOfFiles": 61,
+        "numberOfCodeFiles": 39,
+        "linesTotal": 398480,
+        "linesOfCode": 3036,
+        "totalApiScanned": 4704,
+        "minLinesOfCodeToChange": 3,
+        "maxLinesOfCodeToChange": 3
+      },
+      "ruleInstances": [
+        {
+          "incidentId": "5d7e2976-894f-4ac6-afdb-60b1a42df198",
+          "ruleId": "NuGet.0002",
+          "projectPath": "HamEvent\\HamEvent.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.AspNetCore.SpaProxy, 9.0.21\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.SpaProxy, and replace with new package Microsoft.AspNetCore.SpaProxy 10.0.13",
+              "protected": "Microsoft.AspNetCore.SpaProxy, 9.0.21\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.SpaProxy, and replace with new package Microsoft.AspNetCore.SpaProxy 10.0.13"
+            },
+            "kind": "File",
+            "path": "HamEvent\\HamEvent.csproj",
+            "snippet": "Microsoft.AspNetCore.SpaProxy, 9.0.21\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.SpaProxy, and replace with new package Microsoft.AspNetCore.SpaProxy 10.0.13",
+            "protectedSnippet": "Microsoft.AspNetCore.SpaProxy, 9.0.21\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.SpaProxy, and replace with new package Microsoft.AspNetCore.SpaProxy 10.0.13",
+            "label": "Microsoft.AspNetCore.SpaProxy 9.0.21",
+            "properties": {
+              "PackageId": "Microsoft.AspNetCore.SpaProxy",
+              "PackageVersion": "9.0.21",
+              "PackageNewVersion": "10.0.13",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "0494bbbc-aa4b-4708-a52f-08702182ffbe",
+          "ruleId": "NuGet.0002",
+          "projectPath": "HamEvent\\HamEvent.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.EntityFrameworkCore, 9.0.21\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore, and replace with new package Microsoft.EntityFrameworkCore 10.0.13",
+              "protected": "Microsoft.EntityFrameworkCore, 9.0.21\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore, and replace with new package Microsoft.EntityFrameworkCore 10.0.13"
+            },
+            "kind": "File",
+            "path": "HamEvent\\HamEvent.csproj",
+            "snippet": "Microsoft.EntityFrameworkCore, 9.0.21\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore, and replace with new package Microsoft.EntityFrameworkCore 10.0.13",
+            "protectedSnippet": "Microsoft.EntityFrameworkCore, 9.0.21\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore, and replace with new package Microsoft.EntityFrameworkCore 10.0.13",
+            "label": "Microsoft.EntityFrameworkCore 9.0.21",
+            "properties": {
+              "PackageId": "Microsoft.EntityFrameworkCore",
+              "PackageVersion": "9.0.21",
+              "PackageNewVersion": "10.0.13",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "4775011c-43f1-4839-8f6b-ae3c3f55654f",
+          "ruleId": "NuGet.0002",
+          "projectPath": "HamEvent\\HamEvent.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.EntityFrameworkCore.Sqlite, 9.0.21\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.Sqlite, and replace with new package Microsoft.EntityFrameworkCore.Sqlite 10.0.13",
+              "protected": "Microsoft.EntityFrameworkCore.Sqlite, 9.0.21\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.Sqlite, and replace with new package Microsoft.EntityFrameworkCore.Sqlite 10.0.13"
+            },
+            "kind": "File",
+            "path": "HamEvent\\HamEvent.csproj",
+            "snippet": "Microsoft.EntityFrameworkCore.Sqlite, 9.0.21\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.Sqlite, and replace with new package Microsoft.EntityFrameworkCore.Sqlite 10.0.13",
+            "protectedSnippet": "Microsoft.EntityFrameworkCore.Sqlite, 9.0.21\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.Sqlite, and replace with new package Microsoft.EntityFrameworkCore.Sqlite 10.0.13",
+            "label": "Microsoft.EntityFrameworkCore.Sqlite 9.0.21",
+            "properties": {
+              "PackageId": "Microsoft.EntityFrameworkCore.Sqlite",
+              "PackageVersion": "9.0.21",
+              "PackageNewVersion": "10.0.13",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "5b3e27bd-a483-4bd4-b27d-f31f8c64b9bc",
+          "ruleId": "NuGet.0002",
+          "projectPath": "HamEvent\\HamEvent.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.EntityFrameworkCore.Tools, 9.0.21\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.Tools, and replace with new package Microsoft.EntityFrameworkCore.Tools 10.0.13",
+              "protected": "Microsoft.EntityFrameworkCore.Tools, 9.0.21\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.Tools, and replace with new package Microsoft.EntityFrameworkCore.Tools 10.0.13"
+            },
+            "kind": "File",
+            "path": "HamEvent\\HamEvent.csproj",
+            "snippet": "Microsoft.EntityFrameworkCore.Tools, 9.0.21\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.Tools, and replace with new package Microsoft.EntityFrameworkCore.Tools 10.0.13",
+            "protectedSnippet": "Microsoft.EntityFrameworkCore.Tools, 9.0.21\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.Tools, and replace with new package Microsoft.EntityFrameworkCore.Tools 10.0.13",
+            "label": "Microsoft.EntityFrameworkCore.Tools 9.0.21",
+            "properties": {
+              "PackageId": "Microsoft.EntityFrameworkCore.Tools",
+              "PackageVersion": "9.0.21",
+              "PackageNewVersion": "10.0.13",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "c8e0831d-b285-45b9-8335-edba24c4db03",
+          "ruleId": "NuGet.0002",
+          "projectPath": "HamEvent\\HamEvent.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "System.Configuration.ConfigurationManager, 9.0.21\n\nRecommendation:\n\nRemove System.Configuration.ConfigurationManager, and replace with new package System.Configuration.ConfigurationManager 10.0.13",
+              "protected": "System.Configuration.ConfigurationManager, 9.0.21\n\nRecommendation:\n\nRemove System.Configuration.ConfigurationManager, and replace with new package System.Configuration.ConfigurationManager 10.0.13"
+            },
+            "kind": "File",
+            "path": "HamEvent\\HamEvent.csproj",
+            "snippet": "System.Configuration.ConfigurationManager, 9.0.21\n\nRecommendation:\n\nRemove System.Configuration.ConfigurationManager, and replace with new package System.Configuration.ConfigurationManager 10.0.13",
+            "protectedSnippet": "System.Configuration.ConfigurationManager, 9.0.21\n\nRecommendation:\n\nRemove System.Configuration.ConfigurationManager, and replace with new package System.Configuration.ConfigurationManager 10.0.13",
+            "label": "System.Configuration.ConfigurationManager 9.0.21",
+            "properties": {
+              "PackageId": "System.Configuration.ConfigurationManager",
+              "PackageVersion": "9.0.21",
+              "PackageNewVersion": "10.0.13",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "fe7b1287-7cdf-4907-ba44-b39c6459f1a7",
+          "ruleId": "Project.0002",
+          "projectPath": "HamEvent\\HamEvent.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Current target framework: net9.0\nRecommended target framework: net10.0",
+              "protected": "Current target framework: net9.0\nRecommended target framework: net10.0"
+            },
+            "kind": "File",
+            "path": "HamEvent\\HamEvent.csproj",
+            "snippet": "Current target framework: net9.0\nRecommended target framework: net10.0",
+            "protectedSnippet": "Current target framework: net9.0\nRecommended target framework: net10.0",
+            "properties": {
+              "CurrentTargetFramework": "net9.0",
+              "RecommendedTargetFramework": "net10.0"
+            }
+          }
+        },
+        {
+          "incidentId": "9544e879-1e44-4094-98f1-dcbb9753de76",
+          "ruleId": "Api.0002",
+          "description": "API is available in package System.Configuration.ConfigurationManager, 9.0.0-preview.6.24302.3. Add package reference to System.Configuration.ConfigurationManager, 9.0.0-preview.6.24302.3",
+          "projectPath": "HamEvent\\HamEvent.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var tokenSecret = builder.Configuration[\u0022Token:Secret\u0022] ?? throw new ConfigurationErrorsException(\u0022Token secret is not configured.\u0022);",
+              "protected": "T:System.Configuration.ConfigurationErrorsException"
+            },
+            "kind": "File",
+            "path": "HamEvent\\Program.cs",
+            "snippet": "var tokenSecret = builder.Configuration[\u0022Token:Secret\u0022] ?? throw new ConfigurationErrorsException(\u0022Token secret is not configured.\u0022);",
+            "protectedSnippet": "T:System.Configuration.ConfigurationErrorsException",
+            "label": "T:System.Configuration.ConfigurationErrorsException",
+            "properties": {
+              "PackageId": "System.Configuration.ConfigurationManager",
+              "PackageNewVersion": "9.0.0-preview.6.24302.3"
+            },
+            "line": 21,
+            "column": 0
+          }
+        },
+        {
+          "incidentId": "69d5d63b-4da1-4823-8e60-2fe37410efe6",
+          "ruleId": "Api.0002",
+          "description": "API is available in package System.Configuration.ConfigurationManager, 9.0.0-preview.6.24302.3. Add package reference to System.Configuration.ConfigurationManager, 9.0.0-preview.6.24302.3",
+          "projectPath": "HamEvent\\HamEvent.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var tokenSecret = builder.Configuration[\u0022Token:Secret\u0022] ?? throw new ConfigurationErrorsException(\u0022Token secret is not configured.\u0022);",
+              "protected": "M:System.Configuration.ConfigurationErrorsException.#ctor(System.String)"
+            },
+            "kind": "File",
+            "path": "HamEvent\\Program.cs",
+            "snippet": "var tokenSecret = builder.Configuration[\u0022Token:Secret\u0022] ?? throw new ConfigurationErrorsException(\u0022Token secret is not configured.\u0022);",
+            "protectedSnippet": "M:System.Configuration.ConfigurationErrorsException.#ctor(System.String)",
+            "label": "M:System.Configuration.ConfigurationErrorsException.#ctor(System.String)",
+            "properties": {
+              "PackageId": "System.Configuration.ConfigurationManager",
+              "PackageNewVersion": "9.0.0-preview.6.24302.3"
+            },
+            "line": 21,
+            "column": 0
+          }
+        },
+        {
+          "incidentId": "aa2400b2-241c-41d6-a907-b31070caf020",
+          "ruleId": "Api.0001",
+          "description": "Breaking change: DynamicallyAccessedMembers annotation removed from trim-unsafe configuration APIs ",
+          "projectPath": "HamEvent\\HamEvent.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "builder.Services.Configure\u003CMailerSettings\u003E(builder.Configuration.GetSection(\u0022MailerSettings\u0022));",
+              "protected": "M:Microsoft.Extensions.DependencyInjection.OptionsConfigurationServiceCollectionExtensions.Configure\u0060\u00601(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)"
+            },
+            "kind": "File",
+            "path": "HamEvent\\Program.cs",
+            "snippet": "builder.Services.Configure\u003CMailerSettings\u003E(builder.Configuration.GetSection(\u0022MailerSettings\u0022));",
+            "protectedSnippet": "M:Microsoft.Extensions.DependencyInjection.OptionsConfigurationServiceCollectionExtensions.Configure\u0060\u00601(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)",
+            "label": "M:Microsoft.Extensions.DependencyInjection.OptionsConfigurationServiceCollectionExtensions.Configure\u0060\u00601(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/extensions/10.0/dynamically-accessed-members-configuration.md",
+                "isCustom": false
+              }
+            ],
+            "line": 15,
+            "column": 0
+          }
+        }
+      ],
+      "features": [
+        {
+          "featureId": "LegacyConfiguration",
+          "incidents": [
+            "69d5d63b-4da1-4823-8e60-2fe37410efe6",
+            "9544e879-1e44-4094-98f1-dcbb9753de76"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "UnitTests\\UnitTests.csproj",
+      "startingProject": true,
+      "issues": 5,
+      "storyPoints": 13,
+      "properties": {
+        "appName": "UnitTests",
+        "projectKind": "DotNetCoreApp",
+        "frameworks": [
+          "net9.0"
+        ],
+        "languages": [
+          "C#"
+        ],
+        "tools": [
+          "MSBuild"
+        ],
+        "isSdkStyle": true,
+        "numberOfFiles": 9,
+        "numberOfCodeFiles": 7,
+        "linesTotal": 4029,
+        "linesOfCode": 1413,
+        "totalApiScanned": 3480,
+        "minLinesOfCodeToChange": 8,
+        "maxLinesOfCodeToChange": 8
+      },
+      "ruleInstances": [
+        {
+          "incidentId": "9232033e-91cc-4844-8dba-1b6d71bd6929",
+          "ruleId": "NuGet.0002",
+          "projectPath": "UnitTests\\UnitTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.EntityFrameworkCore.InMemory, 9.0.21\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.InMemory, and replace with new package Microsoft.EntityFrameworkCore.InMemory 10.0.13",
+              "protected": "Microsoft.EntityFrameworkCore.InMemory, 9.0.21\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.InMemory, and replace with new package Microsoft.EntityFrameworkCore.InMemory 10.0.13"
+            },
+            "kind": "File",
+            "path": "UnitTests\\UnitTests.csproj",
+            "snippet": "Microsoft.EntityFrameworkCore.InMemory, 9.0.21\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.InMemory, and replace with new package Microsoft.EntityFrameworkCore.InMemory 10.0.13",
+            "protectedSnippet": "Microsoft.EntityFrameworkCore.InMemory, 9.0.21\n\nRecommendation:\n\nRemove Microsoft.EntityFrameworkCore.InMemory, and replace with new package Microsoft.EntityFrameworkCore.InMemory 10.0.13",
+            "label": "Microsoft.EntityFrameworkCore.InMemory 9.0.21",
+            "properties": {
+              "PackageId": "Microsoft.EntityFrameworkCore.InMemory",
+              "PackageVersion": "9.0.21",
+              "PackageNewVersion": "10.0.13",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "565df6ce-8c4d-422b-8361-5d07433ce119",
+          "ruleId": "NuGet.0003",
+          "projectPath": "UnitTests\\UnitTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "System.Text.RegularExpressions, 4.3.1\n\nRecommendation:\n\nPackage functionality included with new framework reference",
+              "protected": "System.Text.RegularExpressions, 4.3.1\n\nRecommendation:\n\nPackage functionality included with new framework reference"
+            },
+            "kind": "File",
+            "path": "UnitTests\\UnitTests.csproj",
+            "snippet": "System.Text.RegularExpressions, 4.3.1\n\nRecommendation:\n\nPackage functionality included with new framework reference",
+            "protectedSnippet": "System.Text.RegularExpressions, 4.3.1\n\nRecommendation:\n\nPackage functionality included with new framework reference",
+            "label": "System.Text.RegularExpressions 4.3.1",
+            "properties": {
+              "PackageId": "System.Text.RegularExpressions",
+              "PackageVersion": "4.3.1",
+              "PackageNewVersion": null,
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "18b1b498-0298-4247-b05f-a8a205514874",
+          "ruleId": "NuGet.0002",
+          "projectPath": "UnitTests\\UnitTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Microsoft.AspNetCore.Mvc.Testing, 9.0.21\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Mvc.Testing, and replace with new package Microsoft.AspNetCore.Mvc.Testing 10.0.13",
+              "protected": "Microsoft.AspNetCore.Mvc.Testing, 9.0.21\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Mvc.Testing, and replace with new package Microsoft.AspNetCore.Mvc.Testing 10.0.13"
+            },
+            "kind": "File",
+            "path": "UnitTests\\UnitTests.csproj",
+            "snippet": "Microsoft.AspNetCore.Mvc.Testing, 9.0.21\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Mvc.Testing, and replace with new package Microsoft.AspNetCore.Mvc.Testing 10.0.13",
+            "protectedSnippet": "Microsoft.AspNetCore.Mvc.Testing, 9.0.21\n\nRecommendation:\n\nRemove Microsoft.AspNetCore.Mvc.Testing, and replace with new package Microsoft.AspNetCore.Mvc.Testing 10.0.13",
+            "label": "Microsoft.AspNetCore.Mvc.Testing 9.0.21",
+            "properties": {
+              "PackageId": "Microsoft.AspNetCore.Mvc.Testing",
+              "PackageVersion": "9.0.21",
+              "PackageNewVersion": "10.0.13",
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "6698a996-df34-4639-9e09-93b68d3dc8ad",
+          "ruleId": "NuGet.0005",
+          "projectPath": "UnitTests\\UnitTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "xunit, 2.9.3\n\nRecommendation:\n\nThis package will only be updated for security issues. All future feature work has moved onto v3.\n\nGuide for migrating from xUnit.net v2 to v3: https://xunit.net/docs/getting-started/v3/migration\nRemove xunit, and replace with new package xunit, 2.9.3",
+              "protected": "xunit, 2.9.3\n\nRecommendation:\n\nThis package will only be updated for security issues. All future feature work has moved onto v3.\n\nGuide for migrating from xUnit.net v2 to v3: https://xunit.net/docs/getting-started/v3/migration\nRemove xunit, and replace with new package xunit, 2.9.3"
+            },
+            "kind": "File",
+            "path": "UnitTests\\UnitTests.csproj",
+            "snippet": "xunit, 2.9.3\n\nRecommendation:\n\nThis package will only be updated for security issues. All future feature work has moved onto v3.\n\nGuide for migrating from xUnit.net v2 to v3: https://xunit.net/docs/getting-started/v3/migration\nRemove xunit, and replace with new package xunit, 2.9.3",
+            "protectedSnippet": "xunit, 2.9.3\n\nRecommendation:\n\nThis package will only be updated for security issues. All future feature work has moved onto v3.\n\nGuide for migrating from xUnit.net v2 to v3: https://xunit.net/docs/getting-started/v3/migration\nRemove xunit, and replace with new package xunit, 2.9.3",
+            "label": "xunit 2.9.3",
+            "properties": {
+              "PackageId": "xunit",
+              "PackageVersion": "2.9.3",
+              "PackageNewVersion": null,
+              "PackageReplacements": null
+            }
+          }
+        },
+        {
+          "incidentId": "113e42a6-6fa4-44d1-a09b-6c9cf76ccbad",
+          "ruleId": "Project.0002",
+          "projectPath": "UnitTests\\UnitTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Current target framework: net9.0\nRecommended target framework: net10.0",
+              "protected": "Current target framework: net9.0\nRecommended target framework: net10.0"
+            },
+            "kind": "File",
+            "path": "UnitTests\\UnitTests.csproj",
+            "snippet": "Current target framework: net9.0\nRecommended target framework: net10.0",
+            "protectedSnippet": "Current target framework: net9.0\nRecommended target framework: net10.0",
+            "properties": {
+              "CurrentTargetFramework": "net9.0",
+              "RecommendedTargetFramework": "net10.0"
+            }
+          }
+        },
+        {
+          "incidentId": "bfebab55-a40c-4fd8-a083-7c711661328e",
+          "ruleId": "Api.0003",
+          "description": "Breaking change - Streaming HTTP responses enabled by default in browser HTTP clients ",
+          "projectPath": "UnitTests\\UnitTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var body = await res.Content.ReadAsStringAsync();",
+              "protected": "T:System.Net.Http.HttpContent"
+            },
+            "kind": "File",
+            "path": "UnitTests\\ElmahIntegrationTests.cs",
+            "snippet": "var body = await res.Content.ReadAsStringAsync();",
+            "protectedSnippet": "T:System.Net.Http.HttpContent",
+            "label": "T:System.Net.Http.HttpContent",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/default-http-streaming.md",
+                "isCustom": false
+              }
+            ],
+            "line": 68,
+            "column": 12
+          }
+        },
+        {
+          "incidentId": "0411bdde-edcc-4bdf-851b-863647169464",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "UnitTests\\UnitTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var segments = new Uri(url).Segments;",
+              "protected": "T:System.Uri"
+            },
+            "kind": "File",
+            "path": "UnitTests\\HamEventControllerTests.cs",
+            "snippet": "var segments = new Uri(url).Segments;",
+            "protectedSnippet": "T:System.Uri",
+            "label": "T:System.Uri",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 526,
+            "column": 16
+          }
+        },
+        {
+          "incidentId": "22d1873e-3dce-419d-a599-f99ecce5e105",
+          "ruleId": "Api.0003",
+          "description": "Breaking change: URI length limits removed ",
+          "projectPath": "UnitTests\\UnitTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "var segments = new Uri(url).Segments;",
+              "protected": "M:System.Uri.#ctor(System.String)"
+            },
+            "kind": "File",
+            "path": "UnitTests\\HamEventControllerTests.cs",
+            "snippet": "var segments = new Uri(url).Segments;",
+            "protectedSnippet": "M:System.Uri.#ctor(System.String)",
+            "label": "M:System.Uri.#ctor(System.String)",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/uri-length-limits-removed.md",
+                "isCustom": false
+              }
+            ],
+            "line": 526,
+            "column": 16
+          }
+        },
+        {
+          "incidentId": "609641d7-0450-46e8-804f-fb2ef6beccdd",
+          "ruleId": "Api.0003",
+          "description": "Nullable JsonDocument properties deserialize to JsonValueKind.Null ",
+          "projectPath": "UnitTests\\UnitTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "using var emailModel = JsonDocument.Parse(JsonSerializer.Serialize(sentMessage.Model));",
+              "protected": "T:System.Text.Json.JsonDocument"
+            },
+            "kind": "File",
+            "path": "UnitTests\\HamEventControllerTests.cs",
+            "snippet": "using var emailModel = JsonDocument.Parse(JsonSerializer.Serialize(sentMessage.Model));",
+            "protectedSnippet": "T:System.Text.Json.JsonDocument",
+            "label": "T:System.Text.Json.JsonDocument",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/serialization/9.0/jsondocument-props.md",
+                "isCustom": false
+              }
+            ],
+            "line": 520,
+            "column": 12
+          }
+        },
+        {
+          "incidentId": "617a928a-c6f9-41f6-9220-ea1ea0da68f2",
+          "ruleId": "Api.0003",
+          "description": "Nullable JsonDocument properties deserialize to JsonValueKind.Null ",
+          "projectPath": "UnitTests\\UnitTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "using var emailModel = JsonDocument.Parse(JsonSerializer.Serialize(sentMessage.Model));",
+              "protected": "T:System.Text.Json.JsonDocument"
+            },
+            "kind": "File",
+            "path": "UnitTests\\HamEventControllerTests.cs",
+            "snippet": "using var emailModel = JsonDocument.Parse(JsonSerializer.Serialize(sentMessage.Model));",
+            "protectedSnippet": "T:System.Text.Json.JsonDocument",
+            "label": "T:System.Text.Json.JsonDocument",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/serialization/9.0/jsondocument-props.md",
+                "isCustom": false
+              }
+            ],
+            "line": 520,
+            "column": 12
+          }
+        },
+        {
+          "incidentId": "4bb9ea5f-6702-46da-98a2-e2c17511e53e",
+          "ruleId": "Api.0003",
+          "description": "Nullable JsonDocument properties deserialize to JsonValueKind.Null ",
+          "projectPath": "UnitTests\\UnitTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "using var doc = JsonDocument.Parse(json);",
+              "protected": "T:System.Text.Json.JsonDocument"
+            },
+            "kind": "File",
+            "path": "UnitTests\\HamEventControllerTests.cs",
+            "snippet": "using var doc = JsonDocument.Parse(json);",
+            "protectedSnippet": "T:System.Text.Json.JsonDocument",
+            "label": "T:System.Text.Json.JsonDocument",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/serialization/9.0/jsondocument-props.md",
+                "isCustom": false
+              }
+            ],
+            "line": 513,
+            "column": 12
+          }
+        },
+        {
+          "incidentId": "cd5eda38-459c-405c-911b-05a8fca3b24f",
+          "ruleId": "Api.0003",
+          "description": "Nullable JsonDocument properties deserialize to JsonValueKind.Null ",
+          "projectPath": "UnitTests\\UnitTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "using var doc = JsonDocument.Parse(json);",
+              "protected": "T:System.Text.Json.JsonDocument"
+            },
+            "kind": "File",
+            "path": "UnitTests\\HamEventControllerTests.cs",
+            "snippet": "using var doc = JsonDocument.Parse(json);",
+            "protectedSnippet": "T:System.Text.Json.JsonDocument",
+            "label": "T:System.Text.Json.JsonDocument",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/serialization/9.0/jsondocument-props.md",
+                "isCustom": false
+              }
+            ],
+            "line": 513,
+            "column": 12
+          }
+        },
+        {
+          "incidentId": "bb96eed9-4d8e-4e7c-bd53-644d15597cf3",
+          "ruleId": "Api.0003",
+          "description": "Breaking change - Streaming HTTP responses enabled by default in browser HTTP clients ",
+          "projectPath": "UnitTests\\UnitTests.csproj",
+          "state": "Active",
+          "location": {
+            "snippetModel": {
+              "unrestricted": "Assert.DoesNotContain(message, await response.Content.ReadAsStringAsync());",
+              "protected": "T:System.Net.Http.HttpContent"
+            },
+            "kind": "File",
+            "path": "UnitTests\\VerificationIntegrationTests.cs",
+            "snippet": "Assert.DoesNotContain(message, await response.Content.ReadAsStringAsync());",
+            "protectedSnippet": "T:System.Net.Http.HttpContent",
+            "label": "T:System.Net.Http.HttpContent",
+            "links": [
+              {
+                "title": "API documentation",
+                "url": "https://github.com/dotnet/docs/blob/main/docs/core/compatibility/networking/10.0/default-http-streaming.md",
+                "isCustom": false
+              }
+            ],
+            "line": 81,
+            "column": 12
+          }
+        }
+      ],
+      "features": []
+    }
+  ],
+  "rules": {
+    "NuGet.0002": {
+      "id": "NuGet.0002",
+      "isFeature": false,
+      "description": "NuGet package upgrade is recommended for selected target framework.\n\nStandard .NET packages are recommended to have versions matching version of .NET that project targets.\n\nSome other packages also are known to work better for selected target frameworks.",
+      "label": "NuGet package upgrade is recommended",
+      "severity": "Potential",
+      "effort": 1,
+      "links": [
+        {
+          "url": "https://go.microsoft.com/fwlink/?linkid=2262530",
+          "isCustom": false
+        }
+      ]
+    },
+    "Project.0002": {
+      "id": "Project.0002",
+      "isFeature": false,
+      "description": "Project\u0027s target framework(s) needs to be changed to the new target framework that you selected for this upgrade.\n\nDuring upgrade target framework will be adjusted to corresponding platform when applicable. In some cases project would result in multiple target frameworks after the upgrade if it was using features that now have their own platforms in modern .NET frameworks (windows, iOS, Android etc).",
+      "label": "Project\u0027s target framework(s) needs to be changed",
+      "severity": "Mandatory",
+      "effort": 1,
+      "links": [
+        {
+          "title": "Overview of porting from .NET Framework to .NET",
+          "url": "https://go.microsoft.com/fwlink/?linkid=2265227",
+          "isCustom": false
+        },
+        {
+          "title": ".NET project SDKs",
+          "url": "https://go.microsoft.com/fwlink/?linkid=2265226",
+          "isCustom": false
+        }
+      ]
+    },
+    "Api.0002": {
+      "id": "Api.0002",
+      "isFeature": false,
+      "description": "API is source incompatible for selected .NET version: requires code changes to compile successfully when targeting a new version, such as removing obsolete APIs or changing method signatures.",
+      "label": "Source incompatible for selected .NET version",
+      "severity": "Potential",
+      "effort": 1,
+      "links": [
+        {
+          "title": "Breaking changes in .NET",
+          "url": "https://go.microsoft.com/fwlink/?linkid=2262679",
+          "isCustom": false
+        }
+      ]
+    },
+    "Api.0001": {
+      "id": "Api.0001",
+      "isFeature": false,
+      "description": "API is binary incompatible for selected .NET version: affects existing binaries, often requiring recompilation, because the API has changed in a way that prevents older binaries from loading or executing.",
+      "label": "Binary incompatible for selected .NET version",
+      "severity": "Mandatory",
+      "effort": 1,
+      "links": [
+        {
+          "title": "Breaking changes in .NET",
+          "url": "https://go.microsoft.com/fwlink/?linkid=2262679",
+          "isCustom": false
+        }
+      ]
+    },
+    "LegacyConfiguration": {
+      "id": "LegacyConfiguration",
+      "isFeature": false,
+      "description": "Legacy XML-based configuration system (app.config/web.config) that has been replaced by a more flexible configuration model in .NET Core. The old system was rigid and XML-based. Migrate to Microsoft.Extensions.Configuration with JSON/environment variables; use System.Configuration.ConfigurationManager NuGet package as interim bridge if needed.",
+      "label": "Legacy Configuration System",
+      "severity": "Mandatory",
+      "effort": 2,
+      "links": [
+        {
+          "title": "Configuration in .NET",
+          "url": "https://go.microsoft.com/fwlink/?linkid=2341702",
+          "isCustom": false
+        }
+      ]
+    },
+    "NuGet.0003": {
+      "id": "NuGet.0003",
+      "isFeature": false,
+      "description": "NuGet package functionality is included with framework reference.\n\nPackage needs to be removed.",
+      "label": "NuGet package functionality is included with framework reference",
+      "severity": "Mandatory",
+      "effort": 1,
+      "links": [
+        {
+          "url": "https://go.microsoft.com/fwlink/?linkid=2262609",
+          "isCustom": false
+        }
+      ]
+    },
+    "NuGet.0005": {
+      "id": "NuGet.0005",
+      "isFeature": false,
+      "description": "NuGet package is deprecated.\n\nGo to its documentation and if there is a guidance for replacement of functionality provided by this package.",
+      "label": "NuGet package is deprecated",
+      "severity": "Optional",
+      "effort": 1,
+      "links": [
+        {
+          "url": "https://go.microsoft.com/fwlink/?linkid=2262531",
+          "isCustom": false
+        }
+      ]
+    },
+    "Api.0003": {
+      "id": "Api.0003",
+      "isFeature": false,
+      "description": "API has a behavioral change in selected .NET version: code and binaries may behave differently at runtime without needing recompilation, but the new behavior might be undesirable and require updates.",
+      "label": "Behavioral change in selected .NET version",
+      "severity": "Potential",
+      "effort": 1
+    }
+  }
+}

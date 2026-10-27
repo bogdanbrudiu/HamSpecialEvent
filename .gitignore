@@ -120,6 +120,11 @@ ipch/
 
 # Visual Studio Trace Files
 *.e2e
+playwright-report/
+test-results/
+HamEvent/ClientApp/playwright-report/
+HamEvent/ClientApp/test-results/
+HamEvent/ClientApp/.playwright/
 
 # TFS 2012 Local Workspace
 $tf/
@@ -368,3 +373,4 @@ FodyWeavers.xsd
 /HamEvent/.config
 /HamEvent/appsettings.Development.json
 /HamEvent/ClientApp/.angular/cache/18.1.2
+/HamEvent/appsettings.Production.json

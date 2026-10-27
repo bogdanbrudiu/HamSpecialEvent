@@ -1,11 +1,10 @@
-﻿using AutoMapper;
-using CoreMailer.Interfaces;
-using CoreMailer.Models;
+﻿using ElmahCore;
 using HamEvent.Data.Model;
 using HamEvent.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Net.Mail;
 
 namespace HamEvent.Controllers
 {
@@ -14,41 +13,55 @@ namespace HamEvent.Controllers
     public class VerificationController : Controller
     {
         private readonly TokenService _tokenService;
-        private readonly ICoreMvcMailer _mailer;
+        private readonly IEmailService _emailService;
         private readonly MailerSettings _mailerSettings;
         private readonly ILogger<VerificationController> _logger;
 
-        public VerificationController(ILogger<VerificationController> logger, IMapper mapper, ICoreMvcMailer mailer, IOptions<MailerSettings> mailerSettings, TokenService tokenService)
+        public VerificationController(ILogger<VerificationController> logger, IEmailService emailService, IOptions<MailerSettings> mailerSettings, TokenService tokenService)
         {
             _tokenService = tokenService;
             _logger = logger;
-            _mailer = mailer;
+            _emailService = emailService;
             _mailerSettings = mailerSettings.Value;
         }
 
         [HttpGet("send-verification")]
         public async Task<IActionResult> SendVerificationEmail(string email)
         {
-            MailerModel mdl = new MailerModel(_mailerSettings.Host, _mailerSettings.Port)
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return BadRequest("Email is required.");
+            }
+
+            try
+            {
+                _ = new MailAddress(email);
+            }
+            catch (FormatException)
+            {
+                return BadRequest("Invalid email address.");
+            }
+
+            EmailMessage message = new EmailMessage
             {
                 ToAddresses = new List<string>() { email },
-                FromAddress = _mailerSettings.From,
                 IsHtml = true,
-                ViewFile = "Shared/ValidateEmail.html",
+                TemplateName = "Shared/ValidateEmail",
                 Subject = "Confirm Email",
-                User = _mailerSettings.Username,
-                Key = _mailerSettings.Password,
-                EnableSsl = _mailerSettings.EnableSSL,
                 Model = new { token=  _tokenService.GenerateToken(email) }
             };
             _logger.LogDebug(MyLogEvents.SendingEmail, "Sending Email");
             try
             {
-                await _mailer.SendAsync(mdl);
+                await _emailService.SendAsync(message);
             }
             catch(Exception ex)
             {
                 _logger.LogError(MyLogEvents.SendingEmail, ex, "Error Sending Email");
+                if (HttpContext != null)
+                {
+                    await HttpContext.RaiseError(ex);
+                }
                 return StatusCode(500, $"Email send error!");
             }
             return Ok();
@@ -57,6 +70,11 @@ namespace HamEvent.Controllers
         [HttpGet("verify")]
         public IActionResult VerifyEmail(string token, string email)
         {
+            if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(email))
+            {
+                return BadRequest("Token and email are required.");
+            }
+
             if (_tokenService.VerifyToken(token, email))
             {
                 return Ok("Email verified.");

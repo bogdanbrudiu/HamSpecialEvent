@@ -1,0 +1,27 @@
+<h2 mat-dialog-title>Edit QSO</h2>
+<div mat-dialog-content>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Callsign 1</mat-label>
+    <input matInput [(ngModel)]="qso.callsign1" />
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Callsign 2</mat-label>
+    <input matInput [(ngModel)]="qso.callsign2" />
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Mode</mat-label>
+    <input matInput [(ngModel)]="qso.mode" />
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Band</mat-label>
+    <input matInput [(ngModel)]="qso.band" />
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Date</mat-label>
+    <input matInput [(ngModel)]="qso.date" />
+  </mat-form-field>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="save()">Save</button>
+</div>

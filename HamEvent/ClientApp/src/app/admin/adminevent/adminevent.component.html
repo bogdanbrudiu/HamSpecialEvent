@@ -1,0 +1,191 @@
+<app-responsive-toolbar *ngIf="event && event.id !== '00000000-0000-0000-0000-000000000000'" [event]="event"></app-responsive-toolbar>
+
+<div class="row" style="margin-bottom:15px;">
+  <p *ngIf="!event"><em>{{'Loading...' | translate}}</em></p>
+  <p *ngIf="!event && loadFailed"><em>{{ 'Unable to load this event. Verify the link key or use the admin master key.' | translate }}</em></p>
+  <p *ngIf="saveError" role="alert"><em>{{ saveError }}</em></p>
+  <p *ngIf="saveSuccess" role="status">{{ saveSuccess | translate }}</p>
+</div>
+
+<mat-card class="admin-event-card">
+  <mat-card-title>{{ event?.id === '00000000-0000-0000-0000-000000000000' ? ('Create Event' | translate) : ('Edit Event' | translate) }}</mat-card-title>
+  <mat-card-content>
+    <button mat-button type="button" (click)="cancelEdit()" [disabled]="busy">{{ (isAdminEditor ? 'Back to event list' : 'Browse events') | translate }}</button>
+    <form (ngSubmit)="onSubmit()" *ngIf="event">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'Name' | translate }}</mat-label>
+        <input matInput [(ngModel)]="event.name" name="name" required>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'Start Date' | translate }}</mat-label>
+        <input matInput [matDatepicker]="startPicker" [(ngModel)]="event.startDate" name="startDate" required>
+        <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+        <mat-datepicker #startPicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'End Date' | translate }}</mat-label>
+        <input matInput [matDatepicker]="endPicker" [(ngModel)]="event.endDate" name="endDate" required>
+        <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+        <mat-datepicker #endPicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'Description' | translate }}</mat-label>
+        <mat-tab-group [selectedIndex]="selectedDescriptionIndex" (selectedIndexChange)="onDescriptionTabChange($event)">
+          <mat-tab *ngFor="let lang of languages" [label]="lang">
+            <textarea matInput rows="3" [(ngModel)]="event.description[lang]" [name]="'description_' + lang"></textarea>
+            <div *ngIf="event.description[lang]" class="description-html-preview">
+              <div [innerHtml]="event.description[lang] | sanitizedHtml"></div>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'Rules' | translate }}</mat-label>
+        <mat-tab-group [selectedIndex]="selectedRulesIndex" (selectedIndexChange)="onRulesTabChange($event)">
+          <mat-tab *ngFor="let lang of languages" [label]="lang">
+            <textarea matInput rows="6" [(ngModel)]="event.rules[lang]" [name]="'rules_' + lang"></textarea>
+            <div *ngIf="event.rules[lang]" class="rules-html-preview">
+              <div [innerHtml]="event.rules[lang] | sanitizedHtml"></div>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'Email' | translate }}</mat-label>
+        <input matInput [(ngModel)]="event.email" name="email" required type="email">
+      </mat-form-field>
+
+      <div *ngIf="initialEmail !== event.email">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ 'Email Validation Code' | translate }}</mat-label>
+          <input matInput [(ngModel)]="emailValidationCode" name="emailValidationCode">
+        </mat-form-field>
+        <button mat-stroked-button color="primary" type="button" (click)="onSubmit()" [disabled]="busy">
+          {{ codeGenerated ? ('Validate Email' | translate) : ('Send Validation Code' | translate) }}
+        </button>
+      </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'Diploma' | translate }}</mat-label>
+        <input matInput [(ngModel)]="event.diploma" name="diploma">
+      </mat-form-field>
+
+      <!-- Diploma image preview -->
+      <div *ngIf="event.diploma" class="diploma-image-preview diploma-html-preview">
+        <!--<img [src]="event.diploma" alt="Diploma" style="max-width:100%;max-height:200px;margin-bottom:1rem;">-->
+        <div [innerHtml]="event.diploma | sanitizedHtml" style="margin-left: 338px;"></div>
+      </div>
+
+      <!-- hasTop checkbox -->
+      <mat-checkbox [(ngModel)]="event.hasTop" name="hasTop" [ngModelOptions]="{standalone: true}">
+        {{ 'Has Top' | translate }}
+      </mat-checkbox>
+
+      <!-- Excluded signs list -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'Excluded Callsigns' | translate }}</mat-label>
+        <textarea matInput rows="2" [(ngModel)]="event.excludeCallsigns" name="excludeCallsigns"></textarea>
+        <mat-hint>{{ 'Comma separated' | translate }}</mat-hint>
+      </mat-form-field>
+
+      <section *ngIf="uploadUrl" class="api-upload-instructions" aria-label="Logging software API upload instructions">
+        <h3>{{ 'Logging software ADIF upload' | translate }}</h3>
+        <p>
+          {{ 'Configure your logger to export ADIF and send it to this API endpoint (same pattern as ClubLog-style ADIF upload):' | translate }}
+        </p>
+        <pre class="api-code">POST {{ uploadUrl }}</pre>
+        <ul>
+          <li>Method: <strong>POST</strong></li>
+          <li>Body type: <strong>multipart/form-data</strong></li>
+          <li>File field name: <strong>file</strong></li>
+          <li>File format: <strong>ADIF</strong> (.adi)</li>
+        </ul>
+        <p>
+          {{ 'These examples use an event-specific credential. Keep it private.' | translate }}
+        </p>
+        <p>Example:</p>
+        <pre class="api-code">curl -X POST {{ shellUploadUrl }} -F "file=@log.adi"</pre>
+
+        <h4>{{ 'Recommended setup presets (common logging software)' | translate }}</h4>
+        <div class="software-grid">
+          <article class="software-card">
+            <h5>N1MM Logger+</h5>
+            <ol>
+              <li>Configure ADIF export for each operator station (or periodic export).</li>
+              <li>Use a post-export script to call the upload endpoint.</li>
+              <li>Send exported .adi as multipart field <strong>file</strong>.</li>
+            </ol>
+          </article>
+
+          <article class="software-card">
+            <h5>Log4OM</h5>
+            <ol>
+              <li>Enable ADIF auto-export profile.</li>
+              <li>Trigger external command after export (or via scheduled task).</li>
+              <li>Upload generated ADIF to this event endpoint.</li>
+            </ol>
+          </article>
+
+          <article class="software-card">
+            <h5>DXKeeper / DXLab</h5>
+            <ol>
+              <li>Create ADIF export definition for event QSOs.</li>
+              <li>Use launcher automation to run upload command after export.</li>
+              <li>Keep event secret in a local env var, not in plain profile notes.</li>
+            </ol>
+          </article>
+
+          <article class="software-card">
+            <h5>Win-Test</h5>
+            <ol>
+              <li>Export ADIF at intervals or at operator handover.</li>
+              <li>Run a helper script to POST ADIF file to API.</li>
+              <li>Retry upload on temporary network errors.</li>
+            </ol>
+          </article>
+
+          <article class="software-card">
+            <h5>N3FJP / ACLog</h5>
+            <ol>
+              <li>Export ADIF from contest log module.</li>
+              <li>Attach a script or scheduled uploader for near-live sync.</li>
+              <li>Use one endpoint per event to avoid cross-event uploads.</li>
+            </ol>
+          </article>
+
+          <article class="software-card">
+            <h5>Ham Radio Deluxe</h5>
+            <ol>
+              <li>Export selected QSOs to ADIF.</li>
+              <li>Call upload API from PowerShell/batch helper.</li>
+              <li>Validate successful response before deleting local export file.</li>
+            </ol>
+          </article>
+        </div>
+
+        <h4>Generic uploader scripts (works with any logger)</h4>
+        <p>PowerShell:</p>
+        <pre class="api-code">$url = {{ powerShellUploadUrl }}
+Invoke-RestMethod -Method Post -Uri $url -Form @&#123; file = Get-Item 'C:\logs\event.adi' &#125;</pre>
+
+        <p>Linux/macOS shell:</p>
+        <pre class="api-code">curl -X POST {{ shellUploadUrl }} -F "file=@/var/log/event.adi"</pre>
+
+        <p>
+          Tip: if your logger has direct ClubLog upload only, keep that for ClubLog and add this script as an additional export target for HamEvent.
+        </p>
+      </section>
+
+      <div class="actions">
+        <button mat-raised-button color="primary" type="submit" [disabled]="busy">{{ (busy ? 'Saving...' : 'Save') | translate }}</button>
+        <button mat-button color="warn" type="button" (click)="cancelEdit()" [disabled]="busy">{{ 'Cancel' | translate }}</button>
+      </div>
+    </form>
+    <mat-progress-bar *ngIf="!event" mode="indeterminate"></mat-progress-bar>
+  </mat-card-content>
+</mat-card>

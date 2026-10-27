@@ -1,0 +1,220 @@
+name: Deploy TEST
+
+on:
+  workflow_dispatch:
+    inputs:
+      ci_run_id:
+        description: CI run id containing the publish artifact
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: deploy-test-${{ github.event.workflow_run.head_branch || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  guard:
+    name: Evaluate deploy eligibility
+    runs-on: ubuntu-latest
+    outputs:
+      should_deploy: ${{ steps.eval.outputs.should_deploy }}
+      ci_run_id: ${{ steps.eval.outputs.ci_run_id }}
+      source_branch: ${{ steps.eval.outputs.source_branch }}
+    steps:
+      - id: eval
+        shell: bash
+        run: |
+          SHOULD_DEPLOY=false
+          CI_RUN_ID=""
+          SOURCE_BRANCH=""
+
+          if [[ "${{ github.event_name }}" == "workflow_run" ]]; then
+            CI_RUN_ID="${{ github.event.workflow_run.id }}"
+            SOURCE_BRANCH="${{ github.event.workflow_run.head_branch }}"
+            if [[ "${{ github.event.workflow_run.conclusion }}" == "success" ]] && [[ "$SOURCE_BRANCH" =~ ^feature/|^bugfix/|^hotfix/ ]]; then
+              SHOULD_DEPLOY=true
+            fi
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            CI_RUN_ID="${{ inputs.ci_run_id }}"
+            SOURCE_BRANCH="manual"
+            SHOULD_DEPLOY=true
+          fi
+
+          echo "should_deploy=$SHOULD_DEPLOY" >> "$GITHUB_OUTPUT"
+          echo "ci_run_id=$CI_RUN_ID" >> "$GITHUB_OUTPUT"
+          echo "source_branch=$SOURCE_BRANCH" >> "$GITHUB_OUTPUT"
+
+  deploy_test:
+    name: Deploy to TEST
+    runs-on: windows-latest
+    needs: guard
+    if: needs.guard.outputs.should_deploy == 'true'
+    timeout-minutes: 30
+    environment: test
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: app-publish
+          path: publish
+          run-id: ${{ needs.guard.outputs.ci_run_id }}
+          github-token: ${{ github.token }}
+
+      - name: App settings substitution (TEST)
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: publish/appsettings.json
+        env:
+          MailerSettings.From: ${{ secrets.MAILER_SETTINGS_FROM }}
+          MailerSettings.Username: ${{ secrets.MAILER_SETTINGS_USERNAME }}
+          MailerSettings.Password: ${{ secrets.MAILER_SETTINGS_PASSWORD }}
+          MailerSettings.Host: ${{ secrets.MAILER_SETTINGS_HOST }}
+          MailerSettings.Port: ${{ secrets.MAILER_SETTINGS_PORT }}
+          MailerSettings.EnableSSL: ${{ secrets.MAILER_SETTINGS_ENABLESSL }}
+          Token.Secret: ${{ secrets.TOKEN_SECRET }}
+
+      - name: Verify TEST .NET 10 hosting prerequisite
+        shell: pwsh
+        env:
+          DOTNET10_HOSTING_READY: ${{ vars.DOTNET10_HOSTING_READY }}
+        run: |
+          if ($env:DOTNET10_HOSTING_READY -ne 'true') {
+            throw 'Confirm the .NET 10 Hosting Bundle is installed on TEST, then set the test environment variable DOTNET10_HOSTING_READY=true.'
+          }
+
+      - name: Fetch TEST database before deployment
+        uses: bogdanbrudiu/simply-web-deploy/Fetch@main
+        with:
+          website-name: ${{ secrets.WEBSITE_NAME }}
+          server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
+          server-username: ${{ secrets.SERVER_USERNAME }}
+          server-password: ${{ secrets.SERVER_PASSWORD }}
+          target-path: '\fetched-test\'
+          source-path: '""'
+
+      - name: Verify and back up TEST database
+        shell: pwsh
+        run: |
+          $database = 'fetched-test/App_Data/QSOs.db'
+          if (-not (Test-Path $database -PathType Leaf)) {
+            throw "TEST database not found at $database; refusing to deploy the bundled database."
+          }
+          if ((Get-Item $database).Length -eq 0) {
+            throw 'Fetched TEST database is empty; refusing deployment.'
+          }
+          New-Item -ItemType Directory -Force -Path backup | Out-Null
+          Copy-Item $database 'backup/QSOs.db' -Force
+          if ((Get-FileHash $database -Algorithm SHA256).Hash -ne (Get-FileHash 'backup/QSOs.db' -Algorithm SHA256).Hash) {
+            throw 'TEST database backup verification failed.'
+          }
+
+      - name: Upload TEST database backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-db-backup-${{ github.run_id }}
+          path: backup/QSOs.db
+          retention-days: 14
+          if-no-files-found: error
+
+      - name: Stop TEST app pool
+        uses: bogdanbrudiu/simply-web-deploy/Stop@main
+        with:
+          website-name: ${{ secrets.WEBSITE_NAME }}
+          server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
+          server-username: ${{ secrets.SERVER_USERNAME }}
+          server-password: ${{ secrets.SERVER_PASSWORD }}
+
+      - name: Deploy TEST app (preserve DB)
+        uses: bogdanbrudiu/simply-web-deploy/Deploy@main
+        with:
+          website-name: ${{ secrets.WEBSITE_NAME }}
+          server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
+          server-username: ${{ secrets.SERVER_USERNAME }}
+          server-password: ${{ secrets.SERVER_PASSWORD }}
+          source-path: '\publish\'
+          skip-files: 'App_Data\\QSOs.db'
+
+      - name: Start TEST app pool
+        if: always()
+        uses: bogdanbrudiu/simply-web-deploy/Start@main
+        with:
+          website-name: ${{ secrets.WEBSITE_NAME }}
+          server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
+          server-username: ${{ secrets.SERVER_USERNAME }}
+          server-password: ${{ secrets.SERVER_PASSWORD }}
+
+      - name: Wait for TEST readiness
+        shell: pwsh
+        env:
+          BASE_URL: ${{ secrets.TEST_BASE_URL }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:BASE_URL)) {
+            throw 'TEST_BASE_URL secret is required.'
+          }
+
+          $healthUrl = "$($env:BASE_URL.TrimEnd('/'))/health/ready"
+          $maxAttempts = 30
+          for ($i = 1; $i -le $maxAttempts; $i++) {
+            try {
+              $response = Invoke-WebRequest -Uri $healthUrl -Method Get -TimeoutSec 10 -SkipCertificateCheck
+              if ($response.StatusCode -eq 200) {
+                Write-Host "TEST readiness check passed on attempt $i"
+                exit 0
+              }
+            }
+            catch {
+              Write-Host "Attempt $i/$maxAttempts failed: $($_.Exception.Message)"
+            }
+            Start-Sleep -Seconds 5
+          }
+
+          throw "TEST readiness check failed for $healthUrl"
+
+  smoke_test_test_env:
+    name: Smoke Test TEST Environment (Playwright)
+    runs-on: ubuntu-latest
+    needs: deploy_test
+    if: needs.deploy_test.result == 'success'
+    timeout-minutes: 20
+    environment: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: HamEvent/ClientApp/package-lock.json
+
+      - name: Install client dependencies
+        working-directory: HamEvent/ClientApp
+        run: npm ci
+
+      - name: Install Playwright browser
+        working-directory: HamEvent/ClientApp
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright smoke tests on TEST
+        working-directory: HamEvent/ClientApp
+        env:
+          BASE_URL: ${{ secrets.TEST_BASE_URL }}
+        run: |
+          if [ -z "$BASE_URL" ]; then
+            echo "TEST_BASE_URL is required in the test environment secrets." >&2
+            exit 1
+          fi
+          npx playwright test --grep "@smoke"
+
+      - name: Upload Playwright artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-test-artifacts-${{ github.run_id }}
+          path: |
+            HamEvent/ClientApp/playwright-report
+            HamEvent/ClientApp/test-results
+          retention-days: 14

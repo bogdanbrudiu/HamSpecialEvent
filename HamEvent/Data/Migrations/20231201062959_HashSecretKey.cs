@@ -29,7 +29,7 @@ namespace HamEvent.Data.Migrations
             {
                 if (hamevent.SecretKey.Length.Equals(32))
                 {
-                    hamevent.SecretKey = HamEventController.ComputeSha256Hash(new Guid(hamevent.SecretKey));
+                    hamevent.SecretKey = HamEventController.ComputeSha256Hash(hamevent.SecretKey);
                 }
             }
             context.SaveChanges();
